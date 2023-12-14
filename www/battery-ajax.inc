@@ -1,0 +1,13 @@
+~BatteryCountedCapacityAs~
+~BatteryCurrent~
+~BatteryCapacitySetpoint~
+~BatteryOutputState~
+~BatteryChargeEnabled^1/0~
+~BatteryDischargeEnabled^1/0~
+~BatteryTemperature8bfdp~
+~BatteryTemperatureTargetTenths~
+~BatteryHeater8bfdp~
+~BatteryVoltageMv~
+~BatteryAgingAsPerHour~
+~BatteryHeaterProportional~
+~BatteryHeaterIntegral~

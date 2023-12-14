@@ -1,0 +1,8 @@
+# Ignore object or dependancy files
+*.[od]
+
+# Ignore data folder
+data/
+
+#ignore todo file
+todo.txt

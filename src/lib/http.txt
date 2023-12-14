@@ -1,0 +1,10 @@
+http-server
+===========
+Has own thread and runs continuously waiting to receive request from a socket
+
+http
+====
+Contains the buffer which is used for both request and response
+The buffer and copies made of the method, the resource and the query
+HttpGet or HttpPost then handle the query or content to make any changes that are needed
+Finally HttpResponse provide the resource, often an include file.

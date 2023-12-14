@@ -1,0 +1,18 @@
+                                    blk blu brn red grn ora gry whi pnk pur yel
+brown  / green  vehicle battery              x        x
+brown  / blue   habitation battery       x   x
+white  / orange ground                                   x       x
+red    / yellow engine running                    x                          x
+brown  / yellow permanent                    x                               x
+yellow / green  ignitions                             x                      x
+yellow / white  sockets                                          x           x
+pink            lights                                                x
+grey            lights                                       x
+grey   / red    awning light                      x          x
+green  / blue   water pump               x            x
+purple          water fill valve                                         x
+purple / red    water drain                       x                      x
+black  / yellow inverter on           x                                      x
+black  / red    inverter changeover   x           x
+black  / purple reverse b2b           x                                  x
+

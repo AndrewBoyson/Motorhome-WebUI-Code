@@ -1,0 +1,9 @@
+~ControlWaterPump~
+~ControlWaterFill~
+~ControlWaterDrain~
+~ControlInverter~
+~ControlDPlus~
+~TankFreshLitres~
+~ControlPumpMinLitres~
+~ControlPumpDplusLitres~
+~ControlDrainMaxLitres~

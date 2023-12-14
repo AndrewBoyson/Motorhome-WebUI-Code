@@ -1,0 +1,109 @@
+Raspbian
+========
+Use sd formatter to clean a card
+Use Raspberry pi imager to load the sd card with the lite edition (no desktop). In settings change hostname and enable SSH.
+
+sudo raspi-config | Advanced Options | Expand Filesystem
+
+sudo apt update
+sudo apt full-upgrade
+
+sudo apt install git
+
+Can
+===
+sudo nano /boot/config.txt
+
+dtparam=spi=on                                                                     <- uncomment this line
+
+# CAN-BUS Overlay                                                                  <- add these lines below the dtparam=spi=on
+dtoverlay=spi0-1cs,cs0_pin=8                                                       <- Use one CS on GPIO 8 (the default) (specify spi0-2cs if need two CS)
+dtoverlay=mcp2515,spi0-0,oscillator=12000000,interrupt=25,spimaxfrequency=2000000  <- use 16000000 for a 16MHz xtal; 12000000 for a 12MHz xtal
+
+sudo apt-get install can-utils
+
+sudo nano /etc/network/interfaces file and add the following:
+
+auto can0
+iface can0 inet manual
+    pre-up /sbin/ip link set can0 type can bitrate 100000 restart-ms 100
+    up     /sbin/ifconfig can0 up
+    down   /sbin/ifconfig can0 down
+	
+sudo reboot
+
+candump any
+
+Startup
+=======
+
+sudo nano /etc/systemd/system/server.service file and type in the following:
+[Unit]
+Description=Motorhome server
+
+[Service]
+Type=simple
+ExecStart=/home/pi/server/src/server
+StandardOutput=append:/home/pi/server/data/log
+StandardError=append:/home/pi/server/data/log
+Restart=always
+RestartSec=3
+User=root
+
+[Install]
+WantedBy=multi-user.target
+
+Enable with command:
+sudo systemctl enable server
+
+./start   sudo systemctl start server
+./stop    sudo systemctl stop server
+./restart sudo systemctl restart server
+./enable  sudo systemctl enable server
+./disable sudo systemctl disable server
+
+Set executable flags for stuff copied into user folder
+eg chmod 755 coredumps
+otherwise you get 'permission denied'
+
+Core dump
+=========
+Create file /etc/sysctl.d/core.conf with this content:
+
+kernel.core_pattern = /var/lib/coredumps/core-%e-sig%s-pid%p
+kernel.core_uses_pid = 1
+fs.suid_dumpable = 2
+Create such a folder, and set permissions:
+
+sudo mkdir /var/lib/coredumps
+sudo chmod 777 /var/lib/coredumps
+
+Edit file /etc/security/limits.conf and make sure these lines are uncommented and look like this:
+*      soft  core  unlimited
+root   hard  core     100000
+
+Logoff and logon, then:
+
+ulimit -c unlimited
+Check if it worked:
+
+$ ulimit -a
+core file size          (blocks, -c) unlimited
+data seg size           (kbytes, -d) unlimited
+scheduling priority             (-e) 0
+file size               (blocks, -f) unlimited
+pending signals                 (-i) 7345
+max locked memory       (kbytes, -l) 64
+max memory size         (kbytes, -m) unlimited
+open files                      (-n) 1024
+pipe size            (512 bytes, -p) 8
+POSIX message queues     (bytes, -q) 819200
+real-time priority              (-r) 0
+stack size              (kbytes, -s) 8192
+cpu time               (seconds, -t) unlimited
+max user processes              (-u) 7345
+virtual memory          (kbytes, -v) unlimited
+file locks                      (-x) unlimited
+Memento gdb core dump analysis:
+
+gdb <executable> <core_dump_file>

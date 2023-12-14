@@ -1,0 +1,1 @@
+extern int RtcWaitForNextSecond(time_t* pT);
