@@ -23,7 +23,7 @@
 #define DO_HOME_TARGET    2
 #define DO_HOME_CALIBRATE 3
 
-#define RATE_AS_PER_HOUR_DIVISOR 2
+#define RATE_AS_PER_HOUR_DIVISOR 1
 
 static int8_t   _mode            = MODE_MANUAL;
 static uint8_t  _awayPercent     = 0;
