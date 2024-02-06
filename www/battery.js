@@ -82,8 +82,8 @@ function display()
     elem = Ajax.getElementOrNull('val-battery-aging-as-per-hour'            ); if (elem) elem.value       =  batteryAgingAsPerHour;
     elem = Ajax.getElementOrNull('txt-battery-aging-ma'                     ); if (elem) elem.textContent = (batteryAgingAsPerHour * 1000 / 3600).toFixed(0);
     elem = Ajax.getElementOrNull('val-battery-aging-percent-per-month'      ); if (elem) elem.value       = (batteryAgingAsPerHour * 24 * 30 / AS_PER_PERCENT).toFixed(1);
-    elem = Ajax.getElementOrNull('val-battery-heater-proportional'          ); if (elem) elem.value       = (batteryHeaterProportional / 256 / 256 * 100     ).toFixed(2);
-    elem = Ajax.getElementOrNull('val-battery-heater-integral'              ); if (elem) elem.value       = (batteryHeaterIntegral     / 256 / 256 * 100 * 60).toFixed(2);
+    elem = Ajax.getElementOrNull('val-battery-heater-proportional'          ); if (elem) elem.value       = (batteryHeaterProportional / 256 / 256 * 100     ).toFixed(0);
+    elem = Ajax.getElementOrNull('val-battery-heater-integral'              ); if (elem) elem.value       = (batteryHeaterIntegral     / 256 / 256 * 100 * 60).toFixed(0);
     elem = Ajax.getElementOrNull('txt-battery-heater-ti-hours'              ); if (elem) elem.textContent = (TiMinutes / 60).toFixed(2);
 }
 
@@ -97,8 +97,20 @@ function change(elem)
     if (elem.id === 'val-battery-capacity-setpoint-percent'   ) AjaxSendNameValue('battery-capacity-setpoint-percent'   ,  elem.value);
     if (elem.id === 'att-battery-charge-enabled'              ) AjaxSendNameValue('battery-charge-enabled'              ,  elem.dir == 'rtl' ? '0' :  '1');
     if (elem.id === 'att-battery-discharge-enabled'           ) AjaxSendNameValue('battery-discharge-enabled'           ,  elem.dir == 'rtl' ? '0' :  '1');
-    if (elem.id === 'val-battery-heater-proportional'         ) AjaxSendNameValue('battery-heater-proportional'         , (elem.value * 256 * 256 / 100     ).toFixed(0));
-    if (elem.id === 'val-battery-heater-integral'             ) AjaxSendNameValue('battery-heater-integral'             , (elem.value * 256 * 256 / 100 / 60).toFixed(0));
+    if (elem.id === 'val-battery-heater-proportional'         )
+    {
+        let value = elem.value * 256 * 256 / 100;
+        if (value >  65535) value = 65535;
+        if (value <      0) value =     0;
+        AjaxSendNameValue('battery-heater-proportional', value.toFixed(0));
+    }
+    if (elem.id === 'val-battery-heater-integral'             )
+    {
+        let value = elem.value * 256 * 256 / 100 / 60;
+        if (value >  65535) value = 65535;
+        if (value <      0) value =     0;
+        AjaxSendNameValue('battery-heater-integral'    , value.toFixed(0));
+    }
 }
 
 Ajax.server     = '/battery-ajax';

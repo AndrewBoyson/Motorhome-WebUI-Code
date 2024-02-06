@@ -2,12 +2,15 @@
 #include <string.h> //strcat
 #include <stdio.h>  //sprintf
 #include <unistd.h> //sleep
+#include <stdarg.h> //variable arguments
 
 #include "lib/log.h"
 #include "lib/socket.h"
 #include "can-this.h"
 #include "battery.h"
 #include "alert.h"
+
+#define BUFFER_SIZE 1000
 
 int urlQueryEncode(char* to, char* from) //Returns the number of characters in the 'to' buffer (not including the end NUL
 {
@@ -100,48 +103,57 @@ void SmsSend(char* number, char* text)
 	TcpClose(sfd);
 }
 
+void SmsSendV(char* number, const char *format, va_list args)
+{
+ 	char buffer[BUFFER_SIZE];
+	vsnprintf(buffer, sizeof(buffer), format, args);
+	SmsSend(number, buffer);
+}
+void SmsSendF(char* number, const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	SmsSendV(number, format, args);
+	va_end(args);
+}
 static void sendStatus(char* number)
 {
-	char buffer[1000];
-	sprintf(buffer,
-				"Status:\n"
-				"Battery %3.1f%%\n"
-				"Water %d litres\n"
-				"Lpg %d litres\n"
-				"Water pump %s\n"
-				"Water fill %s\n"
-				"Water drain %s\n"
-				"Inverter %s\n"
-				"Mode %s",
-				(float)CanThisGetBatteryCountedCapacityAs() / (BATTERY_CAPACITY_AH * 36),
-				CanThisGetTankFreshLitres(),
-				CanThisGetTankLpgVolumeMl() / 1024,
-				CanThisGetControlWaterPump() ? "on" : "off",
-				CanThisGetControlWaterFill() ? "on" : "off",
-				CanThisGetControlWaterDrain() ? "on" : "off",
-				CanThisGetControlInverter() ? "on" : "off",
-				BatteryGetModeAsString()
-				);
-				
-	SmsSend(number, buffer);
+	SmsSendF(
+		number,
+		"Status:\n"
+		"Battery %3.1f%%\n"
+		"Water %d litres\n"
+		"Lpg %d litres\n"
+		"Water pump %s\n"
+		"Water fill %s\n"
+		"Water drain %s\n"
+		"Inverter %s\n"
+		"Mode %s",
+		(float)CanThisGetBatteryCountedCapacityAs() / (BATTERY_CAPACITY_AH * 36),
+		CanThisGetTankFreshLitres(),
+		CanThisGetTankLpgVolumeMl() / 1024,
+		CanThisGetControlWaterPump()  ? "on" : "off",
+		CanThisGetControlWaterFill()  ? "on" : "off",
+		CanThisGetControlWaterDrain() ? "on" : "off",
+		CanThisGetControlInverter()   ? "on" : "off",
+		BatteryGetModeAsString()
+	);
 }
 static void sendBattery(char* number)
 {
-	char buffer[1000];
-	sprintf(buffer,
-				"Battery:\n"
-				"Counted capacity %3.1f%%\n"
-				"Target capacity %d%%\n"
-				"Current %dmA\n"
-	            "Temperature %2.1f°\n"
-				"State %c\n",
-				(float)CanThisGetBatteryCountedCapacityAs() / (BATTERY_CAPACITY_AH * 36),
-				CanThisGetBatteryCapacityTargetPercent(),
-				CanThisGetBatteryCurrentMa(),
-				(float)CanThisGetBatteryTemperature8bfdp() / 256,
-				CanThisGetBatteryOutputState()
-				);
-	SmsSend(number, buffer);
+	SmsSendF(number,
+		"Battery:\n"
+		"Counted capacity %3.1f%%\n"
+		"Target capacity %d%%\n"
+		"Current %dmA\n"
+		"Temperature %2.1f°\n"
+		"State %c\n",
+		(float)CanThisGetBatteryCountedCapacityAs() / (BATTERY_CAPACITY_AH * 36),
+		CanThisGetBatteryCapacityTargetPercent(),
+		CanThisGetBatteryCurrentMa(),
+		(float)CanThisGetBatteryTemperature8bfdp() / 256,
+		CanThisGetBatteryOutputState()
+	);
 }
 static char parseBool(char* sValue)
 {
@@ -154,7 +166,7 @@ static void setTarget(char* number, char* sValue)
 	int iValue = atoi(sValue);
 	if (iValue > 90 || iValue < 20)
 	{
-		SmsSend(number, "Target %% outside 20 to 90");
+		SmsSendF(number, "Target %d%% outside 20 to 90", iValue);
 		return;
 	}
 	CanThisSetBatteryCapacityTargetPercent((uint8_t)iValue);
