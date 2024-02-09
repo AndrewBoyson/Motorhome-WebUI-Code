@@ -59,7 +59,7 @@ static void checkforInternalTemperatureBelow()
 	
 	if (gettingWorse || gettingBetter) _existingAlert = newAlert;
 	
-	if (gettingWorse) AlertSendF("Internal temperature (%04X hex) is below %d deg", value, newAlert/16);
+	if (gettingWorse) AlertSendF("Internal temperature (%04hX hex) is below %d deg", value, newAlert/16);
 }
 static char checkForAlertAbove(int16_t value, int16_t limit, int16_t hysteresis, char* thisScan, char* lastScan)
 {
