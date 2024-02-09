@@ -35,10 +35,17 @@ static void *workerPoll(void *arg)
 	{
 		sleep(1); //Sleep takes a float so 10 is ten seconds and 0.1 is 100 ms
 		
+		static int secondsAfterInit = 0;
+		if (secondsAfterInit < 1000) secondsAfterInit++;
+
 		UsbDrivePoll(); //Mount or unmount the UsbDrive
-		AlertPoll();    //Check for alerts
-		TankPoll();     //Manages the tank - actually just records water and lpg levels
-		BatteryPoll();  //Manage the battery
+				
+		if (secondsAfterInit > 15) //This gives long enough after a reset for all CAN information to have been received at least once
+		{
+			AlertPoll();    //Check for alerts
+			TankPoll();     //Manages the tank - actually just records water and lpg levels
+			BatteryPoll();  //Manage the battery
+		}
 	}
 	return NULL;
 }
