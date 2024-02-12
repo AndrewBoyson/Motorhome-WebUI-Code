@@ -7,6 +7,7 @@
 #include "lib/http-server.h"
 #include "lib/usbdrive.h"
 #include "lib/rtc.h"
+#include "lib/can-reliable.h"
 
 #include "can-this.h"
 #include "alert.h"
@@ -42,9 +43,10 @@ static void *workerPoll(void *arg)
 				
 		if (secondsAfterInit > 15) //This gives long enough after a reset for all CAN information to have been received at least once
 		{
-			AlertPoll();    //Check for alerts
-			TankPoll();     //Manages the tank - actually just records water and lpg levels
-			BatteryPoll();  //Manage the battery
+			AlertPoll();       //Check for alerts
+			TankPoll();        //Manages the tank - actually just records water and lpg levels
+			BatteryPoll();     //Manage the battery
+			CanReliablePoll(); //Allows checking if a can message was received and retry if not
 		}
 	}
 	return NULL;

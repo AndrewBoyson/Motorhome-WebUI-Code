@@ -10,6 +10,7 @@
 #include <errno.h>
 
 #include "log.h"
+#include "can-reliable.h"
 
 #define MAX_LENGTH 8
 
@@ -97,6 +98,8 @@ int CanReadOrWait(int32_t* pId, int* pLen, void* pData) //Only called by the CAN
 	if (*pLen > MAX_LENGTH) *pLen = MAX_LENGTH;
 	if (*pLen < 0         ) *pLen = 0;
 	memcpy(pData, frame.data, *pLen);
+	
+	CanReliableReceived(*pId, *pLen, pData);
 
 	return 0; //returns 0 on success, anything else on failure
 }

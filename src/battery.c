@@ -295,11 +295,11 @@ void BatteryPoll()
 																							     asPerHourToAdd, mAToAdd);
 			Log('e', "Capacity was %uAs (%2.1f%%), correction was %dAs/h (%2.1fmA)", CanThisGetBatteryCountedCapacityAs(), (float)CanThisGetBatteryCountedCapacityAs() / 280 / 36, 
 																					 CanThisGetBatteryAgingAsPerHour(),    (float)CanThisGetBatteryAgingAsPerHour() / 3.6);
-			usleep(10000); //sleep for 10 ms to give time for any previous CAN message to be processed
+			//usleep(10000); //sleep for 10 ms to give time for any previous CAN message to be processed
 			CanThisSetBatteryCountedCapacityAs(CanThisGetBatteryCountedCapacityAs() + capacityToAddToCountAs);
-			usleep(10000); //sleep for 10 ms to give time for any previous CAN message to be processed
+			//usleep(10000); //sleep for 10 ms to give time for any previous CAN message to be processed
 			CanThisSetBatteryAgingAsPerHour   (CanThisGetBatteryAgingAsPerHour()    + asPerHourToAdd / RATE_AS_PER_HOUR_DIVISOR);
-			usleep(10000); //sleep for 10 ms to give time for any previous CAN message to be processed
+			//usleep(10000); //sleep for 10 ms to give time for any previous CAN message to be processed
 			BatterySetCalTime(now);
 			Log('e', "Capacity now %uAs (%2.1f%%), correction now %dAs/h (%2.1fmA)", CanThisGetBatteryCountedCapacityAs(), (float)CanThisGetBatteryCountedCapacityAs() / 280 / 36, 
 																					 CanThisGetBatteryAgingAsPerHour(),    (float)CanThisGetBatteryAgingAsPerHour() / 3.6);

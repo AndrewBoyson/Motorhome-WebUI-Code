@@ -1,5 +1,8 @@
 #include <stdint.h>
+#include <string.h>
+
 #include "lib/can.h"
+#include "lib/can-reliable.h"
 #include "lib/log.h"
 
 #define CAN_ID_SERVER                    0x000
@@ -193,42 +196,88 @@ uint64_t CanThisGetAmbientHeatingRom              (){ return _ambientHeatingRom;
  int16_t CanThisGetControlPumpDplusLitres         (){ return _controlPumpDplusLitres;         }
  int16_t CanThisGetControlDrainMaxLitres          (){ return _controlDrainMaxLitres;          }
 
-void CanThisSendServerTime                   (uint32_t value){                                          CanSend(CAN_ID_SERVER  + CAN_ID_TIME                 , 4, &value);}
-void CanThisSetBatteryCountedCapacityAs      (uint32_t value){ _batteryCountedCapacity         = value; CanSend(CAN_ID_BATTERY + CAN_ID_COUNTED_AMP_SECONDS  , 4, &value);}
-void CanThisSetBatteryCurrentMa              (int32_t  value){ _batteryCurrentMa               = value; CanSend(CAN_ID_BATTERY + CAN_ID_MA                   , 4, &value);}
-void CanThisSetBatteryCapacityTargetPercent  (uint8_t  value){ _batteryCapacityTargetPercent   = value; CanSend(CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET        , 1, &value);}
-void CanThisSetBatteryOutputState            (char     value){ _batteryOutputState             = value; CanSend(CAN_ID_BATTERY + CAN_ID_OUTPUT_STATE         , 1, &value);}
-void CanThisSetBatteryChargeEnabled          (char     value){ _batteryChargeEnabled           = value; CanSend(CAN_ID_BATTERY + CAN_ID_CHARGE_ENABLED       , 1, &value);}
-void CanThisSetBatteryDischargeEnabled       (char     value){ _batteryDischargeEnabled        = value; CanSend(CAN_ID_BATTERY + CAN_ID_DISCHARGE_ENABLED    , 1, &value);}
-void CanThisSetBatteryTemperatureTargetTenths(int16_t  value){ _batteryTemperatureTargetTenths = value; CanSend(CAN_ID_BATTERY + CAN_ID_HEATER_TARGET        , 2, &value);}
-void CanThisSetBatteryHeaterProportional     (uint16_t value){ _batteryHeaterProportional      = value; CanSend(CAN_ID_BATTERY + CAN_ID_HEATER_PROPORTIONAL  , 2, &value);}
-void CanThisSetBatteryHeaterIntegral         (uint16_t value){ _batteryHeaterIntegral          = value; CanSend(CAN_ID_BATTERY + CAN_ID_HEATER_INTEGRAL      , 2, &value);}
-void CanThisSetBatteryAgingAsPerHour         (int16_t  value){ _batteryAgingAsPerHour          = value; CanSend(CAN_ID_BATTERY + CAN_ID_AGING_AS_PER_HOUR    , 2, &value);}
-void CanThisSetTankFreshBaseTemp16ths        (int16_t  value){ _tankFreshBaseTemp16ths         = value; CanSend(CAN_ID_TANK    + CAN_ID_FRESH_BASE_TEMP      , 2, &value);}
-void CanThisSetTankFreshBaseMv               (int16_t  value){ _tankFreshBaseMv                = value; CanSend(CAN_ID_TANK    + CAN_ID_FRESH_BASE_MV        , 2, &value);}
-void CanThisSetTankFreshUvPer16th            (int16_t  value){ _tankFreshUvPer16th             = value; CanSend(CAN_ID_TANK    + CAN_ID_FRESH_UV_PER_16TH    , 2, &value);}
-void CanThisSetTankSensorPosnFront           (int16_t  value){ _sensorPosnFront                = value; CanSend(CAN_ID_TANK    + CAN_ID_FRESH_SENSOR_FRONT   , 2, &value);}
-void CanThisSetTankSensorPosnRight           (int16_t  value){ _sensorPosnRight                = value; CanSend(CAN_ID_TANK    + CAN_ID_FRESH_SENSOR_RIGHT   , 2, &value);}
-void CanThisSetTankWidth                     (uint16_t value){ _tankWidth                      = value; CanSend(CAN_ID_TANK    + CAN_ID_FRESH_TANK_WIDTH     , 2, &value);}
-void CanThisSetTankLength                    (uint16_t value){ _tankLength                     = value; CanSend(CAN_ID_TANK    + CAN_ID_FRESH_TANK_LENGTH    , 2, &value);}
-void CanThisSetTankAccelerometerXFlat        (int16_t  value){ _tankAccelerometerXFlat         = value; CanSend(CAN_ID_TANK    + CAN_ID_ACCELEROMETER_X_FLAT , 2, &value);}
-void CanThisSetTankAccelerometerYFlat        (int16_t  value){ _tankAccelerometerYFlat         = value; CanSend(CAN_ID_TANK    + CAN_ID_ACCELEROMETER_Y_FLAT , 2, &value);}
-void CanThisSetTankAccelerometerZFlat        (int16_t  value){ _tankAccelerometerZFlat         = value; CanSend(CAN_ID_TANK    + CAN_ID_ACCELEROMETER_Z_FLAT , 2, &value);}
-void CanThisSetTankFreshRom                  (uint64_t value){ _tankFreshRom                   = value; CanSend(CAN_ID_TANK    + CAN_ID_FRESH_ROM            , 8, &value);}
-void CanThisSetTankLpgResistanceMin16ths     (int16_t  value){ _tankLpgResistanceMin16ths      = value; CanSend(CAN_ID_TANK    + CAN_ID_LPG_RESISTANCE_MIN   , 2, &value);}
-void CanThisSetTankLpgResistanceMax16ths     (int16_t  value){ _tankLpgResistanceMax16ths      = value; CanSend(CAN_ID_TANK    + CAN_ID_LPG_RESISTANCE_MAX   , 2, &value);}
-void CanThisSetTankLpgVolumeMinMl            (int16_t  value){ _tankLpgVolumeMinMl             = value; CanSend(CAN_ID_TANK    + CAN_ID_LPG_VOLUME_MIN       , 2, &value);}
-void CanThisSetTankLpgVolumeMaxMl            (int16_t  value){ _tankLpgVolumeMaxMl             = value; CanSend(CAN_ID_TANK    + CAN_ID_LPG_VOLUME_MAX       , 2, &value);}
-void CanThisSetAmbientOutsideRom             (uint64_t value){ _ambientOutsideRom              = value; CanSend(CAN_ID_TANK    + CAN_ID_AMBIENT_OUTSIDE_ROM  , 8, &value);}
-void CanThisSetAmbientHeatingRom             (uint64_t value){ _ambientHeatingRom              = value; CanSend(CAN_ID_TANK    + CAN_ID_AMBIENT_HEATING_ROM  , 8, &value);}
-void CanThisSetControlWaterPump              (char     value){ _controlPump                    = value; CanSend(CAN_ID_CONTROL + CAN_ID_PUMP                 , 1, &value);}
-void CanThisSetControlWaterFill              (char     value){ _controlFill                    = value; CanSend(CAN_ID_CONTROL + CAN_ID_FILL                 , 1, &value);}
-void CanThisSetControlWaterDrain             (char     value){ _controlDrain                   = value; CanSend(CAN_ID_CONTROL + CAN_ID_DRAIN                , 1, &value);}
-void CanThisSetControlInverter               (char     value){ _controlInverter                = value; CanSend(CAN_ID_CONTROL + CAN_ID_INVERTER             , 1, &value);}
-void CanThisSetControlPumpMinLitres          (int16_t  value){ _controlPumpMinLitres           = value; CanSend(CAN_ID_CONTROL + CAN_ID_PUMP_MIN_LITRES      , 2, &value);}
-void CanThisSetControlPumpDplusLitres        (int16_t  value){ _controlPumpDplusLitres         = value; CanSend(CAN_ID_CONTROL + CAN_ID_PUMP_DPLUS_LITRES    , 2, &value);}
-void CanThisSetControlDrainMaxLitres         (int16_t  value){ _controlDrainMaxLitres          = value; CanSend(CAN_ID_CONTROL + CAN_ID_DRAIN_MAX_LITRES     , 2, &value);}
+static void set(void* pSetting, int32_t id, int len, void* pValue)
+{
+	if (memcmp(pSetting, pValue, len) != 0)
+	{
+		memcpy(pSetting, pValue, len);
+		CanReliableSend(id, len, pValue);
+	}
+}	
 
+void CanThisSendServerTime                   (uint32_t value){ CanSend                              (CAN_ID_SERVER  + CAN_ID_TIME                 , 4, &value);}
+void CanThisSetBatteryCountedCapacityAs      (uint32_t value){ set(&_batteryCountedCapacity        , CAN_ID_BATTERY + CAN_ID_COUNTED_AMP_SECONDS  , 4, &value);}
+//void CanThisSetBatteryCurrentMa              (int32_t  value){ set(&_batteryCurrentMa              , CAN_ID_BATTERY + CAN_ID_MA                   , 4, &value);}
+void CanThisSetBatteryCapacityTargetPercent  (uint8_t  value){ set(&_batteryCapacityTargetPercent  , CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET        , 1, &value);}
+//void CanThisSetBatteryOutputState            (char     value){ set(&_batteryOutputState            , CAN_ID_BATTERY + CAN_ID_OUTPUT_STATE         , 1, &value);}
+void CanThisSetBatteryChargeEnabled          (char     value){ set(&_batteryChargeEnabled          , CAN_ID_BATTERY + CAN_ID_CHARGE_ENABLED       , 1, &value);}
+void CanThisSetBatteryDischargeEnabled       (char     value){ set(&_batteryDischargeEnabled       , CAN_ID_BATTERY + CAN_ID_DISCHARGE_ENABLED    , 1, &value);}
+void CanThisSetBatteryTemperatureTargetTenths(int16_t  value){ set(&_batteryTemperatureTargetTenths, CAN_ID_BATTERY + CAN_ID_HEATER_TARGET        , 2, &value);}
+void CanThisSetBatteryHeaterProportional     (uint16_t value){ set(&_batteryHeaterProportional     , CAN_ID_BATTERY + CAN_ID_HEATER_PROPORTIONAL  , 2, &value);}
+void CanThisSetBatteryHeaterIntegral         (uint16_t value){ set(&_batteryHeaterIntegral         , CAN_ID_BATTERY + CAN_ID_HEATER_INTEGRAL      , 2, &value);}
+void CanThisSetBatteryAgingAsPerHour         (int16_t  value){ set(&_batteryAgingAsPerHour         , CAN_ID_BATTERY + CAN_ID_AGING_AS_PER_HOUR    , 2, &value);}
+void CanThisSetTankFreshBaseTemp16ths        (int16_t  value){ set(&_tankFreshBaseTemp16ths        , CAN_ID_TANK    + CAN_ID_FRESH_BASE_TEMP      , 2, &value);}
+void CanThisSetTankFreshBaseMv               (int16_t  value){ set(&_tankFreshBaseMv               , CAN_ID_TANK    + CAN_ID_FRESH_BASE_MV        , 2, &value);}
+void CanThisSetTankFreshUvPer16th            (int16_t  value){ set(&_tankFreshUvPer16th            , CAN_ID_TANK    + CAN_ID_FRESH_UV_PER_16TH    , 2, &value);}
+void CanThisSetTankSensorPosnFront           (int16_t  value){ set(&_sensorPosnFront               , CAN_ID_TANK    + CAN_ID_FRESH_SENSOR_FRONT   , 2, &value);}
+void CanThisSetTankSensorPosnRight           (int16_t  value){ set(&_sensorPosnRight               , CAN_ID_TANK    + CAN_ID_FRESH_SENSOR_RIGHT   , 2, &value);}
+void CanThisSetTankWidth                     (uint16_t value){ set(&_tankWidth                     , CAN_ID_TANK    + CAN_ID_FRESH_TANK_WIDTH     , 2, &value);}
+void CanThisSetTankLength                    (uint16_t value){ set(&_tankLength                    , CAN_ID_TANK    + CAN_ID_FRESH_TANK_LENGTH    , 2, &value);}
+void CanThisSetTankAccelerometerXFlat        (int16_t  value){ set(&_tankAccelerometerXFlat        , CAN_ID_TANK    + CAN_ID_ACCELEROMETER_X_FLAT , 2, &value);}
+void CanThisSetTankAccelerometerYFlat        (int16_t  value){ set(&_tankAccelerometerYFlat        , CAN_ID_TANK    + CAN_ID_ACCELEROMETER_Y_FLAT , 2, &value);}
+void CanThisSetTankAccelerometerZFlat        (int16_t  value){ set(&_tankAccelerometerZFlat        , CAN_ID_TANK    + CAN_ID_ACCELEROMETER_Z_FLAT , 2, &value);}
+void CanThisSetTankFreshRom                  (uint64_t value){ set(&_tankFreshRom                  , CAN_ID_TANK    + CAN_ID_FRESH_ROM            , 8, &value);}
+void CanThisSetTankLpgResistanceMin16ths     (int16_t  value){ set(&_tankLpgResistanceMin16ths     , CAN_ID_TANK    + CAN_ID_LPG_RESISTANCE_MIN   , 2, &value);}
+void CanThisSetTankLpgResistanceMax16ths     (int16_t  value){ set(&_tankLpgResistanceMax16ths     , CAN_ID_TANK    + CAN_ID_LPG_RESISTANCE_MAX   , 2, &value);}
+void CanThisSetTankLpgVolumeMinMl            (int16_t  value){ set(&_tankLpgVolumeMinMl            , CAN_ID_TANK    + CAN_ID_LPG_VOLUME_MIN       , 2, &value);}
+void CanThisSetTankLpgVolumeMaxMl            (int16_t  value){ set(&_tankLpgVolumeMaxMl            , CAN_ID_TANK    + CAN_ID_LPG_VOLUME_MAX       , 2, &value);}
+void CanThisSetAmbientOutsideRom             (uint64_t value){ set(&_ambientOutsideRom             , CAN_ID_TANK    + CAN_ID_AMBIENT_OUTSIDE_ROM  , 8, &value);}
+void CanThisSetAmbientHeatingRom             (uint64_t value){ set(&_ambientHeatingRom             , CAN_ID_TANK    + CAN_ID_AMBIENT_HEATING_ROM  , 8, &value);}
+void CanThisSetControlWaterPump              (char     value){ set(&_controlPump                   , CAN_ID_CONTROL + CAN_ID_PUMP                 , 1, &value);}
+void CanThisSetControlWaterFill              (char     value){ set(&_controlFill                   , CAN_ID_CONTROL + CAN_ID_FILL                 , 1, &value);}
+void CanThisSetControlWaterDrain             (char     value){ set(&_controlDrain                  , CAN_ID_CONTROL + CAN_ID_DRAIN                , 1, &value);}
+void CanThisSetControlInverter               (char     value){ set(&_controlInverter               , CAN_ID_CONTROL + CAN_ID_INVERTER             , 1, &value);}
+void CanThisSetControlPumpMinLitres          (int16_t  value){ set(&_controlPumpMinLitres          , CAN_ID_CONTROL + CAN_ID_PUMP_MIN_LITRES      , 2, &value);}
+void CanThisSetControlPumpDplusLitres        (int16_t  value){ set(&_controlPumpDplusLitres        , CAN_ID_CONTROL + CAN_ID_PUMP_DPLUS_LITRES    , 2, &value);}
+void CanThisSetControlDrainMaxLitres         (int16_t  value){ set(&_controlDrainMaxLitres         , CAN_ID_CONTROL + CAN_ID_DRAIN_MAX_LITRES     , 2, &value);}
+
+/*
+void CanThisSendServerTime                   (uint32_t value){                                          CanSend        (CAN_ID_SERVER  + CAN_ID_TIME                 , 4, &value);}
+void CanThisSetBatteryCountedCapacityAs      (uint32_t value){ _batteryCountedCapacity         = value; CanReliableSend(CAN_ID_BATTERY + CAN_ID_COUNTED_AMP_SECONDS  , 4, &value);}
+void CanThisSetBatteryCurrentMa              (int32_t  value){ _batteryCurrentMa               = value; CanReliableSend(CAN_ID_BATTERY + CAN_ID_MA                   , 4, &value);}
+void CanThisSetBatteryCapacityTargetPercent  (uint8_t  value){ if (_batteryCapacityTargetPercent != value){_batteryCapacityTargetPercent   = value; CanReliableSend(CAN_ID_BATTERY+CAN_ID_OUTPUT_TARGET        , 1, &value);}}
+void CanThisSetBatteryOutputState            (char     value){ _batteryOutputState             = value; CanReliableSend(CAN_ID_BATTERY + CAN_ID_OUTPUT_STATE         , 1, &value);}
+void CanThisSetBatteryChargeEnabled          (char     value){ _batteryChargeEnabled           = value; CanReliableSend(CAN_ID_BATTERY + CAN_ID_CHARGE_ENABLED       , 1, &value);}
+void CanThisSetBatteryDischargeEnabled       (char     value){ _batteryDischargeEnabled        = value; CanReliableSend(CAN_ID_BATTERY + CAN_ID_DISCHARGE_ENABLED    , 1, &value);}
+void CanThisSetBatteryTemperatureTargetTenths(int16_t  value){ _batteryTemperatureTargetTenths = value; CanReliableSend(CAN_ID_BATTERY + CAN_ID_HEATER_TARGET        , 2, &value);}
+void CanThisSetBatteryHeaterProportional     (uint16_t value){ _batteryHeaterProportional      = value; CanReliableSend(CAN_ID_BATTERY + CAN_ID_HEATER_PROPORTIONAL  , 2, &value);}
+void CanThisSetBatteryHeaterIntegral         (uint16_t value){ _batteryHeaterIntegral          = value; CanReliableSend(CAN_ID_BATTERY + CAN_ID_HEATER_INTEGRAL      , 2, &value);}
+void CanThisSetBatteryAgingAsPerHour         (int16_t  value){ _batteryAgingAsPerHour          = value; CanReliableSend(CAN_ID_BATTERY + CAN_ID_AGING_AS_PER_HOUR    , 2, &value);}
+void CanThisSetTankFreshBaseTemp16ths        (int16_t  value){ _tankFreshBaseTemp16ths         = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_FRESH_BASE_TEMP      , 2, &value);}
+void CanThisSetTankFreshBaseMv               (int16_t  value){ _tankFreshBaseMv                = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_FRESH_BASE_MV        , 2, &value);}
+void CanThisSetTankFreshUvPer16th            (int16_t  value){ _tankFreshUvPer16th             = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_FRESH_UV_PER_16TH    , 2, &value);}
+void CanThisSetTankSensorPosnFront           (int16_t  value){ _sensorPosnFront                = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_FRESH_SENSOR_FRONT   , 2, &value);}
+void CanThisSetTankSensorPosnRight           (int16_t  value){ _sensorPosnRight                = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_FRESH_SENSOR_RIGHT   , 2, &value);}
+void CanThisSetTankWidth                     (uint16_t value){ _tankWidth                      = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_FRESH_TANK_WIDTH     , 2, &value);}
+void CanThisSetTankLength                    (uint16_t value){ _tankLength                     = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_FRESH_TANK_LENGTH    , 2, &value);}
+void CanThisSetTankAccelerometerXFlat        (int16_t  value){ _tankAccelerometerXFlat         = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_ACCELEROMETER_X_FLAT , 2, &value);}
+void CanThisSetTankAccelerometerYFlat        (int16_t  value){ _tankAccelerometerYFlat         = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_ACCELEROMETER_Y_FLAT , 2, &value);}
+void CanThisSetTankAccelerometerZFlat        (int16_t  value){ _tankAccelerometerZFlat         = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_ACCELEROMETER_Z_FLAT , 2, &value);}
+void CanThisSetTankFreshRom                  (uint64_t value){ _tankFreshRom                   = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_FRESH_ROM            , 8, &value);}
+void CanThisSetTankLpgResistanceMin16ths     (int16_t  value){ _tankLpgResistanceMin16ths      = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_LPG_RESISTANCE_MIN   , 2, &value);}
+void CanThisSetTankLpgResistanceMax16ths     (int16_t  value){ _tankLpgResistanceMax16ths      = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_LPG_RESISTANCE_MAX   , 2, &value);}
+void CanThisSetTankLpgVolumeMinMl            (int16_t  value){ _tankLpgVolumeMinMl             = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_LPG_VOLUME_MIN       , 2, &value);}
+void CanThisSetTankLpgVolumeMaxMl            (int16_t  value){ _tankLpgVolumeMaxMl             = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_LPG_VOLUME_MAX       , 2, &value);}
+void CanThisSetAmbientOutsideRom             (uint64_t value){ _ambientOutsideRom              = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_AMBIENT_OUTSIDE_ROM  , 8, &value);}
+void CanThisSetAmbientHeatingRom             (uint64_t value){ _ambientHeatingRom              = value; CanReliableSend(CAN_ID_TANK    + CAN_ID_AMBIENT_HEATING_ROM  , 8, &value);}
+void CanThisSetControlWaterPump              (char     value){ _controlPump                    = value; CanReliableSend(CAN_ID_CONTROL + CAN_ID_PUMP                 , 1, &value);}
+void CanThisSetControlWaterFill              (char     value){ _controlFill                    = value; CanReliableSend(CAN_ID_CONTROL + CAN_ID_FILL                 , 1, &value);}
+void CanThisSetControlWaterDrain             (char     value){ _controlDrain                   = value; CanReliableSend(CAN_ID_CONTROL + CAN_ID_DRAIN                , 1, &value);}
+void CanThisSetControlInverter               (char     value){ _controlInverter                = value; CanReliableSend(CAN_ID_CONTROL + CAN_ID_INVERTER             , 1, &value);}
+void CanThisSetControlPumpMinLitres          (int16_t  value){ _controlPumpMinLitres           = value; CanReliableSend(CAN_ID_CONTROL + CAN_ID_PUMP_MIN_LITRES      , 2, &value);}
+void CanThisSetControlPumpDplusLitres        (int16_t  value){ _controlPumpDplusLitres         = value; CanReliableSend(CAN_ID_CONTROL + CAN_ID_PUMP_DPLUS_LITRES    , 2, &value);}
+void CanThisSetControlDrainMaxLitres         (int16_t  value){ _controlDrainMaxLitres          = value; CanReliableSend(CAN_ID_CONTROL + CAN_ID_DRAIN_MAX_LITRES     , 2, &value);}
+*/
 
 void CanThisReceive()
 {
