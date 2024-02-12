@@ -8,10 +8,13 @@
 #define MAX_ENTRIES 10
 #define MAX_RESENDS 15
 
-static uint64_t _values[MAX_ENTRIES];
-static int      _lens  [MAX_ENTRIES];
-static int32_t  _ids   [MAX_ENTRIES];
-static int      _counts[MAX_ENTRIES];
+struct entry
+{
+	uint64_t value;
+	int      len;
+	int32_t  id;
+	int      resends;
+} _entries[MAX_ENTRIES];
 
 void CanReliablePoll()
 {
@@ -23,11 +26,11 @@ void CanReliablePoll()
 	//See if there is an existing entry and resend it
 	for (int i = 0; i < MAX_ENTRIES; i++)
 	{
-		if (_lens[i] != 0)
+		if (_entries[i].len != 0)
 		{
-			Log('d', "CanReliablePoll     -  resent entry id %03x, len %d", _ids[i], _lens[i]);
-			CanSend(_ids[i], _lens[i], &_values[i]);
-			_counts[i]++;
+			Log('d', "CanReliablePoll     -  resent entry id %03x, len %d", _entries[i].id, _entries[i].len);
+			CanSend(_entries[i].id, _entries[i].len, &_entries[i].value);
+			_entries[i].resends++;
 			break;
 		}
 	}
@@ -35,10 +38,10 @@ void CanReliablePoll()
 	//See if any entries need to be reeped
 	for (int i = 0; i < MAX_ENTRIES; i++)
 	{
-		if (_lens[i] != 0 && _counts[i] >= MAX_RESENDS)
+		if (_entries[i].len != 0 && _entries[i].resends >= MAX_RESENDS)
 		{
-			Log('d', "CanReliablePoll     -  reeped entry id %03x, len %d", _ids[i], _lens[i]);
-			_lens[i] = 0;
+			Log('d', "CanReliablePoll     -  reeped entry id %03x, len %d", _entries[i].id, _entries[i].len);
+			_entries[i].len = 0;
 		}
 	}
 }
@@ -52,12 +55,12 @@ void CanReliableSend(int32_t id, int len, void* pData)
 	//See if there is an existing entry and update it
 	for (int i = 0; i < MAX_ENTRIES; i++)
 	{
-		if (_lens[i] != 0 && _ids[i] == id)
+		if (_entries[i].len != 0 && _entries[i].id == id)
 		{
 			Log('d', "CanReliableSend - updated entry id %03x, len %d", id, len);
-			_lens[i] = len;
-			memcpy(&_values[i], pData, len);
-			_counts[i] = 0;
+			_entries[i].len = len;
+			memcpy(&_entries[i].value, pData, len);
+			_entries[i].resends = 0;
 			return;
 		}
 	}
@@ -65,13 +68,13 @@ void CanReliableSend(int32_t id, int len, void* pData)
 	//See if there is a space and add the entry
 	for (int i = 0; i < MAX_ENTRIES; i++)
 	{
-		if (_lens[i] == 0)
+		if (_entries[i].len == 0)
 		{
 			Log('d', "CanReliableSend     -   added entry id %03x, len %d", id, len);
-			_lens[i] = len;
-			_ids[i] = id;
-			memcpy(&_values[i], pData, len);
-			_counts[i] = 0;
+			_entries[i].len = len;
+			_entries[i].id = id;
+			memcpy(&_entries[i].value, pData, len);
+			_entries[i].resends = 0;
 			return;
 		}
 	}
@@ -85,10 +88,10 @@ void CanReliableReceived(int32_t id, int len, void* pData)
 	//See if there is an existing entry and clear it
 	for (int i = 0; i < MAX_ENTRIES; i++)
 	{
-		if (_lens[i] == len && _ids[i] == id && memcmp(&_values[i], pData, len) == 0)
+		if (_entries[i].len == len && _entries[i].id == id && memcmp(&_entries[i].value, pData, len) == 0)
 		{
 			Log('d', "CanReliableReceived - removed entry id %03x, len %d", id, len);
-			_lens[i] = 0;
+			_entries[i].len = 0;
 			return;
 		}
 	}
