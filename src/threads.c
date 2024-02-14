@@ -43,10 +43,10 @@ static void *workerPoll(void *arg)
 				
 		if (secondsAfterInit > 15) //This gives long enough after a reset for all CAN information to have been received at least once
 		{
+			CanReliablePoll(); //Allows checking if a can message was received and retry if not. This should come before other routines which might send a message.
 			AlertPoll();       //Check for alerts
 			TankPoll();        //Manages the tank - actually just records water and lpg levels
 			BatteryPoll();     //Manage the battery
-			CanReliablePoll(); //Allows checking if a can message was received and retry if not
 		}
 	}
 	return NULL;

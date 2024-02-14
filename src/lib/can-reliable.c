@@ -17,21 +17,24 @@ struct entry
 } _entries[MAX_ENTRIES];
 
 void CanReliablePoll()
-{
-	//Divide by 2 to give two seconds
-	static bool odd = 0;
-	odd = !odd;
-	if (!odd) return;
-	
+{	
 	//See if there is an existing entry and resend it
 	for (int i = 0; i < MAX_ENTRIES; i++)
 	{
 		if (_entries[i].len != 0)
 		{
-			Log('d', "CanReliablePoll     -  resent entry id %03x, len %d", _entries[i].id, _entries[i].len);
-			CanSend(_entries[i].id, _entries[i].len, &_entries[i].value);
-			_entries[i].resends++;
-			break;
+			if (_entries[i].resends == 0)
+			{
+				_entries[i].resends++;
+				continue;
+			}
+			else
+			{
+				Log('d', "CanReliablePoll     -  resent entry id %03x, len %d", _entries[i].id, _entries[i].len);
+				CanSend(_entries[i].id, _entries[i].len, &_entries[i].value);
+				_entries[i].resends++;
+				break;
+			}
 		}
 	}
 	
