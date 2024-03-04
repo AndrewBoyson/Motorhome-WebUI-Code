@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h> //system
+#include <stdio.h>
 
 #include "lib/log.h"
 #include "lib/usbdrive.h"
@@ -208,6 +209,21 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	
 	//Log
 	if (strcmp (name, "LogLevel"                     ) == 0) {HttpResponseAddChar  (        LogGetLevel                              ()); return 0; }
+	
+	//Count
+	if (strcmp (name, "CanCounts"                    ) == 0)
+	{
+		char text[1000000];
+		for (int i = 0; i < 2048; i++)
+		{
+			if (CanCounts[i])
+			{
+				snprintf(text, sizeof(text), "%x %u\n", i, CanCounts[i]);
+				HttpResponseAddString(text);
+			}
+		}
+		return 0;
+	}
 	
 	return 1;
 }

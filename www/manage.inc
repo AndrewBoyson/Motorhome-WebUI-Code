@@ -33,11 +33,9 @@
 ~expand^input^Maximum percent^val-plot-max-percent^2.0~
 ~expand^input^Minimum percent^val-plot-min-percent^2.0~
 <h2>Calibrate</h2>
-~expand^input^Minimum start charge As^val-cal-min-as^4.0~
 ~expand^input^Minimum start charge %^val-cal-min-percent^3.0~
 ~expand^led^Calibration ready or ongoing^att-cal-ok-to-start~
 ~expand^input^Last done UTC^val-cal-time^10.0~
-~expand^input^Base charge As^val-cal-as^4.0~
 ~expand^input^Base charge %^val-cal-percent^3.0~
 ~expand^input^Base voltage mV^val-cal-mv^3.0~
 ~expand^input^Slope As/mV^val-cal-as-per-mv^3.0~

@@ -64,9 +64,7 @@ extern int16_t  CanThisGetControlDrainMaxLitres         (void);
 extern void CanThisSendServerTime                   (uint32_t value);
 
 extern void CanThisSetBatteryCountedCapacityAs      (uint32_t value);
-//extern void CanThisSetBatteryCurrentMa              (int32_t  value);
 extern void CanThisSetBatteryCapacityTargetPercent  (uint8_t  value);
-//extern void CanThisSetBatteryOutputState            (char     value);
 extern void CanThisSetBatteryChargeEnabled          (char     value);
 extern void CanThisSetBatteryDischargeEnabled       (char     value);
 extern void CanThisSetBatteryTemperatureTargetTenths(int16_t  value);
@@ -100,3 +98,5 @@ extern void CanThisSetControlDrainMaxLitres         (int16_t  value);
 
 extern void CanThisReceive();
 extern void CanThisInit();
+
+extern uint32_t CanCounts[];

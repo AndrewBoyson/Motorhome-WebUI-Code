@@ -24,5 +24,6 @@
 ~expand^edit^lpg-ajax.inc^Lpg Ajax~
 ~expand^edit^heater-ajax.inc^Heater Ajax~
 ~expand^edit^aging-ajax.inc^Aging Ajax~
+~expand^edit^can-ajax.inc^Aging Ajax~
 </body>
 </html>

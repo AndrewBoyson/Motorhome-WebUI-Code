@@ -74,7 +74,7 @@ static void plotLpg()
 	
 	totalResistance16ths += CanThisGetTankLpgResistance16ths();
 	count++;
-	if (count > 256)
+	if (count >= 256)
 	{
 		int16_t resistance16ths = totalResistance16ths / 256;
 		static int16_t lastResistance16ths = 0;

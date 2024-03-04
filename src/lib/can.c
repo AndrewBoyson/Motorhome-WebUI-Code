@@ -99,7 +99,7 @@ int CanReadOrWait(int32_t* pId, int* pLen, void* pData) //Only called by the CAN
 	if (*pLen < 0         ) *pLen = 0;
 	memcpy(pData, frame.data, *pLen);
 	
-	CanReliableReceived(*pId, *pLen, pData);
+	CanReliableConfirm(*pId, *pLen, pData);
 
 	return 0; //returns 0 on success, anything else on failure
 }
