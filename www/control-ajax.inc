@@ -3,6 +3,7 @@
 ~ControlWaterDrain~
 ~ControlInverter~
 ~ControlDPlus~
+~ControlEhu~
 ~TankFreshLitres~
 ~ControlPumpMinLitres~
 ~ControlPumpDplusLitres~

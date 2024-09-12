@@ -16,6 +16,7 @@ let waterFill                = false;
 let waterDrain               = false;
 let inverter                 = false;
 let dplus                    = false;
+let ehu                      = false;
 let batteryMode              = '';
 let litresLimit              = '';
 let litresDplus              = '';
@@ -39,14 +40,23 @@ function parse()
     waterDrain               = lines[12] === '1';
     inverter                 = lines[13] === '1';
     dplus                    = lines[14] === '1';
-    batteryMode              = lines[15];
-    litresLimit              = lines[16];
-    litresDplus              = lines[17];
-    lpgLitresMin             = lines[18];
+    ehu                      = lines[15] === '1';
+    batteryMode              = lines[16];
+    litresLimit              = lines[17];
+    litresDplus              = lines[18];
+    lpgLitresMin             = lines[19];
 }
 
 const CAPACITY_AH        = 280;
 const AS_PER_PERCENT     = CAPACITY_AH*36;
+
+function displayTemp16ths(temp16ths)
+{
+    if (temp16ths == 0x5000) return 'No id';
+    if (temp16ths == 0x5001) return 'Unknown id';
+    if (temp16ths == 0x5002) return 'No reading';
+    return(temp16ths / 16).toFixed(1);
+}
 
 function display()
 {
@@ -93,13 +103,14 @@ function display()
                                                                                     }
     elem = Ajax.getElementOrNull('txt-tilt-right-deg'                  ); if (elem) elem.textContent =  tiltXdeg.toFixed(1);
     elem = Ajax.getElementOrNull('txt-tilt-front-deg'                  ); if (elem) elem.textContent =  tiltZdeg.toFixed(1);
-    elem = Ajax.getElementOrNull('txt-outside-temperature'             ); if (elem) elem.textContent =  (outsideTemp16ths / 16).toFixed(1);
-    elem = Ajax.getElementOrNull('txt-heating-temperature'             ); if (elem) elem.textContent =  (heatingTemp16ths / 16).toFixed(1);
-    elem = Ajax.getElementOrNull('att-switch-water-pump'               ); if (elem) elem.setAttribute('dir', waterPump  ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-switch-water-fill'               ); if (elem) elem.setAttribute('dir', waterFill  ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-switch-water-drain'              ); if (elem) elem.setAttribute('dir', waterDrain ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-switch-inverter'                 ); if (elem) elem.setAttribute('dir', inverter   ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-switch-dplus'                    ); if (elem) elem.setAttribute('dir', dplus      ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('txt-outside-temperature'             ); if (elem) elem.textContent =  displayTemp16ths(outsideTemp16ths);
+    elem = Ajax.getElementOrNull('txt-heating-temperature'             ); if (elem) elem.textContent =  displayTemp16ths(heatingTemp16ths);
+    elem = Ajax.getElementOrNull('att-control-water-pump'              ); if (elem) elem.setAttribute('dir', waterPump  ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-water-fill'              ); if (elem) elem.setAttribute('dir', waterFill  ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-water-drain'             ); if (elem) elem.setAttribute('dir', waterDrain ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-inverter'                ); if (elem) elem.setAttribute('dir', inverter   ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-dplus'                   ); if (elem) elem.setAttribute('dir', dplus      ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-ehu'                     ); if (elem) elem.setAttribute('dir', ehu        ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('att-mode-away'                       ); if (elem) elem.setAttribute('dir', batteryMode == 1 ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('att-mode-home'                       ); if (elem) elem.setAttribute('dir', batteryMode == 2 ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('txt-battery-mode'                    ); if (elem) {

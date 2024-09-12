@@ -35,9 +35,11 @@
 ~expand^value^Outside temperature^txt-outside-temperature~
 ~expand^value^Internal temperature^txt-heating-temperature~
 <br/>
-~expand^led^Water pump^att-switch-water-pump~
-~expand^led^Water fill^att-switch-water-fill~
-~expand^led^Water drain^att-switch-water-drain~
-~expand^led^Inverter^att-switch-inverter~
+~expand^led^Water pump^att-control-water-pump~
+~expand^led^Water fill^att-control-water-fill~
+~expand^led^Water drain^att-control-water-drain~
+<br/>
+~expand^led^Inverter^att-control-inverter~
+~expand^led^EHU^att-control-ehu~
 </body>
 </html>

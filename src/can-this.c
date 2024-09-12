@@ -69,9 +69,10 @@
 #define CAN_ID_DRAIN                0x02
 #define CAN_ID_INVERTER             0x03
 #define CAN_ID_D_PLUS               0x04
-#define CAN_ID_PUMP_MIN_LITRES      0x05
-#define CAN_ID_PUMP_DPLUS_LITRES    0x06
-#define CAN_ID_DRAIN_MAX_LITRES     0x07
+#define CAN_ID_EHU                  0x05
+#define CAN_ID_PUMP_MIN_LITRES      0x06
+#define CAN_ID_PUMP_DPLUS_LITRES    0x07
+#define CAN_ID_DRAIN_MAX_LITRES     0x08
 
 static uint32_t _batteryCountedCapacity         = 0;
 static int32_t  _batteryCurrentMa               = 0;
@@ -129,6 +130,7 @@ static char     _controlFill                    = 0;
 static char     _controlDrain                   = 0;
 static char     _controlInverter                = 0;
 static char     _controlDPlus                   = 0;
+static char     _controlEhu                     = 0;
 static int16_t  _controlPumpMinLitres           = 0;
 static int16_t  _controlPumpDplusLitres         = 0;
 static int16_t  _controlDrainMaxLitres          = 0;
@@ -192,6 +194,7 @@ uint64_t CanThisGetAmbientHeatingRom              (){ return _ambientHeatingRom;
  char    CanThisGetControlWaterDrain              (){ return _controlDrain;                   }
  char    CanThisGetControlInverter                (){ return _controlInverter;                }
  char    CanThisGetControlDPlus                   (){ return _controlDPlus;                   }
+ char    CanThisGetControlEhu                     (){ return _controlEhu  ;                   }
  int16_t CanThisGetControlPumpMinLitres           (){ return _controlPumpMinLitres;           }
  int16_t CanThisGetControlPumpDplusLitres         (){ return _controlPumpDplusLitres;         }
  int16_t CanThisGetControlDrainMaxLitres          (){ return _controlDrainMaxLitres;          }
@@ -207,9 +210,7 @@ static void set(void* pSetting, int32_t id, int len, void* pValue)
 
 void CanThisSendServerTime                   (uint32_t value){ CanSend                              (CAN_ID_SERVER  + CAN_ID_TIME                 , 4, &value);}
 void CanThisSetBatteryCountedCapacityAs      (uint32_t value){ set(&_batteryCountedCapacity        , CAN_ID_BATTERY + CAN_ID_COUNTED_AMP_SECONDS  , 4, &value);}
-//void CanThisSetBatteryCurrentMa              (int32_t  value){ set(&_batteryCurrentMa              , CAN_ID_BATTERY + CAN_ID_MA                   , 4, &value);}
 void CanThisSetBatteryCapacityTargetPercent  (uint8_t  value){ set(&_batteryCapacityTargetPercent  , CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET        , 1, &value);}
-//void CanThisSetBatteryOutputState            (char     value){ set(&_batteryOutputState            , CAN_ID_BATTERY + CAN_ID_OUTPUT_STATE         , 1, &value);}
 void CanThisSetBatteryChargeEnabled          (char     value){ set(&_batteryChargeEnabled          , CAN_ID_BATTERY + CAN_ID_CHARGE_ENABLED       , 1, &value);}
 void CanThisSetBatteryDischargeEnabled       (char     value){ set(&_batteryDischargeEnabled       , CAN_ID_BATTERY + CAN_ID_DISCHARGE_ENABLED    , 1, &value);}
 void CanThisSetBatteryTemperatureTargetTenths(int16_t  value){ set(&_batteryTemperatureTargetTenths, CAN_ID_BATTERY + CAN_ID_HEATER_TARGET        , 2, &value);}
@@ -312,6 +313,7 @@ void CanThisReceive()
 		case CAN_ID_CONTROL + CAN_ID_DRAIN:                 _controlDrain                   = (    char)data; break;
 		case CAN_ID_CONTROL + CAN_ID_INVERTER:              _controlInverter                = (    char)data; break;
 		case CAN_ID_CONTROL + CAN_ID_D_PLUS:                _controlDPlus                   = (    char)data; break;
+		case CAN_ID_CONTROL + CAN_ID_EHU:                   _controlEhu                     = (    char)data; break;
 		case CAN_ID_CONTROL + CAN_ID_PUMP_MIN_LITRES:       _controlPumpMinLitres           = ( int16_t)data; break;
 		case CAN_ID_CONTROL + CAN_ID_PUMP_DPLUS_LITRES:     _controlPumpDplusLitres         = ( int16_t)data; break;
 		case CAN_ID_CONTROL + CAN_ID_DRAIN_MAX_LITRES:      _controlDrainMaxLitres          = ( int16_t)data; break;

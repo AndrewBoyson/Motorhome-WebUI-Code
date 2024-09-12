@@ -180,6 +180,21 @@ static int recordHeating(time_t t, int16_t tempTenths, uint8_t heaterPercent)
 	if (fclose(fp)                                                                  ) { LogErrno("Record heater - fclose: "  );             return 1; }
 	return 0;
 }
+static int recordCharge(time_t t, int16_t mv, uint32_t as)
+{
+	FILE* fp = fopen("charge", "a");
+	if (fp                                                             == NULL      ) { LogErrno("Record charge - fopen: "   );             return 1; }
+	
+	struct tm tm;
+	if (gmtime_r(&t, &tm)                                              == 0         ) { LogErrno("Record charge - gmtime-r: "); fclose(fp); return 1; }
+	char sTime[20];
+	if (strftime(sTime, sizeof(sTime), "%Y-%m-%d %H:%M:%S", &tm)        < 0         ) { LogErrno("Record charge - strftime: "); fclose(fp); return 1; }
+	
+	if (fprintf(fp, "%s, %d, %u\r\n", sTime, mv, as)                    < 0         ) { LogErrno("Record charge - fprintf: " ); fclose(fp); return 1; }
+	
+	if (fclose(fp)                                                                  ) { LogErrno("Record charge - fclose: "  );             return 1; }
+	return 0;
+}
 
 static void plotHeating()
 {
@@ -201,21 +216,42 @@ static void plotHeating()
 		lastUpdate = now;
 	}
 }
+static void plotCharge()
+{
+	#define SIGNIFICANT_MV_CHANGE 10
+	#define SIGNIFICANT_AS_CHANGE 1000 //1% = 2.8Ah * 3600 = 10080
+	 int16_t thisMv = CanThisGetBatteryVoltageMv();
+	uint32_t thisAs = CanThisGetBatteryCountedCapacityAs();
+	time_t now = time(0);
+	static  int16_t lastMv = 0;
+	static uint32_t lastAs = 0;
+	static time_t lastUpdate = 0;
+	char significantChange = lastMv >= thisMv + SIGNIFICANT_MV_CHANGE || lastMv <= thisMv - SIGNIFICANT_MV_CHANGE   ||
+							 lastAs >= thisAs + SIGNIFICANT_AS_CHANGE || lastAs <= thisAs - SIGNIFICANT_AS_CHANGE;
+	if (significantChange || now > lastUpdate + 1200)
+	{
+		recordCharge(now, thisMv, thisAs);
+		lastMv = thisMv;
+		lastAs = thisAs;
+		lastUpdate = now;
+	}
+}
 void BatteryPoll()
 {
 	plotHeating();
+	plotCharge();
 	
 	char state = CanThisGetBatteryOutputState();
 	
 	if (state == 0) return; //Not yet received any information
 	
 	time_t now = time(0);
-	uint8_t capacityTarget = CanThisGetBatteryCapacityTargetPercent();
 	int32_t mA = CanThisGetBatteryCurrentMa();
 	int16_t cellMv = CanThisGetBatteryVoltageMv() / 4;
 	int16_t batteryTemp8bfdp = CanThisGetBatteryTemperature8bfdp();
 	
     _okToCalibrate = cellMv > _calMv && CanThisGetBatteryCountedCapacityAs() >= _calMinAs;
+	
 	switch (_mode)
 	{
 		case MODE_MANUAL: //Manual - don't set anything
@@ -227,7 +263,15 @@ void BatteryPoll()
 		case MODE_HOME:
 			if (_do == DO_NOTHING || _do == DO_AWAY)
 			{
-				setDo(_okToCalibrate ? DO_HOME_CALIBRATE : DO_HOME_TARGET);
+				if (_okToCalibrate)
+				{
+					setDo(DO_HOME_CALIBRATE);
+					CanThisSetBatteryCapacityTargetPercent((uint8_t)(CanThisGetBatteryCountedCapacityAs() / 280 / 36)); //Make first target the next lower integer percent
+				}
+				else
+				{
+					setDo(DO_HOME_TARGET);
+				}
 			}
 			break;
 	}
@@ -245,7 +289,6 @@ void BatteryPoll()
 		case DO_HOME_TARGET:
 			BatterySetPlotDir(DIR_NONE);
 			CanThisSetBatteryCapacityTargetPercent(_homePercent); //Discharge to home target
-			capacityTarget = _homePercent;
 			break;
 	}
 	
@@ -266,7 +309,7 @@ void BatteryPoll()
 	char doRecordRest = 0;
 	if (isAtRest && _secondsAtRest == 0) doRecordRest = 1;                        //Record on reaching rest state (actually about 5 mins after neutral)
 	for (int i = 8; i < 32; i++) if (_secondsAtRest == 1 << i) doRecordRest = 1;  //Record every multiple of 2 after 256 seconds
-	if (doRecordRest) recordRest(now, _secondsAtRest, cellMv, capacityTarget, batteryTemp8bfdp);
+	if (doRecordRest) recordRest(now, _secondsAtRest, cellMv, CanThisGetBatteryCapacityTargetPercent(), batteryTemp8bfdp);
 		
 	//Increment plot - only run every ten seconds to give plenty of time for the battery to have updated
 	static int _secondsCount = 0;
@@ -275,7 +318,7 @@ void BatteryPoll()
 	if (_secondsCount != 0) return;
 	if ((_secondsAtRest >= _plotRestSeconds) && _plotDir)
 	{
-		recordPlot(now, capacityTarget, cellMv, batteryTemp8bfdp);
+		recordPlot(now, CanThisGetBatteryCapacityTargetPercent(), cellMv, batteryTemp8bfdp);
 		int16_t halfIncrementMv = 280 * 36 * _plotIncPercent / _calAsPerMv / 2;
 		if (_do == DO_HOME_CALIBRATE && cellMv <= (_calMv + halfIncrementMv))
 		{
@@ -295,11 +338,8 @@ void BatteryPoll()
 																							     asPerHourToAdd, mAToAdd);
 			Log('e', "Capacity was %uAs (%2.1f%%), correction was %dAs/h (%2.1fmA)", CanThisGetBatteryCountedCapacityAs(), (float)CanThisGetBatteryCountedCapacityAs() / 280 / 36, 
 																					 CanThisGetBatteryAgingAsPerHour(),    (float)CanThisGetBatteryAgingAsPerHour() / 3.6);
-			//usleep(10000); //sleep for 10 ms to give time for any previous CAN message to be processed
 			CanThisSetBatteryCountedCapacityAs(CanThisGetBatteryCountedCapacityAs() + capacityToAddToCountAs);
-			//usleep(10000); //sleep for 10 ms to give time for any previous CAN message to be processed
 			CanThisSetBatteryAgingAsPerHour   (CanThisGetBatteryAgingAsPerHour()    + asPerHourToAdd / RATE_AS_PER_HOUR_DIVISOR);
-			//usleep(10000); //sleep for 10 ms to give time for any previous CAN message to be processed
 			BatterySetCalTime(now);
 			Log('e', "Capacity now %uAs (%2.1f%%), correction now %dAs/h (%2.1fmA)", CanThisGetBatteryCountedCapacityAs(), (float)CanThisGetBatteryCountedCapacityAs() / 280 / 36, 
 																					 CanThisGetBatteryAgingAsPerHour(),    (float)CanThisGetBatteryAgingAsPerHour() / 3.6);
@@ -308,11 +348,10 @@ void BatteryPoll()
 			setDo(DO_HOME_TARGET);
 			BatterySetPlotDir(DIR_NONE); //This is needed to prevent an increment from taking place for one scan
 		}
-		if (capacityTarget >= _plotMaxPercent) BatterySetPlotDir(DIR_NONE);
-		if (capacityTarget <= _plotMinPercent) BatterySetPlotDir(DIR_NONE);
-		if (_plotDir == DIR_UP  ) capacityTarget += _plotIncPercent;
-		if (_plotDir == DIR_DOWN) capacityTarget -= _plotIncPercent;
-		if (_plotDir) CanThisSetBatteryCapacityTargetPercent(capacityTarget);
+		if (CanThisGetBatteryCapacityTargetPercent() >= _plotMaxPercent) BatterySetPlotDir(DIR_NONE);
+		if (CanThisGetBatteryCapacityTargetPercent() <= _plotMinPercent) BatterySetPlotDir(DIR_NONE);
+		if (_plotDir == DIR_UP  ) CanThisSetBatteryCapacityTargetPercent(CanThisGetBatteryCapacityTargetPercent() + _plotIncPercent);
+		if (_plotDir == DIR_DOWN) CanThisSetBatteryCapacityTargetPercent(CanThisGetBatteryCapacityTargetPercent() - _plotIncPercent);
 	}
 }
 

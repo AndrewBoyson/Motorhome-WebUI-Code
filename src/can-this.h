@@ -57,6 +57,7 @@ extern char     CanThisGetControlWaterFill              (void);
 extern char     CanThisGetControlWaterDrain             (void);
 extern char     CanThisGetControlInverter               (void);
 extern char     CanThisGetControlDPlus                  (void);
+extern char     CanThisGetControlEhu                    (void);
 extern int16_t  CanThisGetControlPumpMinLitres          (void);
 extern int16_t  CanThisGetControlPumpDplusLitres        (void);
 extern int16_t  CanThisGetControlDrainMaxLitres         (void);

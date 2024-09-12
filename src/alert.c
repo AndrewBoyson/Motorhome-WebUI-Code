@@ -61,52 +61,40 @@ static void checkforInternalTemperatureBelow()
 	
 	if (gettingWorse) AlertSendF("Internal temperature (%04hX hex) is below %d deg", value, newAlert/16);
 }
-static char checkForAlertAbove(int16_t value, int16_t limit, int16_t hysteresis, char* thisScan, char* lastScan)
+static char checkForAlertAbove(int16_t value, int16_t limit, int16_t hysteresis, char* haveAlert, char* hadAlert)
 {
-	if (value > limit             ) *thisScan = 1;
-	if (value < limit - hysteresis) *thisScan = 0;
+	if (value > limit             ) *haveAlert = 1;
+	if (value < limit - hysteresis) *haveAlert = 0;
 	
-	char oneShot = *thisScan && !*lastScan;
-	*lastScan = *thisScan;
+	char oneShot = *haveAlert && !*hadAlert;
+	*hadAlert = *haveAlert;
 	
 	return oneShot;
 }
-static char checkForAlertBelow(int16_t value, int16_t limit, int16_t hysteresis, char* thisScan, char* lastScan)
+static char checkForAlertBelow(int16_t value, int16_t limit, int16_t hysteresis, char* haveAlert, char* hadAlert)
 {
-	if (value < limit             ) *thisScan = 1;
-	if (value > limit + hysteresis) *thisScan = 0;
+	if (value < limit             ) *haveAlert = 1;
+	if (value > limit + hysteresis) *haveAlert = 0;
 	
-	char oneShot = *thisScan && !*lastScan;
-	*lastScan = *thisScan;
+	char oneShot = *haveAlert && !*hadAlert;
+	*hadAlert = *haveAlert;
 	
 	return oneShot;
 }
 static void pollInternalTemperature()
 {
-	static char _this40 = 0;	static char _last40 = 0;
-	static char _this30 = 0;	static char _last30 = 0;
-	static char _this10 = 0;	static char _last10 = 0;
-	static char _this08 = 0;	static char _last08 = 0;
-	static char _this06 = 0;	static char _last06 = 0;
-	static char _this04 = 0;	static char _last04 = 0;
-	static char _this02 = 0;	static char _last02 = 0;
-	static char _this00 = 0;	static char _last00 = 0;
+	static char _have30 = 0;	static char _had30 = 0;
+	static char _have00 = 0;	static char _had00 = 0;
 	
-	int16_t temperature = CanThisGetAmbientHeatingTemp16ths() / 16;
+	int16_t temperature16ths = CanThisGetAmbientHeatingTemp16ths();
 	
-	if (checkForAlertAbove(temperature, 40, 1, &_this40, &_last40)) AlertSend("Internal temperature is above 40");
-	if (checkForAlertAbove(temperature, 30, 1, &_this30, &_last30)) AlertSend("Internal temperature is above 30");
-	if (checkForAlertBelow(temperature, 10, 1, &_this10, &_last10)) AlertSend("Internal temperature is below 10");
-	if (checkForAlertBelow(temperature,  8, 1, &_this08, &_last08)) AlertSend("Internal temperature is below 8");
-	if (checkForAlertBelow(temperature,  6, 1, &_this06, &_last06)) AlertSend("Internal temperature is below 6");
-	if (checkForAlertBelow(temperature,  4, 1, &_this04, &_last04)) AlertSend("Internal temperature is below 4");
-	if (checkForAlertBelow(temperature,  2, 1, &_this02, &_last02)) AlertSend("Internal temperature is below 2");
-	if (checkForAlertBelow(temperature,  0, 1, &_this00, &_last00)) AlertSend("Internal temperature is below 0");
+	if (checkForAlertAbove(temperature16ths, 30 * 16, 5, &_have30, &_had30)) AlertSendF("Internal temperature (%04hX hex) is above 30 deg", temperature16ths);
+	if (checkForAlertBelow(temperature16ths,  0 * 16, 1, &_have00, &_had00)) AlertSendF("Internal temperature (%04hX hex) is below 0 deg" , temperature16ths);
 }
 void AlertPoll()
 {
-	//pollInternalTemperature();
-	checkforInternalTemperatureBelow();
+	pollInternalTemperature();
+	//checkforInternalTemperatureBelow();
 	static uint8_t lastChargePercent   = 50;
 	static int16_t lastTemperatureDeg  = 20;
 	

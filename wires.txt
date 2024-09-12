@@ -12,7 +12,5 @@ grey   / red    awning light                      x          x
 green  / blue   water pump               x            x
 purple          water fill valve                                         x
 purple / red    water drain                       x                      x
-black  / yellow inverter on           x                                      x
-black  / red    inverter changeover   x           x
-black  / purple reverse b2b           x                                  x
-
+black  / yellow inverter call         x                                      x
+blue   / yellow buzzer                   x                                   x

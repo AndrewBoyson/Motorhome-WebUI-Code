@@ -6,6 +6,7 @@ let waterFill                = false;
 let waterDrain               = false;
 let inverter                 = false;
 let dplus                    = false;
+let ehu                      = false;
 let litres                   = '';
 let pumpMinLitres            = '';
 let pumpDplusLitres          = '';
@@ -19,10 +20,11 @@ function parse()
     waterDrain               = lines[2] === '1';
     inverter                 = lines[3] === '1';
     dplus                    = lines[4] === '1';
-    litres                   = lines[5];
-    pumpMinLitres            = lines[6];
-    pumpDplusLitres          = lines[7];
-    drainMaxLitres           = lines[8];
+    ehu                      = lines[5] === '1';
+    litres                   = lines[6];
+    pumpMinLitres            = lines[7];
+    pumpDplusLitres          = lines[8];
+    drainMaxLitres           = lines[9];
 }
 
 const CAPACITY_AH        = 280;
@@ -36,6 +38,7 @@ function display()
     elem = Ajax.getElementOrNull('att-control-water-drain'              ); if (elem) elem.setAttribute('dir', waterDrain ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('att-control-inverter'                 ); if (elem) elem.setAttribute('dir', inverter   ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('att-control-dplus'                    ); if (elem) elem.setAttribute('dir', dplus      ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-ehu'                      ); if (elem) elem.setAttribute('dir', ehu        ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('val-control-pump-min-litres'          ); if (elem) elem.value       =  pumpMinLitres;
     elem = Ajax.getElementOrNull('val-control-pump-dplus-litres'        ); if (elem) elem.value       =  pumpDplusLitres;
     elem = Ajax.getElementOrNull('val-control-drain-max-litres'         ); if (elem) elem.value       =  drainMaxLitres;

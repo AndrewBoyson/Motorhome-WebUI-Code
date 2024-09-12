@@ -84,7 +84,7 @@ void SmsSend(char* number, char* text)
 	}
 	char buffer[1000];
 	char* p = buffer;
-	p = stpcpy(p, "GET /cgi-bin/sms_send?username=pi&password=pi&number=");
+	p = stpcpy(p, "GET /cgi-bin/sms_send?username=pi&password=Password1&number=");
 	p += urlQueryEncode(p, number);
 	p = stpcpy(p, "&text=");
 	p += urlQueryEncode(p, text);

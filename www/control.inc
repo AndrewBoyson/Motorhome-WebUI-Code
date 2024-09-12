@@ -24,6 +24,7 @@
 ~expand^switch^Inverter^att-control-inverter~
 <br/>
 ~expand^led^D+^att-control-dplus~
+~expand^led^EHU^att-control-ehu~
 <br/>
 ~expand^value^Litres^txt-control-litres^3.0~
 ~expand^input^Min litres for pump^val-control-pump-min-litres^3.0~

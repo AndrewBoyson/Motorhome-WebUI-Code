@@ -13,6 +13,7 @@
 ~ControlWaterDrain~
 ~ControlInverter~
 ~ControlDPlus~
+~ControlEhu~
 ~BatteryMode~
 ~ControlPumpMinLitres~
 ~ControlPumpDplusLitres~

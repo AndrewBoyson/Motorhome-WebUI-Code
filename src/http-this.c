@@ -193,6 +193,7 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	if (strcmp (name, "ControlWaterDrain"            ) == 0) {HttpResponseAddS8    (        CanThisGetControlWaterDrain              ()); return 0; }
 	if (strcmp (name, "ControlInverter"              ) == 0) {HttpResponseAddS8    (        CanThisGetControlInverter                ()); return 0; }
 	if (strcmp (name, "ControlDPlus"                 ) == 0) {HttpResponseAddS8    (        CanThisGetControlDPlus                   ()); return 0; }
+	if (strcmp (name, "ControlEhu"                   ) == 0) {HttpResponseAddS8    (        CanThisGetControlEhu                     ()); return 0; }
 	if (strcmp (name, "ControlPumpMinLitres"         ) == 0) {HttpResponseAddS16   (        CanThisGetControlPumpMinLitres           ()); return 0; }
 	if (strcmp (name, "ControlPumpDplusLitres"       ) == 0) {HttpResponseAddS16   (        CanThisGetControlPumpDplusLitres         ()); return 0; }
 	if (strcmp (name, "ControlDrainMaxLitres"        ) == 0) {HttpResponseAddS16   (        CanThisGetControlDrainMaxLitres          ()); return 0; }

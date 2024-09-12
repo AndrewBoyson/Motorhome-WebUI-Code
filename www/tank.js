@@ -83,6 +83,13 @@ function parse()
     heatingTemp16ths      = lines[37];
 }
 
+function displayTemp16ths(temp16ths)
+{
+    if (temp16ths == 0x5000) return 'No id';
+    if (temp16ths == 0x5001) return 'Unknown id';
+    if (temp16ths == 0x5002) return 'No reading';
+    return(temp16ths / 16).toFixed(1);
+}
 
 function display()
 {
@@ -98,10 +105,10 @@ function display()
     let mvComp = (freshTemp16ths - freshBaseTemp16ths) * freshUvPer16th / 1024;
     let mmComp = (accelerometerX * freshSensorRight - accelerometerZ * freshSensorFront) / 16384;
 
-    elem = Ajax.getElementOrNull('txt-fresh-temperature'    ); if (elem) elem.textContent =  (freshTemp16ths / 16).toFixed(1);
+    elem = Ajax.getElementOrNull('txt-fresh-temperature'    ); if (elem) elem.textContent =  displayTemp16ths(freshTemp16ths);
     elem = Ajax.getElementOrNull('val-fresh-rom'            ); if (elem) elem.value       =  freshRom;
     elem = Ajax.getElementOrNull('txt-fresh-supply-mv'      ); if (elem) elem.textContent =  freshSupplyMv;
-    elem = Ajax.getElementOrNull('val-fresh-base-degrees'   ); if (elem) elem.value       =  (freshBaseTemp16ths / 16).toFixed(1);
+    elem = Ajax.getElementOrNull('val-fresh-base-degrees'   ); if (elem) elem.value       =  displayTemp16ths(freshBaseTemp16ths);
     elem = Ajax.getElementOrNull('val-fresh-base-mv'        ); if (elem) elem.value       =  freshBaseMv;
     elem = Ajax.getElementOrNull('val-fresh-mv-per-degree'  ); if (elem) elem.value       =  (freshUvPer16th * 16 / 1024).toFixed(2);
     elem = Ajax.getElementOrNull('txt-fresh-mv'             ); if (elem) elem.textContent =  freshMv;
@@ -125,10 +132,10 @@ function display()
     elem = Ajax.getElementOrNull('txt-rom-1'                ); if (elem) elem.textContent =  rom1;
     elem = Ajax.getElementOrNull('txt-rom-2'                ); if (elem) elem.textContent =  rom2;
     elem = Ajax.getElementOrNull('txt-rom-3'                ); if (elem) elem.textContent =  rom3;
-    elem = Ajax.getElementOrNull('txt-rom-data-0'           ); if (elem) elem.textContent =  (romData0 / 16).toFixed(1);
-    elem = Ajax.getElementOrNull('txt-rom-data-1'           ); if (elem) elem.textContent =  (romData1 / 16).toFixed(1);
-    elem = Ajax.getElementOrNull('txt-rom-data-2'           ); if (elem) elem.textContent =  (romData2 / 16).toFixed(1);
-    elem = Ajax.getElementOrNull('txt-rom-data-3'           ); if (elem) elem.textContent =  (romData3 / 16).toFixed(1);
+    elem = Ajax.getElementOrNull('txt-rom-data-0'           ); if (elem) elem.textContent =  displayTemp16ths(romData0);
+    elem = Ajax.getElementOrNull('txt-rom-data-1'           ); if (elem) elem.textContent =  displayTemp16ths(romData1);
+    elem = Ajax.getElementOrNull('txt-rom-data-2'           ); if (elem) elem.textContent =  displayTemp16ths(romData2);
+    elem = Ajax.getElementOrNull('txt-rom-data-3'           ); if (elem) elem.textContent =  displayTemp16ths(romData3);
     elem = Ajax.getElementOrNull('txt-lpg-mv'               ); if (elem) elem.textContent =  lpgMv;
     elem = Ajax.getElementOrNull('txt-lpg-resistance'       ); if (elem) elem.textContent =  (lpgResistance16ths    / 16).toFixed(1);
     elem = Ajax.getElementOrNull('val-lpg-resistance-min'   ); if (elem) elem.value       =  (lpgResistanceMin16ths / 16).toFixed(1);
@@ -138,8 +145,8 @@ function display()
     elem = Ajax.getElementOrNull('txt-lpg-volume'           ); if (elem) elem.textContent =  (lpgVolumeMl    / 1024).toFixed(1);
     elem = Ajax.getElementOrNull('val-outside-rom'          ); if (elem) elem.value       =  outsideRom;
     elem = Ajax.getElementOrNull('val-heating-rom'          ); if (elem) elem.value       =  heatingRom;
-    elem = Ajax.getElementOrNull('txt-outside-temperature'  ); if (elem) elem.textContent =  (outsideTemp16ths / 16).toFixed(1);
-    elem = Ajax.getElementOrNull('txt-heating-temperature'  ); if (elem) elem.textContent =  (heatingTemp16ths / 16).toFixed(1);
+    elem = Ajax.getElementOrNull('txt-outside-temperature'  ); if (elem) elem.textContent =  displayTemp16ths(outsideTemp16ths);
+    elem = Ajax.getElementOrNull('txt-heating-temperature'  ); if (elem) elem.textContent =  displayTemp16ths(heatingTemp16ths);
 }
 
 function change(elem)
