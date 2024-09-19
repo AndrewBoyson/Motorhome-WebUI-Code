@@ -128,6 +128,7 @@ static void sendStatus(char* number)
 		"Water fill %s\n"
 		"Water drain %s\n"
 		"Inverter %s\n"
+		"EHU %s\n"
 		"Mode %s",
 		(float)CanThisGetBatteryCountedCapacityAs() / (BATTERY_CAPACITY_AH * 36),
 		CanThisGetTankFreshLitres(),
@@ -136,6 +137,7 @@ static void sendStatus(char* number)
 		CanThisGetControlWaterFill()  ? "on" : "off",
 		CanThisGetControlWaterDrain() ? "on" : "off",
 		CanThisGetControlInverter()   ? "on" : "off",
+		CanThisGetControlEhu()        ? "on" : "off",
 		BatteryGetModeAsString()
 	);
 }
