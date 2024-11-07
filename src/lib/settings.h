@@ -9,7 +9,7 @@ extern int SettingsGetU8    (const char* name, uint8_t*  pValue);
 extern int SettingsGetU16   (const char* name, uint16_t* pValue);
 extern int SettingsGetU32   (const char* name, uint32_t* pValue);
 extern int SettingsGetTime  (const char* name, time_t*   pValue);
-extern int SettingsGetString(const char* name, char*       text);
+extern int SettingsGetString(const char* name, char*       text, int bufLen);
 extern int SettingsGetChar  (const char* name, char*     pValue);
 
 extern int SettingsSetV     (const char *name, const char *format, ...);

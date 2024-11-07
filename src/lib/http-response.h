@@ -58,3 +58,7 @@ Four possibilities:
 extern int  HttpResponseType;      //Only 200 OK, 400 Bad Request, 404 Not Found, 500 Internal Server Error, or 501 Not Implemented are understood
 extern char HttpResponseMessage[]; //This will be sent as the body of a warning message to supplement the above
 
+#define HTTP_RESPONSE_COOKIE_SIZE 20
+extern char HttpResponseCookie[];
+extern int  HttpResponseCookieAge;
+

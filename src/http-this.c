@@ -8,6 +8,7 @@
 #include "lib/usbdrive.h"
 #include "lib/http-get.h"
 #include "lib/http-response.h"
+#include "credentials.h"
 #include "http-this.h"
 #include "global.h"
 #include "can-this.h"
@@ -43,16 +44,18 @@ int HttpThisNameValue(unsigned rid, char* name, char* value) { //returns -1 if u
 	static unsigned _smsRid = 0; //Use the request id to match two name value pairs for handling together
 	static char     _smsNumber[20];
 	static char     _smsText[1000];
-
+	
 	//From Teltonika
 	if (strcmp(name, "sms-number") == 0) { strncpy(_smsNumber, value, sizeof(_smsNumber)); if (rid == _smsRid) SmsHandleRequest(_smsNumber, _smsText); _smsRid = rid; return 0; }
 	if (strcmp(name, "sms-text"  ) == 0) { strncpy(_smsText,   value, sizeof(_smsText  )); if (rid == _smsRid) SmsHandleRequest(_smsNumber, _smsText); _smsRid = rid; return 0; }
 	
 	//From Server
-	if (strcmp(name, "sms-send-test-alert"                 ) == 0) { AlertSend        (            value                    ); return 0; }    
-	if (strcmp(name, "sms-alert-number"                    ) == 0) { AlertSetNumber   (            value                    ); return 0; }
+	if (strcmp(name, "sms-send-test-alert"                 ) == 0) { AlertSend             ( value ); return 0; }    
+	if (strcmp(name, "sms-alert-number"                    ) == 0) { AlertSetNumber        ( value ); return 0; }
 	
-	if (strcmp(name, "log-level"                           ) == 0) { LogSetLevel      (           *value                    ); return 0; } //Take the first character from the value string
+	if (strcmp(name, "log-level"                           ) == 0) { LogSetLevel           (*value ); return 0; } //Take the first character from the value string
+	if (strcmp(name, "credentials-reset-id"                ) == 0) { CredentialsResetId    (       ); return 0; }
+	if (strcmp(name, "credentials-password"                ) == 0) { CredentialsSetPassword( value ); return 0; }
 	
 	if (strcmp(name, "battery-counted-capacity-amp-seconds") == 0) { uint32_t v; if (HttpGetParseU32  (value, &v)) return -1; CanThisSetBatteryCountedCapacityAs      (v); return 0; }
 	if (strcmp(name, "battery-capacity-setpoint-percent"   ) == 0) { uint8_t  v; if (HttpGetParseU8   (value, &v)) return -1; CanThisSetBatteryCapacityTargetPercent  (v); return 0; }
@@ -111,6 +114,8 @@ int HttpThisNameValue(unsigned rid, char* name, char* value) { //returns -1 if u
 }
 
 int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if not handled
+
+	char text[100];
 
 	//Battery
 	if (strcmp (name, "BatteryCountedCapacityAs"      ) == 0) { HttpResponseAddU32 (        CanThisGetBatteryCountedCapacityAs       ()); return 0; }
@@ -203,10 +208,14 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	if (strcmp (name, "UsbDriveIsMounted"            ) == 0) { HttpResponseAddBool (format, UsbDriveGetIsMounted                     ()); return 0; }
 	if (strcmp (name, "UsbDriveSizeBytes"            ) == 0) { HttpResponseAddU32  (        UsbDriveGetSizeBytes                     ()); return 0; }
 	if (strcmp (name, "UsbDriveFreeBytes"            ) == 0) { HttpResponseAddU32  (        UsbDriveGetFreeBytes                     ()); return 0; }
-	if (strcmp (name, "UsbDriveLabel"                ) == 0) { char label[50]; UsbDriveGetLabel(label); HttpResponseAddString(label)    ; return 0; }
+	if (strcmp (name, "UsbDriveLabel"                ) == 0) { UsbDriveGetLabel(text);      HttpResponseAddString(text);                  return 0; }
 	
 	//Alert
 	if (strcmp (name, "SmsAlertNumber"               ) == 0) {HttpResponseAddString(        AlertGetNumber                           ()); return 0; }
+	
+	//Credentials
+	if (strcmp (name, "CredentialsPassword"          ) == 0) {CredentialsGetPassword(text, sizeof(text)); HttpResponseAddString(text);    return 0; }
+	if (strcmp (name, "CredentialsId"                ) == 0) {CredentialsGetId      (text, sizeof(text)); HttpResponseAddString(text);    return 0; }
 	
 	//Log
 	if (strcmp (name, "LogLevel"                     ) == 0) {HttpResponseAddChar  (        LogGetLevel                              ()); return 0; }

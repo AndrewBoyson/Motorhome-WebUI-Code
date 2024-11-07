@@ -240,7 +240,39 @@ int SettingsSetChar  (const char* name, char       value) { //Returns 0 on succe
 	
 	return 0;
 }
-int SettingsGetString(const char* name, char*       text) { //Returns 0 on success
+int SettingsGetString(const char* name, char*       text, int buffLen) { //Returns 0 on success
+/*
+If the buffer length is zero then do nothing
+If the buffer length is one then return a string with a single null but don't read any characters
+If the buffer length is greater than one then read up to buffer length -1 characters and terminate with a null
+*/
+
+	if (buffLen == 0)
+	{
+		Log('e', "SettingsGetString - buffLen of zero");
+		return -1;
+	}
+	if (!text)
+	{
+		Log('e', "SettingsGetString - NULL buffer");
+		return -1;
+	}
+	
+	FILE* fp = openForRead(name);
+	if (!fp) return -1;
+	
+	char* p = text;
+	while(p < text + buffLen - 1) //There is room in the buffer to add a character or NULL so continue
+	{
+		int c = fgetc(fp);        //Try to read the next character
+		if (c > 0) *p++ = c;      //There is a character so add it and move on
+		else        break;        //There is no character to read so leave
+	}
+	*p = 0;                       //Terminate the tring
+	fclose(fp);
+	return 0;
+}
+int OldSettingsGetString(const char* name, char*       text) { //Returns 0 on success
 
 	FILE* fp = openForRead(name);
 	if (!fp) return -1;

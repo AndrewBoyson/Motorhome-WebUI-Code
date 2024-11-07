@@ -21,6 +21,15 @@
   <input type='text' style='text-align:left;' value='test alert' name='sms-send-test-alert'>
   <input type='submit' value='Send sms'>
 </form>
+<h2>Credentials</h2>
+<form action='/config' method='get'>
+  <input type='text' style='text-align:left;' value='~CredentialsPassword~' name='credentials-password'>
+  <input type='submit' value='Set Password'>
+</form>
+<form action='/config' method='get'>
+  <input type='text' style='text-align:left;' value='~CredentialsId~' name='credentials-reset-id'>
+  <input type='submit' value='Reset ID'>
+</form>
 ~expand^edit^../data/settings/curve^Curve~
 </body>
 </html>

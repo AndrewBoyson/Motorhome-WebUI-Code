@@ -5,7 +5,9 @@
 #include <ctype.h>
 
 #include "http-response.h"
+#include "http-request.h"
 #include "../http-this.h"
+#include "../credentials.h"
 #include "log.h"
 
 #define SIZE_NAME 100
@@ -235,7 +237,9 @@ static int handleNameValue(unsigned rid, char* name, char* value) { //returns -1
 	}
 	return 0;
 }
-static int handleGet() { //returns -1 to indicate an error is to be handled
+int HttpGet(char* query) { //returns -1 to indicate an error is to be handled
+
+	//Log('d', "'%s'", query);
 
 	//Keep a request id to enable multiple name value pairs to be linked when handled
 	static unsigned rid = 0;
@@ -244,26 +248,40 @@ static int handleGet() { //returns -1 to indicate an error is to be handled
 	//Read the name
 	char  name[SIZE_NAME];
 	char value[SIZE_VALUE];
+	
+	p = query;
+	while(1)
+	{
+		int r = readNameValue(name, value); //returns -1 on error, +1 to finish and 0 to continue.
+		
+		if (r == -1) return -1; //Handle error
+			
+		if (strcmp(name, "password") == 0)
+		{
+			if (CredentialsVerifyPassword(value))
+			{
+				HttpRequestAuthorised = 1;
+				CredentialsMakeCookie(HttpResponseCookie);
+				HttpResponseCookieAge = 400 * 24 * 3600;
+			}
+			break; //Finish
+		}
+		if (r) break; //Finish
+	}
+	
+	//Don't handle any request unless authorised
+	if (!HttpRequestAuthorised) return 0; //Quietly return without indication of an error
+	
+	p = query;
 	while(1)
 	{
 		int r = readNameValue(name, value); //returns -1 on error, +1 to finish and 0 to continue.
 		if (r == -1) return -1;
-		if (*name) //Only handle names which are not empty
+		if (*name && strcmp(name, "password")) //Only handle names which are not empty and which aren't system names
 		{
 			if (handleNameValue(rid, name, value)) return -1; //returns 0 on success; -1 on error
-			if (r) return 0;
 		}
+		if (r) break; //Finish
 	}
-}
-int HttpGet(char* query) {
-	//Log('d', "'%s'", query);
-	
-	//Set up the buffer pointers
-	p  = query;
-
-	//Handle the query
-	if (handleGet()) return -1;
-
-	//Return success
 	return 0;
 }

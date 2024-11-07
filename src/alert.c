@@ -22,7 +22,7 @@ char* AlertGetNumber()
 
 void AlertInit()
 {
-	SettingsGetString("smsAlertNumber", _alertNumber);
+	SettingsGetString("smsAlertNumber", _alertNumber, sizeof(_alertNumber));
 }
 
 void AlertSend(char* text)

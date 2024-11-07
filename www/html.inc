@@ -12,6 +12,7 @@
 <a class='tab-shortcut' href='#main-content'>Skip to content</a>
 ~expand^menu~
 <h1 id='main-content'>Motorhome - ~getvalue~</h1>
+~expand^edit^login.inc^Login~
 ~expand^edit^index.inc^Index~
 ~expand^edit^control.inc^Control~
 ~expand^edit^battery.inc^Battery~

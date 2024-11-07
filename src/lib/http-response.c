@@ -20,6 +20,8 @@
 
 int  HttpResponseType;                                //Only 0 (no error), 400 Bad Request, 404 Not Found, 500 Internal Server Error, or 501 Not Implemented are understood
 char HttpResponseMessage[HTTP_RESPONSE_MESSAGE_SIZE]; //This will be sent as the body of a warning message to supplement the above
+char HttpResponseCookie [HTTP_RESPONSE_COOKIE_SIZE ]; //'id=42'
+int  HttpResponseCookieAge = 0;
 
 static void addChar(char c) {
 	HttpServerSendBytes(&c, 1);
@@ -392,13 +394,6 @@ void HttpResponseSend      () {
 		return;
 	}
 	
-/*	
-	if (strlen(HttpRequestResource) > PATH_SIZE - 10)
-	{
-		Log ('e', "HttpResponseSend - Resource path is too long '%.100s", HttpRequestResource);
-		return;
-	}
-	*/
 	if (HttpResponseType == 200) makeLocalResourcePathExtAndTime(); //This may change HttpResponseType to 404 not found
 	
 	//Add the header and date
@@ -429,6 +424,17 @@ void HttpResponseSend      () {
 		else if (strcmp(_resourceExt, "txt" ) == 0) { addText("text/plain"               ); noCache = 1; }
 		else                                        { addText("unknown"                  ); noCache = 1; }
 		addText("\r\n");
+		
+		//Add cookie once
+		if (HttpResponseCookie[0])
+		{
+			addText("Set-Cookie: ");
+			addText(HttpResponseCookie);
+			addText(";Max-Age=");
+			HttpResponseAddS32(HttpResponseCookieAge);
+			addText("\r\n");
+			HttpResponseCookie[0] = 0; //Set once only
+		}
 
 		//Add cache control
 		if (noCache)
