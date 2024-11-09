@@ -24,12 +24,9 @@
 <h2>Credentials</h2>
 <form action='/config' method='get'>
   <input type='text' style='text-align:left;' value='~CredentialsPassword~' name='credentials-password'>
-  <input type='submit' value='Set Password'>
+  <input type='submit' value='Password'>
 </form>
-<form action='/config' method='get'>
-  <input type='text' style='text-align:left;' value='~CredentialsId~' name='credentials-reset-id'>
-  <input type='submit' value='Reset ID'>
-</form>
+<p>The session id <code>~CredentialsId~</code> is changed whenever the password is set
 ~expand^edit^../data/settings/curve^Curve~
 </body>
 </html>

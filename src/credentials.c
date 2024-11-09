@@ -19,7 +19,6 @@ char CredentialsVerifyCookie(char* cookie)
 	char target[100];
 	CredentialsMakeCookie(target);
 	return strstr(cookie, target) != 0; //strstr returns the location of target in cookie or 0 if not found
-	//return strcmp(target, cookie) == 0;
 }
 char CredentialsVerifyPassword(char* password)
 {
@@ -28,6 +27,7 @@ char CredentialsVerifyPassword(char* password)
 	if (r) target[0] = 0;
 	return strcmp(target, password) == 0;
 }
+/*
 void CredentialsResetId()
 {
 	static char runOnce = 0;
@@ -46,12 +46,9 @@ void CredentialsResetId()
 		else if (c == 63) idText[i] =           '/';
 	}
 	idText[sizeof(idText)-1] = 0;
-	
-	//unsigned randomNumber = rand();
-	//char idText[20];
-	//sprintf(idText, "%X", randomNumber);
 	SettingsSetString("credentialsId", idText);
 }
+*/
 void CredentialsGetId(char* id, int bufLen)
 {
 	int r = SettingsGetString("credentialsId", id, bufLen);
@@ -60,6 +57,23 @@ void CredentialsGetId(char* id, int bufLen)
 void CredentialsSetPassword(char* password)
 {
 	SettingsSetString("credentialsPassword", password);
+	
+	//Change the id
+	srand((unsigned)time(0));
+	
+	char idText[9];
+	
+	for (int i = 0; i < sizeof(idText) - 1; i++)
+	{
+		unsigned char c = (unsigned char)(rand() & 0x3F);
+		if      (c  < 26) idText[i] = c       + 'A';
+		else if (c  < 52) idText[i] = c  - 26 + 'a';
+		else if (c  < 62) idText[i] = c  - 52 + '0';
+		else if (c == 62) idText[i] =           '+';
+		else if (c == 63) idText[i] =           '/';
+	}
+	idText[sizeof(idText)-1] = 0;
+	SettingsSetString("credentialsId", idText);
 }
 void CredentialsGetPassword(char* password, int bufLen)
 {

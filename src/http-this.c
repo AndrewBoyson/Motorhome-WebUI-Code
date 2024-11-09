@@ -54,7 +54,7 @@ int HttpThisNameValue(unsigned rid, char* name, char* value) { //returns -1 if u
 	if (strcmp(name, "sms-alert-number"                    ) == 0) { AlertSetNumber        ( value ); return 0; }
 	
 	if (strcmp(name, "log-level"                           ) == 0) { LogSetLevel           (*value ); return 0; } //Take the first character from the value string
-	if (strcmp(name, "credentials-reset-id"                ) == 0) { CredentialsResetId    (       ); return 0; }
+	//if (strcmp(name, "credentials-reset-id"                ) == 0) { CredentialsResetId    (       ); return 0; }
 	if (strcmp(name, "credentials-password"                ) == 0) { CredentialsSetPassword( value ); return 0; }
 	
 	if (strcmp(name, "battery-counted-capacity-amp-seconds") == 0) { uint32_t v; if (HttpGetParseU32  (value, &v)) return -1; CanThisSetBatteryCountedCapacityAs      (v); return 0; }
