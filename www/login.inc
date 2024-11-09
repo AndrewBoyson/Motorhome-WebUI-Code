@@ -19,7 +19,7 @@ div                      { line-height:1.2em; }
 form                     { line-height:1.2em; margin:0; }
 input[type=text]         { border:thin solid gray; border-radius:0.2em; margin:0; padding:0.1em; width:9em; text-align:left}
 input[type=submit]       { display:none; }
-</style><h1 id='main-content'>Heating - Login</h1>
+</style><h1 Motorhome - Login</h1>
 <h2>Welcome - please enter the password</h2>
 <form action='/' method='get' autocomplete='off'>
   <div style='width:8em; display:inline-block;'>Password</div>

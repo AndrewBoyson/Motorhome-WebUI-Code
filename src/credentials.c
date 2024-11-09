@@ -33,9 +33,23 @@ void CredentialsResetId()
 	static char runOnce = 0;
 	if (!runOnce) srand((unsigned)time(0));
 	runOnce = 1;
-	unsigned randomNumber = rand();
-	char idText[20];
-	sprintf(idText, "%X", randomNumber);
+	
+	char idText[9];
+	
+	for (int i = 0; i < sizeof(idText) - 1; i++)
+	{
+		unsigned char c = (unsigned char)(rand() & 0x3F);
+		if      (c  < 26) idText[i] = c       + 'A';
+		else if (c  < 52) idText[i] = c  - 26 + 'a';
+		else if (c  < 62) idText[i] = c  - 52 + '0';
+		else if (c == 62) idText[i] =           '+';
+		else if (c == 63) idText[i] =           '/';
+	}
+	idText[sizeof(idText)-1] = 0;
+	
+	//unsigned randomNumber = rand();
+	//char idText[20];
+	//sprintf(idText, "%X", randomNumber);
 	SettingsSetString("credentialsId", idText);
 }
 void CredentialsGetId(char* id, int bufLen)
