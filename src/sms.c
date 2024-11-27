@@ -6,11 +6,39 @@
 
 #include "lib/log.h"
 #include "lib/socket.h"
+#include "lib/settings.h"
 #include "can-this.h"
 #include "battery.h"
 #include "alert.h"
 
 #define BUFFER_SIZE 1000
+
+static char _username[20];
+static char _password[20];
+
+void SmsSetUserName(char* text)
+{
+	strncpy(_username, text, sizeof(_username));
+	SettingsSetString("SmsUsername", _username);
+}
+char* SmsGetUserName(void)
+{
+	return _username;
+}
+void SmsSetPassword(char* text)
+{
+	strncpy(_password, text, sizeof(_password));
+	SettingsSetString("SmsPassword", _password);
+}
+char* SmsGetPassword()
+{
+	return _password;
+}
+void SmsInit()
+{
+	SettingsGetString("SmsUsername", _username, sizeof(_username));
+	SettingsGetString("SmsPassword", _password, sizeof(_password));
+}
 
 int urlQueryEncode(char* to, char* from) //Returns the number of characters in the 'to' buffer (not including the end NUL
 {
@@ -84,7 +112,12 @@ void SmsSend(char* number, char* text)
 	}
 	char buffer[1000];
 	char* p = buffer;
-	p = stpcpy(p, "GET /cgi-bin/sms_send?username=pi&password=Password1&number=");
+	p = stpcpy(p, "GET /cgi-bin/sms_send?");
+	p = stpcpy(p, "username=");
+	p = stpcpy(p, _username);
+	p = stpcpy(p, "&password=");
+	p = stpcpy(p, _password);
+	p = stpcpy(p, "&number=");
 	p += urlQueryEncode(p, number);
 	p = stpcpy(p, "&text=");
 	p += urlQueryEncode(p, text);

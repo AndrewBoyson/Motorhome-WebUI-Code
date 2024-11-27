@@ -17,20 +17,23 @@
 
 #define MOUNT_INFO "/proc/self/mountinfo"
 
-void UsbDriveGetLabel(char* label)
+char _label[50];
+
+char* UsbDriveGetLabel()
 {
-    FILE * fp;
-    char * line = NULL;
+    FILE* fp;
+    char* line = NULL;
+	char* pLabelNextChar = _label;
     size_t len = 0;
     ssize_t read;
 
     fp = popen("blkid", "r");
     if (!fp)
 	{
-		strcpy(label, "Error opening process blkid");
-        return;
+		strcpy(_label, "Error opening process blkid");
+        return _label;
 	}
-	strcpy(label, DEV_POINT " not found");
+	strcpy(_label, DEV_POINT " not found");
 
 	#define FIELD_SIZE 50
 	char f1[FIELD_SIZE];
@@ -59,15 +62,17 @@ void UsbDriveGetLabel(char* label)
 			{
 				if (!*p) break;
 				if (*p == '=') break;
-				if (*p != '\"') *label++ = *p;
+				if (*p != '\"') *pLabelNextChar++ = *p;
 				p++;
 			}
-			*label = 0;
+			*pLabelNextChar = 0;
 		}
     }
 
     pclose(fp);
     if (line) free(line);
+	
+	return _label;
 }
 
 unsigned int UsbDriveGetSizeBytes()

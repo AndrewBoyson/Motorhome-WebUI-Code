@@ -6,8 +6,8 @@
 
 #include "http-response.h"
 #include "http-request.h"
+#include "http-credentials.h"
 #include "../http-this.h"
-#include "../credentials.h"
 #include "log.h"
 
 #define SIZE_NAME 100

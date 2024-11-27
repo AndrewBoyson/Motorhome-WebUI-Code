@@ -1,6 +1,6 @@
 extern unsigned int UsbDriveGetSizeBytes();
 extern unsigned int UsbDriveGetFreeBytes();
-extern void UsbDriveGetLabel(char* label);
+extern char* UsbDriveGetLabel(void);
 extern char UsbDriveGetIsPluggedIn(void);
 extern char UsbDriveGetIsMounted(void);
 extern int  UsbDriveMount(void);

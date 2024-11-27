@@ -1,7 +1,8 @@
 
-#include "../lib/socket.h"
+#include "socket.h"
 #include "http-request.h"
 #include "http-response.h"
+#include "http-credentials.h"
 
 #define PORT 80
 
@@ -36,6 +37,9 @@ void HttpServer()
 	//Initialise local part
 	int sockfd = TcpMakeListeningSocket(PORT);
 	if (sockfd < 0) return;
+	
+	//Initialise components required by server
+	CredentialsInit();
 	
 	while(1)
 	{

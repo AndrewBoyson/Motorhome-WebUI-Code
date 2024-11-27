@@ -12,6 +12,19 @@
 <a class='tab-shortcut' href='#main-content'>Skip to content</a>
 ~expand^menu~
 <h1 id='main-content'>Motorhome - ~getvalue~</h1>
+
+<h2>Sms</h2>
+<form action='/config' method='get'>
+  <input type='text' style='text-align:left;' value='~SmsUserName~' name='sms-username'>
+  <input type='submit' value='Username'>
+</form>
+<form action='/config' method='get'>
+  <input type='text' style='text-align:left;' value='~SmsPassword~' name='sms-password'>
+  <input type='submit' value='Password'>
+</form>
+<p>User name <code>~SmsUserName~</code> and password <code>~SmsPassword~</code> must be the same as those
+in RUT Services > Mobile Utilities > SMS Gateway > Post/Get in order for SMSs to be sent by the Pi.</p>
+
 <h2>Alert</h2>
 <form action='/config' method='get'>
   <input type='text' style='text-align:left;' value='~SmsAlertNumber~' name='sms-alert-number'>
@@ -21,12 +34,15 @@
   <input type='text' style='text-align:left;' value='test alert' name='sms-send-test-alert'>
   <input type='submit' value='Send sms'>
 </form>
+
 <h2>Credentials</h2>
 <form action='/config' method='get'>
   <input type='text' style='text-align:left;' value='~CredentialsPassword~' name='credentials-password'>
   <input type='submit' value='Password'>
 </form>
-<p>The session id <code>~CredentialsId~</code> is changed whenever the password is set
+<p>The session id <code>~CredentialsId~</code> changes whenever the password is set</p>
+<p>password=<code>~CredentialsPassword~</code> must be set
+in RUT Services > Mobile Utilities > SMS Gateway > SMS Forwarding > Extra data pair 1 in order for received SMSs to be acted on by the Pi.</p>
 ~expand^edit^../data/settings/curve^Curve~
 </body>
 </html>

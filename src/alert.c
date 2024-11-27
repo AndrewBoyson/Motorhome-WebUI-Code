@@ -10,9 +10,9 @@
 
 static char _alertNumber[20];
 
-void AlertSetNumber(char* number)
+void AlertSetNumber(char* text)
 {
-	strncpy(_alertNumber, number, sizeof(_alertNumber));
+	strncpy(_alertNumber, text, sizeof(_alertNumber));
 	SettingsSetString("smsAlertNumber", _alertNumber);
 }
 char* AlertGetNumber()
@@ -23,6 +23,7 @@ char* AlertGetNumber()
 void AlertInit()
 {
 	SettingsGetString("smsAlertNumber", _alertNumber, sizeof(_alertNumber));
+	SmsInit();
 }
 
 void AlertSend(char* text)

@@ -268,25 +268,8 @@ If the buffer length is greater than one then read up to buffer length -1 charac
 		if (c > 0) *p++ = c;      //There is a character so add it and move on
 		else        break;        //There is no character to read so leave
 	}
-	*p = 0;                       //Terminate the tring
+	*p = 0;                       //Terminate the string
 	fclose(fp);
-	return 0;
-}
-int OldSettingsGetString(const char* name, char*       text) { //Returns 0 on success
-
-	FILE* fp = openForRead(name);
-	if (!fp) return -1;
-	
-	errno = 0;
-	if (fscanf(fp, "%s", text) < 0)
-	{
-		if (errno) LogErrno("Settings - fscanf: ");
-		fclose(fp);
-		return -1;
-	}
-	
-	if (fclose(fp)) LogErrno("Settings - fclose: ");
-	
 	return 0;
 }
 int SettingsSetString(const char* name, char*       text) { //Returns 0 on success

@@ -8,7 +8,7 @@
 #include "lib/usbdrive.h"
 #include "lib/http-get.h"
 #include "lib/http-response.h"
-#include "credentials.h"
+#include "lib/http-credentials.h"
 #include "http-this.h"
 #include "global.h"
 #include "can-this.h"
@@ -52,9 +52,10 @@ int HttpThisNameValue(unsigned rid, char* name, char* value) { //returns -1 if u
 	//From Server
 	if (strcmp(name, "sms-send-test-alert"                 ) == 0) { AlertSend             ( value ); return 0; }    
 	if (strcmp(name, "sms-alert-number"                    ) == 0) { AlertSetNumber        ( value ); return 0; }
+	if (strcmp(name, "sms-username"                        ) == 0) { SmsSetUserName        ( value ); return 0; }
+	if (strcmp(name, "sms-password"                        ) == 0) { SmsSetPassword        ( value ); return 0; }
 	
 	if (strcmp(name, "log-level"                           ) == 0) { LogSetLevel           (*value ); return 0; } //Take the first character from the value string
-	//if (strcmp(name, "credentials-reset-id"                ) == 0) { CredentialsResetId    (       ); return 0; }
 	if (strcmp(name, "credentials-password"                ) == 0) { CredentialsSetPassword( value ); return 0; }
 	
 	if (strcmp(name, "battery-counted-capacity-amp-seconds") == 0) { uint32_t v; if (HttpGetParseU32  (value, &v)) return -1; CanThisSetBatteryCountedCapacityAs      (v); return 0; }
@@ -114,8 +115,6 @@ int HttpThisNameValue(unsigned rid, char* name, char* value) { //returns -1 if u
 }
 
 int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if not handled
-
-	char text[100];
 
 	//Battery
 	if (strcmp (name, "BatteryCountedCapacityAs"      ) == 0) { HttpResponseAddU32 (        CanThisGetBatteryCountedCapacityAs       ()); return 0; }
@@ -204,18 +203,20 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	if (strcmp (name, "ControlDrainMaxLitres"        ) == 0) {HttpResponseAddS16   (        CanThisGetControlDrainMaxLitres          ()); return 0; }
 	
 	//Usb
-	if (strcmp (name, "UsbDriveIsPluggedIn"          ) == 0) { HttpResponseAddBool (format, UsbDriveGetIsPluggedIn                   ()); return 0; }
-	if (strcmp (name, "UsbDriveIsMounted"            ) == 0) { HttpResponseAddBool (format, UsbDriveGetIsMounted                     ()); return 0; }
-	if (strcmp (name, "UsbDriveSizeBytes"            ) == 0) { HttpResponseAddU32  (        UsbDriveGetSizeBytes                     ()); return 0; }
-	if (strcmp (name, "UsbDriveFreeBytes"            ) == 0) { HttpResponseAddU32  (        UsbDriveGetFreeBytes                     ()); return 0; }
-	if (strcmp (name, "UsbDriveLabel"                ) == 0) { UsbDriveGetLabel(text);      HttpResponseAddString(text);                  return 0; }
+	if (strcmp (name, "UsbDriveIsPluggedIn"          ) == 0) {HttpResponseAddBool  (format, UsbDriveGetIsPluggedIn                   ()); return 0; }
+	if (strcmp (name, "UsbDriveIsMounted"            ) == 0) {HttpResponseAddBool  (format, UsbDriveGetIsMounted                     ()); return 0; }
+	if (strcmp (name, "UsbDriveSizeBytes"            ) == 0) {HttpResponseAddU32   (        UsbDriveGetSizeBytes                     ()); return 0; }
+	if (strcmp (name, "UsbDriveFreeBytes"            ) == 0) {HttpResponseAddU32   (        UsbDriveGetFreeBytes                     ()); return 0; }
+	if (strcmp (name, "UsbDriveLabel"                ) == 0) {HttpResponseAddString(        UsbDriveGetLabel                         ()); return 0; }
 	
 	//Alert
 	if (strcmp (name, "SmsAlertNumber"               ) == 0) {HttpResponseAddString(        AlertGetNumber                           ()); return 0; }
+	if (strcmp (name, "SmsUserName"                  ) == 0) {HttpResponseAddString(        SmsGetUserName                           ()); return 0; }
+	if (strcmp (name, "SmsPassword"                  ) == 0) {HttpResponseAddString(        SmsGetPassword                           ()); return 0; }
 	
 	//Credentials
-	if (strcmp (name, "CredentialsPassword"          ) == 0) {CredentialsGetPassword(text, sizeof(text)); HttpResponseAddString(text);    return 0; }
-	if (strcmp (name, "CredentialsId"                ) == 0) {CredentialsGetId      (text, sizeof(text)); HttpResponseAddString(text);    return 0; }
+	if (strcmp (name, "CredentialsPassword"          ) == 0) {HttpResponseAddString(        CredentialsGetPassword                   ()); return 0; }
+	if (strcmp (name, "CredentialsId"                ) == 0) {HttpResponseAddString(        CredentialsGetId                         ()); return 0; }
 	
 	//Log
 	if (strcmp (name, "LogLevel"                     ) == 0) {HttpResponseAddChar  (        LogGetLevel                              ()); return 0; }

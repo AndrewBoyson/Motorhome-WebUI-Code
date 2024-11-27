@@ -9,7 +9,7 @@
 #include "http-response.h"
 #include "log.h"
 #include "../global.h"
-#include "../credentials.h"
+#include "http-credentials.h"
 
 #define HEADER_NAME_SIZE   20 // eg 'Content-Length'
 #define HEADER_VALUE_SIZE 100 // eg '1000'
