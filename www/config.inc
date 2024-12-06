@@ -23,7 +23,7 @@
   <input type='submit' value='Password'>
 </form>
 <p>User name <code>~SmsUserName~</code> and password <code>~SmsPassword~</code> must be the same as those
-in RUT Services > Mobile Utilities > SMS Gateway > Post/Get in order for SMSs to be sent by the Pi.</p>
+in RUT Services > Mobile Utilities > SMS Gateway > Post/Get to allow SMSs to be sent by the RUT.</p>
 
 <h2>Alert</h2>
 <form action='/config' method='get'>
@@ -42,7 +42,7 @@ in RUT Services > Mobile Utilities > SMS Gateway > Post/Get in order for SMSs to
 </form>
 <p>The session id <code>~CredentialsId~</code> changes whenever the password is set</p>
 <p>password=<code>~CredentialsPassword~</code> must be set
-in RUT Services > Mobile Utilities > SMS Gateway > SMS Forwarding > Extra data pair 1 in order for received SMSs to be acted on by the Pi.</p>
+in RUT Services > Mobile Utilities > SMS Gateway > SMS Forwarding > Extra data pair 1 to allow received SMSs to be acted on by the Pi.</p>
 ~expand^edit^../data/settings/curve^Curve~
 </body>
 </html>

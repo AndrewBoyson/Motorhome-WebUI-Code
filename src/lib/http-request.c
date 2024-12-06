@@ -11,18 +11,15 @@
 #include "../global.h"
 #include "http-credentials.h"
 
-#define HEADER_NAME_SIZE   20 // eg 'Content-Length'
-#define HEADER_VALUE_SIZE 100 // eg '1000'
+#define URL_METHOD_SIZE         10 // eg 'POST', 'GET', 'HEAD'.
+#define URL_RESOURCE_SIZE       50 // eg '/' or '/favicon.ico'. Leave room to add absolute path to www and '.inc'.
+#define URL_QUERY_SIZE         100 // eg 'batterycapacity=50000'
+#define HEADER_NAME_SIZE        50 // eg 'Content-Length'
+#define HEADER_VALUE_SIZE     2000 // eg '1000'
 
-#define METHOD_SIZE    10 // eg 'POST', 'GET', 'HEAD'.
-#define RESOURCE_SIZE  50 // eg '/' or '/favicon.ico'. Leave room to add absolute path to www and '.inc'.
-#define QUERY_SIZE   2000 // eg 'batterycapacity=50000'
-#define COOKIE_SIZE HEADER_VALUE_SIZE // 'id=f4Gt5'
-
-char HttpRequestMethod  [  METHOD_SIZE]; // POST, GET, HEAD
-char HttpRequestResource[RESOURCE_SIZE]; // '/' or '/favicon.ico' etc
-char HttpRequestQuery   [   QUERY_SIZE]; // 'batterycapacity=50000' etc
-char HttpRequestCookie  [  COOKIE_SIZE]; // 'id=f4Gt5'
+char HttpRequestMethod  [URL_METHOD_SIZE]; // POST, GET, HEAD
+char HttpRequestResource[URL_RESOURCE_SIZE]; // '/' or '/favicon.ico' etc
+char HttpRequestQuery   [URL_QUERY_SIZE]; // 'batterycapacity=50000' etc
 
 char HttpRequestAuthorised = 0; //Reset at the start of each request and set if a valid cookie or a valid password is received.
 	
@@ -52,9 +49,9 @@ static int handleRequestHeader    (char *name,    char *value)    {
 	}
 	if (strcmp(name, "Cookie") == 0)
 	{
-		strncpy(HttpRequestCookie, value, COOKIE_SIZE);
-		HttpRequestCookie[COOKIE_SIZE-1] = 0; //Guarantee a null terminated string
-		if (CredentialsVerifyCookie(HttpRequestCookie)) HttpRequestAuthorised = 1;	//Establish if the request is authorised by cookie
+//		Log('d', "Cookie size is %d", strlen(value));
+//		Log('d', "Cookie is '%s'", value);
+		if (CredentialsVerifyCookie(value)) HttpRequestAuthorised = 1;	//Establish if the request is authorised by cookie
 	}
 	return 0;
 }
@@ -78,7 +75,7 @@ static int handleRequestTopLine   (char* method, char* resource, char* query) {
 		switch(c)
 		{
 			case '\n': return  0; //Leave the pointer at the start of the next line
-			case '\r':  continue ; //Ignore carriage returns
+			case '\r': continue ; //Ignore carriage returns
             case   0 :
 				HttpResponseType = 400; // Bad request
 				strcpy(HttpResponseMessage, "Top line ended before EOL");
@@ -114,9 +111,9 @@ static int handleRequestTopLine   (char* method, char* resource, char* query) {
 				i = 0;
 				break;
 			default:
-				if (isMethod   && i <   METHOD_SIZE - 1) { method  [i] = c; method  [i+1] = 0; }
-				if (isResource && i < RESOURCE_SIZE - 1) { resource[i] = c; resource[i+1] = 0; }
-				if (isQuery    && i <    QUERY_SIZE - 1) { query   [i] = c; query   [i+1] = 0; }
+				if (isMethod   && i < URL_METHOD_SIZE   - 1) { method  [i] = c; method  [i+1] = 0; }
+				if (isResource && i < URL_RESOURCE_SIZE - 1) { resource[i] = c; resource[i+1] = 0; }
+				if (isQuery    && i < URL_QUERY_SIZE    - 1) { query   [i] = c; query   [i+1] = 0; }
 				i++;
 				break;
 		}
@@ -212,9 +209,9 @@ void HttpRequestReceive(void) {
 	//Handle no authorization
 	if (!HttpRequestAuthorised)
 	{
-		HttpResponseType = 200; //Success as we are going to show the login page
-		strcpy(HttpRequestResource, "/login");
-		return;
+		HttpResponseType = 401; // Unauthorized
+		strcpy(HttpResponseMessage, "Please visit '/login' and enter the password.");
+		return; //HttpResponse will overwrite this with a login request and a '200 Success', if appropriate.
 	}
 	
 	//Handle posted content

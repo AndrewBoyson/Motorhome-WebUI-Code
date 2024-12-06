@@ -340,6 +340,7 @@ void addStatusLine() {
 	{
 		case 200: addText("OK");                    break;
 		case 400: addText("Bad Request");           break;
+		case 401: addText("Unauthorized");          break;
 		case 404: addText("Not Found");             break;
 		case 500: addText("Internal Server Error"); break;
 		case 501: addText("Not Implemented");       break;
@@ -392,6 +393,15 @@ void HttpResponseSend      () {
 	{
 		Log ('e', "HttpResponseSend - No Status set - %s", HttpResponseMessage);
 		return;
+	}
+	
+	if (HttpResponseType == 401) //Unauthorized
+	{
+		if (strchr(HttpRequestResource, '.') == 0) //If there is an extension '.' don't send the login page but leave the response as 'Unauthorized'
+		{
+			HttpResponseType = 200; //Success as we are going to show the login page
+			strcpy(HttpRequestResource, "/login");
+		}
 	}
 	
 	if (HttpResponseType == 200) makeLocalResourcePathExtAndTime(); //This may change HttpResponseType to 404 not found
