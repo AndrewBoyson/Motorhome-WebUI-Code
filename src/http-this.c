@@ -54,6 +54,7 @@ int HttpThisNameValue(unsigned rid, char* name, char* value) { //returns -1 if u
 	if (strcmp(name, "sms-alert-number"                    ) == 0) { AlertSetNumber        ( value ); return 0; }
 	if (strcmp(name, "sms-username"                        ) == 0) { SmsSetUserName        ( value ); return 0; }
 	if (strcmp(name, "sms-password"                        ) == 0) { SmsSetPassword        ( value ); return 0; }
+	if (strcmp(name, "sms-hostname"                        ) == 0) { SmsSetHostname        ( value ); return 0; }
 	
 	if (strcmp(name, "log-level"                           ) == 0) { LogSetLevel           (*value ); return 0; } //Take the first character from the value string
 	if (strcmp(name, "credentials-password"                ) == 0) { CredentialsSetPassword( value ); return 0; }
@@ -213,6 +214,7 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	if (strcmp (name, "SmsAlertNumber"               ) == 0) {HttpResponseAddString(        AlertGetNumber                           ()); return 0; }
 	if (strcmp (name, "SmsUserName"                  ) == 0) {HttpResponseAddString(        SmsGetUserName                           ()); return 0; }
 	if (strcmp (name, "SmsPassword"                  ) == 0) {HttpResponseAddString(        SmsGetPassword                           ()); return 0; }
+	if (strcmp (name, "SmsHostName"                  ) == 0) {HttpResponseAddString(        SmsGetHostname                           ()); return 0; }
 	
 	//Credentials
 	if (strcmp (name, "CredentialsPassword"          ) == 0) {HttpResponseAddString(        CredentialsGetPassword                   ()); return 0; }

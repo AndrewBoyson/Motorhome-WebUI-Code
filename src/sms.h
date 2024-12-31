@@ -4,6 +4,8 @@ extern void  SmsSetUserName(char* text);
 extern char* SmsGetUserName(void);
 extern void  SmsSetPassword(char* text);
 extern char* SmsGetPassword(void);
+extern void  SmsSetHostname(char* text);
+extern char* SmsGetHostname(void);
 extern void  SmsInit(void);
 
 extern void  SmsSend (char* number, char* text);

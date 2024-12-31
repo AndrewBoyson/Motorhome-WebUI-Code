@@ -13,8 +13,9 @@
 
 #define BUFFER_SIZE 1000
 
-static char _username[20];
-static char _password[20];
+static char _username[50];
+static char _password[50];
+static char _hostname[50];
 
 void SmsSetUserName(char* text)
 {
@@ -34,10 +35,20 @@ char* SmsGetPassword()
 {
 	return _password;
 }
+void SmsSetHostname(char* text)
+{
+	strncpy(_hostname, text, sizeof(_hostname));
+	SettingsSetString("SmsHostname", _hostname);
+}
+char* SmsGetHostname()
+{
+	return _hostname;
+}
 void SmsInit()
 {
 	SettingsGetString("SmsUsername", _username, sizeof(_username));
 	SettingsGetString("SmsPassword", _password, sizeof(_password));
+	SettingsGetString("SmsHostname", _hostname, sizeof(_hostname));
 }
 
 int urlQueryEncode(char* to, char* from) //Returns the number of characters in the 'to' buffer (not including the end NUL
@@ -122,7 +133,7 @@ void SmsSend(char* number, char* text)
 	p = stpcpy(p, "&text=");
 	p += urlQueryEncode(p, text);
 	p = stpcpy(p, " HTTP/1.0\r\n\r\n");
-	int sfd = TcpMakeTalkingSocket("192.168.1.1", "80", 100);
+	int sfd = TcpMakeTalkingSocket(_hostname, "80", 100);
 	if (sfd == -1)
 	{
 		Log('e', "SmsSend - Could not connect to sms server");

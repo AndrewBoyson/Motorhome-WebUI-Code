@@ -22,8 +22,13 @@
   <input type='text' style='text-align:left;' value='~SmsPassword~' name='sms-password'>
   <input type='submit' value='Password'>
 </form>
-<p>User name <code>~SmsUserName~</code> and password <code>~SmsPassword~</code> must be the same as those
+<form action='/config' method='get'>
+  <input type='text' style='text-align:left;' value='~SmsHostName~' name='sms-hostname'>
+  <input type='submit' value='Hostname'>
+</form>
+<p>Username <code>~SmsUserName~</code> and password <code>~SmsPassword~</code> must be the same as those
 in RUT Services > Mobile Utilities > SMS Gateway > Post/Get to allow SMSs to be sent by the RUT.</p>
+<p>Hostname <code>~SmsHostName~</code> is that of the RUT router.</p>
 
 <h2>Alert</h2>
 <form action='/config' method='get'>
