@@ -13,7 +13,15 @@
 ~expand^menu~
 <h1 id='main-content'>Motorhome - ~getvalue~</h1>
 
-<h2>Sms</h2>
+<h2>Sms alerts</h2>
+<form action='/config' method='get'>
+  <input type='text' style='text-align:left;' value='test alert' name='sms-send-test-alert'>
+  <input type='submit' value='Send sms'>
+</form>
+<form action='/config' method='get'>
+  <input type='text' style='text-align:left;' value='~SmsAlertNumber~' name='sms-alert-number'>
+  <input type='submit' value='Set sms'>
+</form>
 <form action='/config' method='get'>
   <input type='text' style='text-align:left;' value='~SmsUserName~' name='sms-username'>
   <input type='submit' value='Username'>
@@ -29,16 +37,6 @@
 <p>Username <code>~SmsUserName~</code> and password <code>~SmsPassword~</code> must be the same as those
 in RUT Services > Mobile Utilities > SMS Gateway > Post/Get to allow SMSs to be sent by the RUT.</p>
 <p>Hostname <code>~SmsHostName~</code> is that of the RUT router.</p>
-
-<h2>Alert</h2>
-<form action='/config' method='get'>
-  <input type='text' style='text-align:left;' value='~SmsAlertNumber~' name='sms-alert-number'>
-  <input type='submit' value='Set sms'>
-</form>
-<form action='/config' method='get'>
-  <input type='text' style='text-align:left;' value='test alert' name='sms-send-test-alert'>
-  <input type='submit' value='Send sms'>
-</form>
 
 <h2>Credentials</h2>
 <form action='/config' method='get'>

@@ -136,7 +136,7 @@ void SmsSend(char* number, char* text)
 	int sfd = TcpMakeTalkingSocket(_hostname, "80", 100);
 	if (sfd == -1)
 	{
-		Log('e', "SmsSend - Could not connect to sms server");
+		Log('e', "SmsSend - Could not connect to sms server '%s'", _hostname);
 		return;
 	}
 	Log('i', "Opened socket %d for sms and sent '%s'\r\n", sfd, buffer);
