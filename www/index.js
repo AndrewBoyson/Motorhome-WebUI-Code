@@ -15,6 +15,7 @@ let waterPump                = false;
 let waterFill                = false;
 let waterDrain               = false;
 let inverter                 = false;
+let lpgHeater                = false;
 let dplus                    = false;
 let ehu                      = false;
 let batteryMode              = '';
@@ -39,12 +40,13 @@ function parse()
     waterFill                = lines[11] === '1';
     waterDrain               = lines[12] === '1';
     inverter                 = lines[13] === '1';
-    dplus                    = lines[14] === '1';
-    ehu                      = lines[15] === '1';
-    batteryMode              = lines[16];
-    litresLimit              = lines[17];
-    litresDplus              = lines[18];
-    lpgLitresMin             = lines[19];
+    lpgHeater                = lines[14] === '1';
+    dplus                    = lines[15] === '1';
+    ehu                      = lines[16] === '1';
+    batteryMode              = lines[17];
+    litresLimit              = lines[18];
+    litresDplus              = lines[19];
+    lpgLitresMin             = lines[20];
 }
 
 const CAPACITY_AH        = 280;
@@ -109,6 +111,7 @@ function display()
     elem = Ajax.getElementOrNull('att-control-water-fill'              ); if (elem) elem.setAttribute('dir', waterFill  ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('att-control-water-drain'             ); if (elem) elem.setAttribute('dir', waterDrain ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('att-control-inverter'                ); if (elem) elem.setAttribute('dir', inverter   ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-lpg-heater'              ); if (elem) elem.setAttribute('dir', lpgHeater  ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('att-control-dplus'                   ); if (elem) elem.setAttribute('dir', dplus      ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('att-control-ehu'                     ); if (elem) elem.setAttribute('dir', ehu        ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('att-mode-away'                       ); if (elem) elem.setAttribute('dir', batteryMode == 1 ? 'rtl' : 'ltr');

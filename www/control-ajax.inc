@@ -2,6 +2,7 @@
 ~ControlWaterFill~
 ~ControlWaterDrain~
 ~ControlInverter~
+~ControlLpgHeater~
 ~ControlDPlus~
 ~ControlEhu~
 ~TankFreshLitres~

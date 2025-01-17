@@ -106,6 +106,7 @@ int HttpThisNameValue(unsigned rid, char* name, char* value) { //returns -1 if u
 	if (strcmp(name, "control-water-fill"                  ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; CanThisSetControlWaterFill              (v); return 0; }
 	if (strcmp(name, "control-water-drain"                 ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; CanThisSetControlWaterDrain             (v); return 0; }
 	if (strcmp(name, "control-inverter"                    ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; CanThisSetControlInverter               (v); return 0; }
+	if (strcmp(name, "control-lpg-heater"                  ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; CanThisSetControlLpgHeater              (v); return 0; }
 	if (strcmp(name, "control-pump-min-litres"             ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetControlPumpMinLitres          (v); return 0; }
 	if (strcmp(name, "control-pump-dplus-litres"           ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetControlPumpDplusLitres        (v); return 0; }
 	if (strcmp(name, "control-drain-max-litres"            ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetControlDrainMaxLitres         (v); return 0; }
@@ -197,6 +198,7 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	if (strcmp (name, "ControlWaterFill"             ) == 0) {HttpResponseAddS8    (        CanThisGetControlWaterFill               ()); return 0; }
 	if (strcmp (name, "ControlWaterDrain"            ) == 0) {HttpResponseAddS8    (        CanThisGetControlWaterDrain              ()); return 0; }
 	if (strcmp (name, "ControlInverter"              ) == 0) {HttpResponseAddS8    (        CanThisGetControlInverter                ()); return 0; }
+	if (strcmp (name, "ControlLpgHeater"             ) == 0) {HttpResponseAddS8    (        CanThisGetControlLpgHeater               ()); return 0; }
 	if (strcmp (name, "ControlDPlus"                 ) == 0) {HttpResponseAddS8    (        CanThisGetControlDPlus                   ()); return 0; }
 	if (strcmp (name, "ControlEhu"                   ) == 0) {HttpResponseAddS8    (        CanThisGetControlEhu                     ()); return 0; }
 	if (strcmp (name, "ControlPumpMinLitres"         ) == 0) {HttpResponseAddS16   (        CanThisGetControlPumpMinLitres           ()); return 0; }

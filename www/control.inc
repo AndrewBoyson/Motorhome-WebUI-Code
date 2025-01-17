@@ -23,6 +23,8 @@
 <br/>
 ~expand^switch^Inverter^att-control-inverter~
 <br/>
+~expand^switch^Lpg heater^att-control-lpg-heater~
+<br/>
 ~expand^led^D+^att-control-dplus~
 ~expand^led^EHU^att-control-ehu~
 <br/>

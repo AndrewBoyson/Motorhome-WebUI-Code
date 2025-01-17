@@ -68,11 +68,12 @@
 #define CAN_ID_FILL                 0x01
 #define CAN_ID_DRAIN                0x02
 #define CAN_ID_INVERTER             0x03
-#define CAN_ID_D_PLUS               0x04
-#define CAN_ID_EHU                  0x05
-#define CAN_ID_PUMP_MIN_LITRES      0x06
-#define CAN_ID_PUMP_DPLUS_LITRES    0x07
-#define CAN_ID_DRAIN_MAX_LITRES     0x08
+#define CAN_ID_LPG_HEATER           0x04
+#define CAN_ID_D_PLUS               0x05
+#define CAN_ID_EHU                  0x06
+#define CAN_ID_PUMP_MIN_LITRES      0x07
+#define CAN_ID_PUMP_DPLUS_LITRES    0x08
+#define CAN_ID_DRAIN_MAX_LITRES     0x09
 
 static uint32_t _batteryCountedCapacity         = 0;
 static int32_t  _batteryCurrentMa               = 0;
@@ -129,6 +130,7 @@ static char     _controlPump                    = 0;
 static char     _controlFill                    = 0;
 static char     _controlDrain                   = 0;
 static char     _controlInverter                = 0;
+static char     _controlLpgHeater               = 0;
 static char     _controlDPlus                   = 0;
 static char     _controlEhu                     = 0;
 static int16_t  _controlPumpMinLitres           = 0;
@@ -193,6 +195,7 @@ uint64_t CanThisGetAmbientHeatingRom              (){ return _ambientHeatingRom;
  char    CanThisGetControlWaterFill               (){ return _controlFill;                    }
  char    CanThisGetControlWaterDrain              (){ return _controlDrain;                   }
  char    CanThisGetControlInverter                (){ return _controlInverter;                }
+ char    CanThisGetControlLpgHeater               (){ return _controlLpgHeater;               }
  char    CanThisGetControlDPlus                   (){ return _controlDPlus;                   }
  char    CanThisGetControlEhu                     (){ return _controlEhu  ;                   }
  int16_t CanThisGetControlPumpMinLitres           (){ return _controlPumpMinLitres;           }
@@ -238,6 +241,7 @@ void CanThisSetControlWaterPump              (char     value){ set(&_controlPump
 void CanThisSetControlWaterFill              (char     value){ set(&_controlFill                   , CAN_ID_CONTROL + CAN_ID_FILL                 , 1, &value);}
 void CanThisSetControlWaterDrain             (char     value){ set(&_controlDrain                  , CAN_ID_CONTROL + CAN_ID_DRAIN                , 1, &value);}
 void CanThisSetControlInverter               (char     value){ set(&_controlInverter               , CAN_ID_CONTROL + CAN_ID_INVERTER             , 1, &value);}
+void CanThisSetControlLpgHeater              (char     value){ set(&_controlLpgHeater              , CAN_ID_CONTROL + CAN_ID_LPG_HEATER           , 1, &value);}
 void CanThisSetControlPumpMinLitres          (int16_t  value){ set(&_controlPumpMinLitres          , CAN_ID_CONTROL + CAN_ID_PUMP_MIN_LITRES      , 2, &value);}
 void CanThisSetControlPumpDplusLitres        (int16_t  value){ set(&_controlPumpDplusLitres        , CAN_ID_CONTROL + CAN_ID_PUMP_DPLUS_LITRES    , 2, &value);}
 void CanThisSetControlDrainMaxLitres         (int16_t  value){ set(&_controlDrainMaxLitres         , CAN_ID_CONTROL + CAN_ID_DRAIN_MAX_LITRES     , 2, &value);}
@@ -312,6 +316,7 @@ void CanThisReceive()
 		case CAN_ID_CONTROL + CAN_ID_FILL:                  _controlFill                    = (    char)data; break;
 		case CAN_ID_CONTROL + CAN_ID_DRAIN:                 _controlDrain                   = (    char)data; break;
 		case CAN_ID_CONTROL + CAN_ID_INVERTER:              _controlInverter                = (    char)data; break;
+		case CAN_ID_CONTROL + CAN_ID_LPG_HEATER:            _controlLpgHeater               = (    char)data; break;
 		case CAN_ID_CONTROL + CAN_ID_D_PLUS:                _controlDPlus                   = (    char)data; break;
 		case CAN_ID_CONTROL + CAN_ID_EHU:                   _controlEhu                     = (    char)data; break;
 		case CAN_ID_CONTROL + CAN_ID_PUMP_MIN_LITRES:       _controlPumpMinLitres           = ( int16_t)data; break;

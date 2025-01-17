@@ -38,6 +38,7 @@
 ~expand^led^Water pump^att-control-water-pump~
 ~expand^led^Water fill^att-control-water-fill~
 ~expand^led^Water drain^att-control-water-drain~
+~expand^led^Lpg Heater^att-control-lpg-heater~
 <br/>
 ~expand^led^Inverter^att-control-inverter~
 ~expand^led^EHU^att-control-ehu~
