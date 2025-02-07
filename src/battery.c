@@ -91,11 +91,12 @@ char*    BatteryGetModeAsString   ()
 		default:          return "?";
 	}
 }
-void BatterySetModeAsString   (char*    p)
+char BatterySetModeAsString   (char*    p)
 {
-	if (strcasecmp(p, "Manual") == 0) BatterySetMode(MODE_MANUAL);
-	if (strcasecmp(p, "Away"  ) == 0) BatterySetMode(MODE_AWAY  );
-	if (strcasecmp(p, "Home"  ) == 0) BatterySetMode(MODE_HOME  );
+	if (strcasecmp(p, "Manual") == 0) { BatterySetMode(MODE_MANUAL); return 0; }
+	if (strcasecmp(p, "Away"  ) == 0) { BatterySetMode(MODE_AWAY  ); return 0; }
+	if (strcasecmp(p, "Home"  ) == 0) { BatterySetMode(MODE_HOME  ); return 0; }
+	return -1;
 }
 
 void BatteryInit()

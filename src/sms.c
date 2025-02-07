@@ -219,11 +219,15 @@ static void sendHelp(char* number)
 		"mode home|away|manual\n"
 	);
 }
-static char parseBool(char* sValue)
+static int parseBool(char* sValue) //Returns -1 if not understood, 1 if on and 0 if off
 {
-	char iValue = 0;
-	if (strncasecmp(sValue, "on", 2) == 0) iValue = 1;
-	return iValue;
+	if (strcasecmp(sValue, "on"   ) == 0) return 1;
+	if (strcasecmp(sValue, "off"  ) == 0) return 0;
+	if (strcasecmp(sValue, "1"    ) == 0) return 1;
+	if (strcasecmp(sValue, "0"    ) == 0) return 0;
+	if (strcasecmp(sValue, "true" ) == 0) return 1;
+	if (strcasecmp(sValue, "false") == 0) return 0;
+	return -1;
 }
 static void setTarget(char* number, char* sValue)
 {
@@ -237,42 +241,57 @@ static void setTarget(char* number, char* sValue)
 	sleep(3); //Need time for the values to be updated in their thread so sleep this one
 	sendBattery(number);
 }
-static void setPump(char* number, char* sValue)
+static char setPump(char* number, char* sValue)
 {
-	CanThisSetControlWaterPump(parseBool(sValue));
+	int iValue = parseBool(sValue);
+	if (iValue < 0) return -1;
+	CanThisSetControlWaterPump((char)iValue);
 	sleep(3); //Need time for the values to be updated in their thread so sleep this one
 	sendStatus(number);
+	return 0;
 }
-static void setFill(char* number, char* sValue)
+static char setFill(char* number, char* sValue)
 {
-	CanThisSetControlWaterFill(parseBool(sValue));
+	int iValue = parseBool(sValue);
+	if (iValue < 0) return -1;
+	CanThisSetControlWaterFill((char)iValue);
 	sleep(3); //Need time for the values to be updated in their thread so sleep this one
 	sendStatus(number);
+	return 0;
 }
-static void setDrain(char* number, char* sValue)
+static char setDrain(char* number, char* sValue)
 {
-	Log('w', "Value is '%s' -> %d", sValue, parseBool(sValue));
-	CanThisSetControlWaterDrain(parseBool(sValue));
+	int iValue = parseBool(sValue);
+	if (iValue < 0) return -1;
+	CanThisSetControlWaterDrain((char)iValue);
 	sleep(3); //Need time for the values to be updated in their thread so sleep this one
 	sendStatus(number);
+	return 0;
 }
-static void setInverter(char* number, char* sValue)
+static char setInverter(char* number, char* sValue)
 {
-	CanThisSetControlInverter(parseBool(sValue));
+	int iValue = parseBool(sValue);
+	if (iValue < 0) return -1;
+	CanThisSetControlInverter((char)iValue);
 	sleep(3); //Need time for the values to be updated in their thread so sleep this one
 	sendStatus(number);
+	return 0;
 }
-static void setLpgHeater(char* number, char* sValue)
+static char setLpgHeater(char* number, char* sValue)
 {
-	CanThisSetControlLpgHeater(parseBool(sValue));
+	int iValue = parseBool(sValue);
+	if (iValue < 0) return -1;
+	CanThisSetControlLpgHeater((char)iValue);
 	sleep(3); //Need time for the values to be updated in their thread so sleep this one
 	sendStatus(number);
+	return 0;
 }
-static void setMode(char* number, char* sValue)
+static char setMode(char* number, char* sValue)
 {
-	BatterySetModeAsString(sValue);
+	if (BatterySetModeAsString(sValue)) return -1;
 	sleep(3); //Need time for the values to be updated in their thread so sleep this one
 	sendStatus(number);
+	return 0;
 }
 static void splitRequest(char* request, int commandSize, char* command, int paramSize, char* param) //Returns 0 on success
 {
@@ -339,41 +358,22 @@ static void splitRequest(char* request, int commandSize, char* command, int para
 	}
 }
 void SmsHandleRequest(char* number, char* request)
-{
-	/*
-	if (strncasecmp(request, "status"   , 6) == 0) { sendStatus  (number);               return; }
-	if (strncasecmp(request, "battery"  , 7) == 0) { sendBattery (number);               return; }
-	if (strncasecmp(request, "target"   , 6) == 0) { setTarget   (number, request +  7); return; }
-	if (strncasecmp(request, "pump"     , 4) == 0) { setPump     (number, request +  5); return; }
-	if (strncasecmp(request, "fill"     , 4) == 0) { setFill     (number, request +  5); return; }
-	if (strncasecmp(request, "drain"    , 5) == 0) { setDrain    (number, request +  6); return; }
-	if (strncasecmp(request, "inverter" , 8) == 0) { setInverter (number, request +  9); return; }
-	if (strncasecmp(request, "lpgheater", 9) == 0) { setLpgHeater(number, request + 10); return; }
-	if (strncasecmp(request, "mode"     , 4) == 0) { setMode     (number, request +  5); return; }
-	if (strncasecmp(request, "help"     , 4) == 0) { sendHelp    (number);       		 return; }
-	Log('w', "SMS '%s' sent '%s'", number, request);
-	char buffer[2000];
-	sprintf(buffer, "SMS received from %s\n\n%s", number, request);
-	AlertSend(buffer);
-	*/
-	
+{	
 	char command[20];
 	char param[20];
 	splitRequest(request, sizeof(command), command, sizeof(param), param);
 	
-	if (strcasecmp(command, "status"   ) == 0) { sendStatus  (number       ); return; }
-	if (strcasecmp(command, "battery"  ) == 0) { sendBattery (number       ); return; }
-	if (strcasecmp(command, "help"     ) == 0) { sendHelp    (number       ); return; }
-	if (strcasecmp(command, "target"   ) == 0) { setTarget   (number, param); return; }
-	if (strcasecmp(command, "pump"     ) == 0) { setPump     (number, param); return; }
-	if (strcasecmp(command, "fill"     ) == 0) { setFill     (number, param); return; }
-	if (strcasecmp(command, "drain"    ) == 0) { setDrain    (number, param); return; }
-	if (strcasecmp(command, "inverter" ) == 0) { setInverter (number, param); return; }
-	if (strcasecmp(command, "lpgheater") == 0) { setLpgHeater(number, param); return; }
-	if (strcasecmp(command, "mode"     ) == 0) { setMode     (number, param); return; }
+	     if (strcasecmp(command, "status"   ) == 0) {      sendStatus  (number       ); return; } //Handles its own error response
+	else if (strcasecmp(command, "battery"  ) == 0) {      sendBattery (number       ); return; } //Handles its own error response
+	else if (strcasecmp(command, "help"     ) == 0) {      sendHelp    (number       ); return; } //Handles its own error response
+	else if (strcasecmp(command, "target"   ) == 0) {      setTarget   (number, param); return; } //Handles its own error response
+	else if (strcasecmp(command, "pump"     ) == 0) { if (!setPump     (number, param)) return; }
+	else if (strcasecmp(command, "fill"     ) == 0) { if (!setFill     (number, param)) return; }
+	else if (strcasecmp(command, "drain"    ) == 0) { if (!setDrain    (number, param)) return; }
+	else if (strcasecmp(command, "inverter" ) == 0) { if (!setInverter (number, param)) return; }
+	else if (strcasecmp(command, "lpgheater") == 0) { if (!setLpgHeater(number, param)) return; }
+	else if (strcasecmp(command, "mode"     ) == 0) { if (!setMode     (number, param)) return; }
 	Log('w', "SMS '%s' sent '%s' command '%s' param '%s'", number, request, command, param);
-	char buffer[2000];
-	sprintf(buffer, "SMS received from %s\n\n%s", number, request);
-	AlertSend(buffer);
+	SmsSendF(number, "Sorry, I don't understand '%s'", request);
 	
 }
