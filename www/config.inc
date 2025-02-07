@@ -36,7 +36,7 @@
 </form>
 <p>Username <code>~SmsUserName~</code> and password <code>~SmsPassword~</code> must be the same as those
 in RUT Services > Mobile Utilities > SMS Gateway > Post/Get to allow SMSs to be sent by the RUT.</p>
-<p>Hostname <code>~SmsHostName~</code> is that of the RUT router.</p>
+<p>Hostname <code>~SmsHostName~</code> must be same as that in RUT System > General > Hostname.</p>
 
 <h2>Credentials</h2>
 <form action='/config' method='get'>

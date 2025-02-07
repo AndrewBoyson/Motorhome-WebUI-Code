@@ -172,6 +172,7 @@ static void sendStatus(char* number)
 		"Water fill %s\n"
 		"Water drain %s\n"
 		"Inverter %s\n"
+		"Lpg heater %s\n"
 		"EHU %s\n"
 		"Mode %s",
 		(float)CanThisGetBatteryCountedCapacityAs() / (BATTERY_CAPACITY_AH * 36),
@@ -181,6 +182,7 @@ static void sendStatus(char* number)
 		CanThisGetControlWaterFill()  ? "on" : "off",
 		CanThisGetControlWaterDrain() ? "on" : "off",
 		CanThisGetControlInverter()   ? "on" : "off",
+		CanThisGetControlLpgHeater()  ? "on" : "off",
 		CanThisGetControlEhu()        ? "on" : "off",
 		BatteryGetModeAsString()
 	);
@@ -199,6 +201,22 @@ static void sendBattery(char* number)
 		CanThisGetBatteryCurrentMa(),
 		(float)CanThisGetBatteryTemperature8bfdp() / 256,
 		CanThisGetBatteryOutputState()
+	);
+}
+static void sendHelp(char* number)
+{
+	SmsSend(number,
+		"Help:\n"
+		"help\n"
+		"status\n"
+		"battery\n"
+		"target 20-90\n"
+		"pump on|off\n"
+		"fill on|off\n"
+		"drain on|off\n"
+		"inverter on|off\n"
+		"lpgheater on|off\n"
+		"mode home|away|manual\n"
 	);
 }
 static char parseBool(char* sValue)
@@ -244,39 +262,118 @@ static void setInverter(char* number, char* sValue)
 	sleep(3); //Need time for the values to be updated in their thread so sleep this one
 	sendStatus(number);
 }
+static void setLpgHeater(char* number, char* sValue)
+{
+	CanThisSetControlLpgHeater(parseBool(sValue));
+	sleep(3); //Need time for the values to be updated in their thread so sleep this one
+	sendStatus(number);
+}
 static void setMode(char* number, char* sValue)
 {
 	BatterySetModeAsString(sValue);
 	sleep(3); //Need time for the values to be updated in their thread so sleep this one
 	sendStatus(number);
 }
+static void splitRequest(char* request, int commandSize, char* command, int paramSize, char* param) //Returns 0 on success
+{
+	if (!request)     return;
+	if (!command)     return;
+	if (!param)       return;
+	if (!commandSize) return;
+	if (!paramSize  ) return;
+	
+	char* pCommand = command;
+	char* pParam   = param;
+	
+	*pCommand = 0;
+	*pParam = 0;
+	
+	//Trim leading white space
+	while(1)
+	{
+		char c = *request;
+		if (c ==  0 ) return;  //Normal end so finish
+		if (c != ' ') break;   //Found non white space so move on
+		request++;
+	}
+	
+	//Read the command
+	while(1)
+	{
+		char c = *request;
+		if (c ==  0 ) return; //Normal end so finish
+		if (c == ' ') break;  //Found white space so move on
+		
+		if (pCommand < command + commandSize - 1)
+		{
+			*pCommand = c;
+			 pCommand++;
+			*pCommand = 0;
+		}
+		request++;
+	}
+	
+	//Trim white space
+	while(1)
+	{
+		char c = *request;
+		if (c ==  0 ) return; //Normal end so finish
+		if (c != ' ') break;  //Found non white space so move on
+		request++;
+	}
+	
+	//Read the parameter
+	while(1)
+	{
+		char c = *request;
+		if (c ==  0 ) return; //Normal end so finish
+		if (c == ' ') break;  //Found white space so move on
+		
+		if (pParam < param + paramSize - 1)
+		{
+			*pParam = c;
+			 pParam++;
+			*pParam = 0;
+		}
+		request++;
+	}
+}
 void SmsHandleRequest(char* number, char* request)
 {
-	if (strncasecmp(request, "status"  , 6) == 0) { sendStatus (number);              return; }
-	if (strncasecmp(request, "battery" , 7) == 0) { sendBattery(number);              return; }
-	if (strncasecmp(request, "target"  , 6) == 0) { setTarget  (number, request + 6); return; }
-	if (strncasecmp(request, "pump"    , 4) == 0) { setPump    (number, request + 5); return; }
-	if (strncasecmp(request, "fill"    , 4) == 0) { setFill    (number, request + 5); return; }
-	if (strncasecmp(request, "drain"   , 5) == 0) { setDrain   (number, request + 6); return; }
-	if (strncasecmp(request, "inverter", 8) == 0) { setInverter(number, request + 8); return; }
-	if (strncasecmp(request, "mode"    , 4) == 0) { setMode    (number, request + 5); return; }
-	if (strncasecmp(request, "help"    , 4) == 0)
-	{
-		SmsSend(number, "Help:\n"
-						"help\n"
-						"status\n"
-						"battery\n"
-						"target 20-90\n"
-						"pump on|off\n"
-						"fill on|off\n"
-						"drain on|off\n"
-						"inverter on|off\n"
-						"mode home|away|manual\n"
-						);
-		return;
-	}
+	/*
+	if (strncasecmp(request, "status"   , 6) == 0) { sendStatus  (number);               return; }
+	if (strncasecmp(request, "battery"  , 7) == 0) { sendBattery (number);               return; }
+	if (strncasecmp(request, "target"   , 6) == 0) { setTarget   (number, request +  7); return; }
+	if (strncasecmp(request, "pump"     , 4) == 0) { setPump     (number, request +  5); return; }
+	if (strncasecmp(request, "fill"     , 4) == 0) { setFill     (number, request +  5); return; }
+	if (strncasecmp(request, "drain"    , 5) == 0) { setDrain    (number, request +  6); return; }
+	if (strncasecmp(request, "inverter" , 8) == 0) { setInverter (number, request +  9); return; }
+	if (strncasecmp(request, "lpgheater", 9) == 0) { setLpgHeater(number, request + 10); return; }
+	if (strncasecmp(request, "mode"     , 4) == 0) { setMode     (number, request +  5); return; }
+	if (strncasecmp(request, "help"     , 4) == 0) { sendHelp    (number);       		 return; }
 	Log('w', "SMS '%s' sent '%s'", number, request);
 	char buffer[2000];
 	sprintf(buffer, "SMS received from %s\n\n%s", number, request);
 	AlertSend(buffer);
+	*/
+	
+	char command[20];
+	char param[20];
+	splitRequest(request, sizeof(command), command, sizeof(param), param);
+	
+	if (strcasecmp(command, "status"   ) == 0) { sendStatus  (number       ); return; }
+	if (strcasecmp(command, "battery"  ) == 0) { sendBattery (number       ); return; }
+	if (strcasecmp(command, "help"     ) == 0) { sendHelp    (number       ); return; }
+	if (strcasecmp(command, "target"   ) == 0) { setTarget   (number, param); return; }
+	if (strcasecmp(command, "pump"     ) == 0) { setPump     (number, param); return; }
+	if (strcasecmp(command, "fill"     ) == 0) { setFill     (number, param); return; }
+	if (strcasecmp(command, "drain"    ) == 0) { setDrain    (number, param); return; }
+	if (strcasecmp(command, "inverter" ) == 0) { setInverter (number, param); return; }
+	if (strcasecmp(command, "lpgheater") == 0) { setLpgHeater(number, param); return; }
+	if (strcasecmp(command, "mode"     ) == 0) { setMode     (number, param); return; }
+	Log('w', "SMS '%s' sent '%s' command '%s' param '%s'", number, request, command, param);
+	char buffer[2000];
+	sprintf(buffer, "SMS received from %s\n\n%s", number, request);
+	AlertSend(buffer);
+	
 }

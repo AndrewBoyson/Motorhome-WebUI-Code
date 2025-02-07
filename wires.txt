@@ -12,6 +12,6 @@ grey   / red    awning light                      x          x
 green  / blue   water pump               x            x
 purple          water fill valve                                         x
 purple / red    water drain                       x                      x
-black  / yellow inverter call         x                                      x
 blue   / yellow alarm                    x                                   x
+black  / yellow inverter call         x                                      x
 blue   / white  lpg heater               x                       x
