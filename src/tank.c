@@ -69,22 +69,33 @@ static void plotFresh()
 }
 static void plotLpg()
 {
+	#define SIGNIFICANT_OHMS_DECREASE 10 //Corresponds to about 2 litres
+	static int16_t  lastResistance16ths = 0;
 	static int32_t totalResistance16ths = 0;
 	static int16_t count = 0;
 	
-	totalResistance16ths += CanThisGetTankLpgResistance16ths();
-	count++;
+	char areDriving = CanThisGetControlDPlus();
+	if (areDriving)
+	{
+		totalResistance16ths += CanThisGetTankLpgResistance16ths();
+		count++;
+	}
+	else
+	{
+		totalResistance16ths = 0;
+		count = 0;
+	}
 	if (count >= 256)
 	{
-		int16_t resistance16ths = totalResistance16ths / 256;
-		static int16_t lastResistance16ths = 0;
+		int16_t thisResistance16ths = totalResistance16ths / 256;
 		time_t now = time(0);
-		char significantChange = resistance16ths > lastResistance16ths + 4 || resistance16ths < lastResistance16ths - 4;
-		if (significantChange)
+		char hadFillUp = thisResistance16ths < lastResistance16ths - SIGNIFICANT_OHMS_DECREASE * 16;
+		if (hadFillUp)
 		{
-			recordLpg(now, resistance16ths);
-			lastResistance16ths = resistance16ths;
+			recordLpg(now, lastResistance16ths);
+			recordLpg(now, thisResistance16ths);
 		}
+		lastResistance16ths = thisResistance16ths;
 		totalResistance16ths = 0;
 		count = 0;
 	}
