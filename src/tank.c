@@ -78,20 +78,20 @@ static void plotLpg()
 	static char     lastResistanceIsValid = 0;
 	static time_t   lastTime = 0;
 	static int32_t totalResistance16ths = 0;
-	static int16_t count = 0;
+	static int16_t countResistance16ths = 0;
 	
 	char areDriving = CanThisGetControlDPlus();
 	if (!areDriving)
 	{
 		totalResistance16ths = 0;
-		count = 0;
+		countResistance16ths = 0;
 		return;
 	}
 	
 	//If are driving
 	totalResistance16ths += CanThisGetTankLpgResistance16ths();
-	count++;
-	if (count >= 256)
+	countResistance16ths++;
+	if (countResistance16ths >= 256)
 	{
 		int16_t thisResistance16ths = totalResistance16ths / 256;
 		time_t thisTime = time(0);
@@ -105,7 +105,7 @@ static void plotLpg()
 		lastResistanceIsValid = 1;
 		lastTime = thisTime;
 		totalResistance16ths = 0;
-		count = 0;
+		countResistance16ths = 0;
 	}
 }
 
