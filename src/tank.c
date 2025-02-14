@@ -72,7 +72,7 @@ static void plotLpg()
 	//82ohms ~> 20 litres
 	// 9ohms ~>  9 litres
 	// 6.6ohms per litre
-	//So can detect a fillup as being any change giving an increase of at least 2 litres ~> 13ohms
+	//So can detect a fillup as being an increase of at least 2 litres ~> 13ohms
 	#define SIGNIFICANT_OHMS_INCREASE 13
 	static int16_t  lastResistance16ths = 0;
 	static char    lastResistanceIsValid = 0;
@@ -80,16 +80,16 @@ static void plotLpg()
 	static int16_t count = 0;
 	
 	char areDriving = CanThisGetControlDPlus();
-	if (areDriving)
-	{
-		totalResistance16ths += CanThisGetTankLpgResistance16ths();
-		count++;
-	}
-	else
+	if (!areDriving)
 	{
 		totalResistance16ths = 0;
 		count = 0;
+		return;
 	}
+	
+	//If are driving
+	totalResistance16ths += CanThisGetTankLpgResistance16ths();
+	count++;
 	if (count >= 256)
 	{
 		int16_t thisResistance16ths = totalResistance16ths / 256;
