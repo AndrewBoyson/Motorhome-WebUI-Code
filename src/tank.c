@@ -75,6 +75,7 @@ static void plotLpg()
 	//So can detect a fillup as being any change giving an increase of at least 2 litres ~> 13ohms
 	#define SIGNIFICANT_OHMS_INCREASE 13
 	static int16_t  lastResistance16ths = 0;
+	static char    lastResistanceIsValid = 0;
 	static int32_t totalResistance16ths = 0;
 	static int16_t count = 0;
 	
@@ -93,13 +94,14 @@ static void plotLpg()
 	{
 		int16_t thisResistance16ths = totalResistance16ths / 256;
 		time_t now = time(0);
-		char hadFillUp = thisResistance16ths > lastResistance16ths + SIGNIFICANT_OHMS_INCREASE * 16;
+		char hadFillUp = lastResistanceIsValid && (thisResistance16ths > lastResistance16ths + SIGNIFICANT_OHMS_INCREASE * 16);
 		if (hadFillUp)
 		{
 			recordLpg(now, lastResistance16ths);
 			recordLpg(now, thisResistance16ths);
 		}
 		lastResistance16ths = thisResistance16ths;
+		lastResistanceIsValid = 1;
 		totalResistance16ths = 0;
 		count = 0;
 	}
