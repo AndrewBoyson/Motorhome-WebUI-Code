@@ -114,9 +114,9 @@ static struct addrinfo * getAddresses(char *server, char *port, int protocol) { 
 	struct addrinfo *result;
 	memset(&hints, 0, sizeof(struct addrinfo));
 	//If hints.ai_flags specifies AI_V4MAPPED, and hints.ai_family is AF_INET6, and no matching IPv6 addresses could be found, then include IPv4-mapped IPv6 addresses.
-	hints.ai_family   = AF_INET6;
+	hints.ai_family   = AF_INET6; //--15/02/2025
 	hints.ai_socktype = protocol;
-	hints.ai_flags    = AI_V4MAPPED;
+	hints.ai_flags    = AI_V4MAPPED; //--15/02/2025
 	hints.ai_protocol = 0;        // Any protocol
 	int s = getaddrinfo(server, port, &hints, &result);
 	if (s != 0)
@@ -129,15 +129,22 @@ static struct addrinfo * getAddresses(char *server, char *port, int protocol) { 
 static int connectToAddressInList(struct addrinfo *addresses, int timeout) {                     //Returns a socket if successful or -1 if not
 	int sfd;
 	struct addrinfo *rp;
+	int count = 0;
 	for (rp = addresses; rp != NULL; rp = rp->ai_next)
-	{	
-		if (rp->ai_family != PF_INET6) continue;
+	{
+		count++;
+		if (rp->ai_family != PF_INET6) continue; //--15/02/2025
 		sfd = makeSocketWithTimeout(rp->ai_socktype, timeout, timeout);
 		if (sfd == -1) continue;
 		if (connect(sfd, rp->ai_addr, rp->ai_addrlen) != -1) return sfd; // Success
-
+		else
+		{
+			Log('e',"connectToAddressInList - address %d could not connect", count);
+			LogErrno("connectToAddressInList");
+		}
 		close(sfd);
 	}
+	Log('e', "connectToAddressInList - found %d addresses but none would connect", count);
 	return -1; //No address succeeded
 }
 

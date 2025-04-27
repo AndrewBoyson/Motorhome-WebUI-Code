@@ -12,6 +12,7 @@
 #include "alert.h"
 
 #define BUFFER_SIZE 1000
+#define DEBUG_LOG_LEVEL 'i'
 
 static char _username[50];
 static char _password[50];
@@ -104,8 +105,10 @@ Can be 07xxx xxxxxx or +447
 	
 	return 1;
 }
+
 void SmsSend(char* number, char* text)
 {
+	
 	if (!number)
 	{
 		Log('e', "SmsSend - Sms number is not set");
@@ -121,29 +124,102 @@ void SmsSend(char* number, char* text)
 		Log('e', "SmsSend - Sms number '%s' is not valid", number);
 		return;
 	}
-	char buffer[1000];
-	char* p = buffer;
-	p = stpcpy(p, "GET /cgi-bin/sms_send?");
-	p = stpcpy(p, "username=");
-	p = stpcpy(p, _username);
-	p = stpcpy(p, "&password=");
-	p = stpcpy(p, _password);
-	p = stpcpy(p, "&number=");
-	p += urlQueryEncode(p, number);
-	p = stpcpy(p, "&text=");
-	p += urlQueryEncode(p, text);
-	p = stpcpy(p, " HTTP/1.0\r\n\r\n");
-	int sfd = TcpMakeTalkingSocket(_hostname, "80", 100);
+	Log(DEBUG_LOG_LEVEL, "SmsSend number '%s', text '%s'\r\n", number, text);
+	
+	char buffer[5000];
+	int  length = 0;
+	char data[4000];
+	char dataLength[10];
+	char token[100];
+	char *p ;
+	int sfd = 0;
+	
+	//Get token
+	sfd = TcpMakeTalkingSocket(_hostname, "80", 100);
 	if (sfd == -1)
 	{
 		Log('e', "SmsSend - Could not connect to sms server '%s'", _hostname);
 		return;
 	}
-	Log('i', "Opened socket %d for sms and sent '%s'\r\n", sfd, buffer);
+	Log(DEBUG_LOG_LEVEL, "Opened socket %d\r\n", sfd);
+	p = data;
+	*p = 0;
+	p = stpcpy(p, "{\"username\":\"");
+	p = stpcpy(p, _username);
+	p = stpcpy(p, "\",\"password\":\"");
+	p = stpcpy(p, _password);
+	p = stpcpy(p, "\"}");
+	sprintf(dataLength, "%d", strlen(data));
+	
+	p = buffer;
+	*p = 0;
+	p = stpcpy(p, "POST /api/login HTTP/1.0\r\n");
+	p = stpcpy(p, "Content-Type: application/json\r\n");
+	p = stpcpy(p, "Content-Length: ");
+	p = stpcpy(p, dataLength);
+	p = stpcpy(p, "\r\n");
+	p = stpcpy(p, "\r\n");
+	p = stpcpy(p, data);
+	Log(DEBUG_LOG_LEVEL, "Sent '%s'\r\n", buffer);
 	TcpSendString(sfd, buffer);
 	buffer[0] = 0;
-	int length = TcpRecvAll(sfd, buffer, sizeof(buffer));
-	Log('i', "Received %d characters from sms '%.*s'\r\n", length, length, buffer);
+	length = TcpRecvAll(sfd, buffer, sizeof(buffer));
+	Log(DEBUG_LOG_LEVEL, "Received %d characters from sms '%.*s'\r\n", length, length, buffer);
+	char *pToken = strstr(buffer, "\"token\":\"") + 9;
+	p = pToken;
+	while (p)
+	{
+		if (!*p) break;
+		if (*p == '"')
+		{
+			*p = 0;
+			break;
+		}
+		p++;
+	}
+	strcpy(token, pToken);
+	
+	Log(DEBUG_LOG_LEVEL, "Token is '%s'\r\n", token);
+	
+	//Close socket
+	TcpClose(sfd);
+	
+	//Send sms
+	sfd = TcpMakeTalkingSocket(_hostname, "80", 100);
+	if (sfd == -1)
+	{
+		Log('e', "SmsSend - Could not connect to sms server '%s'", _hostname);
+		return;
+	}
+	Log(DEBUG_LOG_LEVEL, "Opened socket %d\r\n", sfd);
+	p = data;
+	*p = 0;
+	p = stpcpy(p, "{\"data\":{\"number\":\"");
+    p = stpcpy(p, number);
+	p = stpcpy(p, "\",\"message\":\"");
+    p = stpcpy(p, text);
+	p = stpcpy(p, "\",\"modem\":\"2-1\"}}");
+	sprintf(dataLength, "%d", strlen(data));
+	
+	p = buffer;
+	*p = 0;
+	p = stpcpy(p, "POST /api/messages/actions/send HTTP/1.0\r\n");
+	p = stpcpy(p, "Content-Type: application/json\r\n");
+	p = stpcpy(p, "Authorization: Bearer ");
+	p = stpcpy(p, token);
+	p = stpcpy(p, "\r\n");
+	p = stpcpy(p, "Content-Length: ");
+	p = stpcpy(p, dataLength);
+	p = stpcpy(p, "\r\n");
+	p = stpcpy(p, "\r\n");
+	p = stpcpy(p, data);
+	Log(DEBUG_LOG_LEVEL, "Sent '%s'\r\n", buffer);
+	TcpSendString(sfd, buffer);
+	buffer[0] = 0;
+	length = TcpRecvAll(sfd, buffer, sizeof(buffer));
+	Log(DEBUG_LOG_LEVEL, "Received %d characters from sms '%.*s'\r\n", length, length, buffer);
+	
+	//Close socket
 	TcpClose(sfd);
 }
 
