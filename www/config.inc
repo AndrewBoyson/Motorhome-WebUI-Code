@@ -34,8 +34,8 @@
   <input type='text' style='text-align:left;' value='~SmsHostName~' name='sms-hostname'>
   <input type='submit' value='Hostname'>
 </form>
-<p>Username <code>~SmsUserName~</code> and password <code>~SmsPassword~</code> must be the same as those
-in RUT Services > Mobile Utilities > SMS Gateway > Post/Get to allow SMSs to be sent by the RUT.</p>
+<p>Username <code>~SmsUserName~</code> and password <code>~SmsPassword~</code> must be an account in a group with write access to
+Services > Mobile Utilities > Messages > Send Messages to allow SMSs to be sent by the RUT.</p>
 <p>Hostname <code>~SmsHostName~</code> must be same as that in RUT System > General > Hostname.</p>
 
 <h2>Credentials</h2>

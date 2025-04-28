@@ -124,7 +124,7 @@ void SmsSend(char* number, char* text)
 		Log('e', "SmsSend - Sms number '%s' is not valid", number);
 		return;
 	}
-	Log(DEBUG_LOG_LEVEL, "SmsSend number '%s', text '%s'\r\n", number, text);
+	Log(DEBUG_LOG_LEVEL, "SmsSend number '%s', text '%s'", number, text);
 	
 	char buffer[5000];
 	int  length = 0;
@@ -141,7 +141,7 @@ void SmsSend(char* number, char* text)
 		Log('e', "SmsSend - Could not connect to sms server '%s'", _hostname);
 		return;
 	}
-	Log(DEBUG_LOG_LEVEL, "Opened socket %d\r\n", sfd);
+	Log(DEBUG_LOG_LEVEL, "Opened socket %d", sfd);
 	p = data;
 	*p = 0;
 	p = stpcpy(p, "{\"username\":\"");
@@ -160,12 +160,25 @@ void SmsSend(char* number, char* text)
 	p = stpcpy(p, "\r\n");
 	p = stpcpy(p, "\r\n");
 	p = stpcpy(p, data);
-	Log(DEBUG_LOG_LEVEL, "Sent '%s'\r\n", buffer);
+	Log(DEBUG_LOG_LEVEL, "SmsSend sent:\r\nvvvv\r\n%s\r\n^^^^", buffer);
 	TcpSendString(sfd, buffer);
 	buffer[0] = 0;
 	length = TcpRecvAll(sfd, buffer, sizeof(buffer));
-	Log(DEBUG_LOG_LEVEL, "Received %d characters from sms '%.*s'\r\n", length, length, buffer);
-	char *pToken = strstr(buffer, "\"token\":\"") + 9;
+	if (length < 1)
+	{
+		Log('e', "SmsSend - Did not receive reply from token request\r\n");
+		TcpClose(sfd);
+		return;
+	}
+	Log(DEBUG_LOG_LEVEL, "Received %d characters from token request:\r\nvvvv\r\n%.*s\r\n^^^^", length, length, buffer);
+	char* pToken = strstr(buffer, "\"token\":\"");
+	if (!pToken)
+	{
+		Log('e', "SmsSend - Did not receive token, had:\r\nvvvv\r\n%.*s\r\n^^^^", length, buffer);
+		TcpClose(sfd);
+		return;
+	}
+	pToken += 9;
 	p = pToken;
 	while (p)
 	{
@@ -179,7 +192,7 @@ void SmsSend(char* number, char* text)
 	}
 	strcpy(token, pToken);
 	
-	Log(DEBUG_LOG_LEVEL, "Token is '%s'\r\n", token);
+	Log(DEBUG_LOG_LEVEL, "Token is '%s'", token);
 	
 	//Close socket
 	TcpClose(sfd);
@@ -191,13 +204,27 @@ void SmsSend(char* number, char* text)
 		Log('e', "SmsSend - Could not connect to sms server '%s'", _hostname);
 		return;
 	}
-	Log(DEBUG_LOG_LEVEL, "Opened socket %d\r\n", sfd);
+	Log(DEBUG_LOG_LEVEL, "Opened socket %d", sfd);
 	p = data;
 	*p = 0;
 	p = stpcpy(p, "{\"data\":{\"number\":\"");
     p = stpcpy(p, number);
 	p = stpcpy(p, "\",\"message\":\"");
-    p = stpcpy(p, text);
+	while (1) //JSON strings requires that  the ", the \ and any control character below space be escaped
+	{
+		if (*text == 0) break;
+		else if (*text == '\\') { *p++ = '\\'; *p =  '\\'; }
+		else if (*text == '"' ) { *p++ = '\\'; *p =  '"' ; }
+		else if (*text == '\b') { *p++ = '\\'; *p =  'b' ; }
+		else if (*text == '\f') { *p++ = '\\'; *p =  'f' ; }
+		else if (*text == '\n') { *p++ = '\\'; *p =  'n' ; }
+		else if (*text == '\r') { *p++ = '\\'; *p =  'r' ; }
+		else if (*text == '\t') { *p++ = '\\'; *p =  't' ; }
+		else                    {              *p = *text; }
+		p++;
+		text++;
+	}
+    //p = stpcpy(p, text);
 	p = stpcpy(p, "\",\"modem\":\"2-1\"}}");
 	sprintf(dataLength, "%d", strlen(data));
 	
@@ -213,11 +240,23 @@ void SmsSend(char* number, char* text)
 	p = stpcpy(p, "\r\n");
 	p = stpcpy(p, "\r\n");
 	p = stpcpy(p, data);
-	Log(DEBUG_LOG_LEVEL, "Sent '%s'\r\n", buffer);
+	Log(DEBUG_LOG_LEVEL, "SmsSend - Sent:\r\nvvvv\r\n%s\r\n^^^^", buffer);
 	TcpSendString(sfd, buffer);
 	buffer[0] = 0;
 	length = TcpRecvAll(sfd, buffer, sizeof(buffer));
-	Log(DEBUG_LOG_LEVEL, "Received %d characters from sms '%.*s'\r\n", length, length, buffer);
+	if (length < 1)
+	{
+		Log('e', "SmsSend - Did not receive reply from send request\r\n");
+		TcpClose(sfd);
+		return;
+	}
+	Log(DEBUG_LOG_LEVEL, "Received %d characters from sms send request:\r\nvvvv\r\n%.*s\r\n^^^^", length, length, buffer);
+	if (!strstr(buffer, "\"success\":true"))
+	{
+		Log('e', "SmsSend - send not successful, had:\r\nvvvv\r\n%.*s^^^^", length, buffer);
+		TcpClose(sfd);
+		return;
+	}
 	
 	//Close socket
 	TcpClose(sfd);
