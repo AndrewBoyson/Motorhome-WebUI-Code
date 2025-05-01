@@ -11,7 +11,7 @@
 #include "battery.h"
 #include "alert.h"
 
-#define BUFFER_SIZE 1000
+#define BUFFER_SIZE 2000
 #define DEBUG_LOG_LEVEL 'i'
 
 static char _username[50];
@@ -105,33 +105,66 @@ Can be 07xxx xxxxxx or +447
 	
 	return 1;
 }
-
-void SmsSend(char* number, char* text)
+char* jsonAddPlainText(char* json, const char* source)
+{
+	while (1)
+	{
+		*json = *source;
+		if (*source == 0) break;
+		json++;
+		source++;
+	}
+	return json;
+}
+char* jsonAddEncodeString(char* json, const char* source)
+{
+	while (1) //JSON strings requires that  the ", the \ and any control character below space be escaped
+	{
+		     if (*source == 0   ) {                 *json = 0      ; break; }
+		else if (*source == '\\') { *json++ = '\\'; *json = '\\'   ; }
+		else if (*source == '"' ) { *json++ = '\\'; *json = '"'    ; }
+		else if (*source == '\b') { *json++ = '\\'; *json = 'b'    ; }
+		else if (*source == '\f') { *json++ = '\\'; *json = 'f'    ; }
+		else if (*source == '\n') { *json++ = '\\'; *json = 'n'    ; }
+		else if (*source == '\r') { *json++ = '\\'; *json = 'r'    ; }
+		else if (*source == '\t') { *json++ = '\\'; *json = 't'    ; }
+		else                    {                   *json = *source; }
+		json++;
+		source++;
+	}
+	return json;
+}
+void sendText(int sfd, char* text)
+{
+	TcpSendString(sfd, text);
+	Log(DEBUG_LOG_LEVEL, "sendText %s", text);
+}
+void sendLine(int sfd, char* line)
+{
+	TcpSendString(sfd, line);
+	TcpSendString(sfd, "\r\n");
+	Log(DEBUG_LOG_LEVEL, "sendLine %s", line);
+}
+void sendChunk(int sfd, char* chunk)
+{
+	char chunkLength[10];
+	sprintf(chunkLength, "%x", strlen(chunk));
+	sendLine(sfd, chunkLength);
+	sendLine(sfd, chunk);
+}
+void SmsSend(char* number, char* message)
 {
 	
-	if (!number)
-	{
-		Log('e', "SmsSend - Sms number is not set");
-		return;
-	}
-	if (!text)
-	{
-		Log('e', "SmsSend - Sms text is not set");
-		return;
-	}
-	if (!isValidMobileNumber(number))
-	{
-		Log('e', "SmsSend - Sms number '%s' is not valid", number);
-		return;
-	}
-	Log(DEBUG_LOG_LEVEL, "SmsSend number '%s', text '%s'", number, text);
+	if (!number                     ) { Log('e', "SmsSend - Sms number is not set"               ); return;	}
+	if (!message                    ) { Log('e', "SmsSend - Sms message is not set"              ); return; }
+	if (!isValidMobileNumber(number)) { Log('e', "SmsSend - Sms number '%s' is not valid", number); return; }
+	Log(DEBUG_LOG_LEVEL, "SmsSend number '%s', message '%s'", number, message);
 	
-	char buffer[5000];
-	int  length = 0;
-	char data[4000];
-	char dataLength[10];
+	char buffer[BUFFER_SIZE];
+	char json[BUFFER_SIZE];
 	char token[100];
-	char *p ;
+	int  length = 0;
+	char *p = 0;
 	int sfd = 0;
 	
 	//Get token
@@ -141,27 +174,20 @@ void SmsSend(char* number, char* text)
 		Log('e', "SmsSend - Could not connect to sms server '%s'", _hostname);
 		return;
 	}
-	Log(DEBUG_LOG_LEVEL, "Opened socket %d", sfd);
-	p = data;
-	*p = 0;
-	p = stpcpy(p, "{\"username\":\"");
-	p = stpcpy(p, _username);
-	p = stpcpy(p, "\",\"password\":\"");
-	p = stpcpy(p, _password);
-	p = stpcpy(p, "\"}");
-	sprintf(dataLength, "%d", strlen(data));
+	sendLine (sfd, "POST /api/login HTTP/1.1");
+	sendLine (sfd, "Connection: close");
+	sendLine (sfd, "Transfer-Encoding: chunked");
+	sendLine (sfd, "Content-Type: application/json");
+	sendLine (sfd, "");
+	p = json;
+	p = jsonAddPlainText   (p, "{\"username\":\"");
+	p = jsonAddEncodeString(p, _username);
+	p = jsonAddPlainText   (p, "\",\"password\":\"");
+	p = jsonAddEncodeString(p, _password);
+	p = jsonAddPlainText   (p, "\"}");
+	sendChunk(sfd, json);
+	sendChunk(sfd, "");
 	
-	p = buffer;
-	*p = 0;
-	p = stpcpy(p, "POST /api/login HTTP/1.0\r\n");
-	p = stpcpy(p, "Content-Type: application/json\r\n");
-	p = stpcpy(p, "Content-Length: ");
-	p = stpcpy(p, dataLength);
-	p = stpcpy(p, "\r\n");
-	p = stpcpy(p, "\r\n");
-	p = stpcpy(p, data);
-	Log(DEBUG_LOG_LEVEL, "SmsSend sent:\r\nvvvv\r\n%s\r\n^^^^", buffer);
-	TcpSendString(sfd, buffer);
 	buffer[0] = 0;
 	length = TcpRecvAll(sfd, buffer, sizeof(buffer));
 	if (length < 1)
@@ -171,26 +197,24 @@ void SmsSend(char* number, char* text)
 		return;
 	}
 	Log(DEBUG_LOG_LEVEL, "Received %d characters from token request:\r\nvvvv\r\n%.*s\r\n^^^^", length, length, buffer);
-	char* pToken = strstr(buffer, "\"token\":\"");
-	if (!pToken)
+	p = strstr(buffer, "\"token\":\"");
+	if (!p)
 	{
 		Log('e', "SmsSend - Did not receive token, had:\r\nvvvv\r\n%.*s\r\n^^^^", length, buffer);
 		TcpClose(sfd);
 		return;
 	}
-	pToken += 9;
-	p = pToken;
-	while (p)
+	p += 9;
+	char* pToken = token;
+	while (1)
 	{
-		if (!*p) break;
-		if (*p == '"')
+		if (*p == 0 || *p == '"')
 		{
-			*p = 0;
+			*pToken = 0;
 			break;
 		}
-		p++;
+		*pToken++ = *p++;
 	}
-	strcpy(token, pToken);
 	
 	Log(DEBUG_LOG_LEVEL, "Token is '%s'", token);
 	
@@ -204,44 +228,26 @@ void SmsSend(char* number, char* text)
 		Log('e', "SmsSend - Could not connect to sms server '%s'", _hostname);
 		return;
 	}
-	Log(DEBUG_LOG_LEVEL, "Opened socket %d", sfd);
-	p = data;
-	*p = 0;
-	p = stpcpy(p, "{\"data\":{\"number\":\"");
-    p = stpcpy(p, number);
-	p = stpcpy(p, "\",\"message\":\"");
-	while (1) //JSON strings requires that  the ", the \ and any control character below space be escaped
-	{
-		if (*text == 0) break;
-		else if (*text == '\\') { *p++ = '\\'; *p =  '\\'; }
-		else if (*text == '"' ) { *p++ = '\\'; *p =  '"' ; }
-		else if (*text == '\b') { *p++ = '\\'; *p =  'b' ; }
-		else if (*text == '\f') { *p++ = '\\'; *p =  'f' ; }
-		else if (*text == '\n') { *p++ = '\\'; *p =  'n' ; }
-		else if (*text == '\r') { *p++ = '\\'; *p =  'r' ; }
-		else if (*text == '\t') { *p++ = '\\'; *p =  't' ; }
-		else                    {              *p = *text; }
-		p++;
-		text++;
-	}
-    //p = stpcpy(p, text);
-	p = stpcpy(p, "\",\"modem\":\"2-1\"}}");
-	sprintf(dataLength, "%d", strlen(data));
 	
-	p = buffer;
-	*p = 0;
-	p = stpcpy(p, "POST /api/messages/actions/send HTTP/1.0\r\n");
-	p = stpcpy(p, "Content-Type: application/json\r\n");
+	sendLine (sfd, "POST /api/messages/actions/send HTTP/1.1");
+	sendLine (sfd, "Connection: close");
+	sendLine (sfd, "Transfer-Encoding: chunked");
+	sendLine (sfd, "Content-Type: application/json");
+	char line[100];
+	p = line;
 	p = stpcpy(p, "Authorization: Bearer ");
 	p = stpcpy(p, token);
-	p = stpcpy(p, "\r\n");
-	p = stpcpy(p, "Content-Length: ");
-	p = stpcpy(p, dataLength);
-	p = stpcpy(p, "\r\n");
-	p = stpcpy(p, "\r\n");
-	p = stpcpy(p, data);
-	Log(DEBUG_LOG_LEVEL, "SmsSend - Sent:\r\nvvvv\r\n%s\r\n^^^^", buffer);
-	TcpSendString(sfd, buffer);
+	sendLine (sfd, line);
+	sendLine (sfd, "");
+	p = json;
+	p = jsonAddPlainText   (p, "{\"data\":{\"number\":\"");
+	p = jsonAddEncodeString(p, number);
+	p = jsonAddPlainText   (p, "\",\"message\":\"");
+	p = jsonAddEncodeString(p, message);
+	p = jsonAddPlainText   (p, "\",\"modem\":\"2-1\"}}");
+	sendChunk(sfd, json);
+	sendChunk(sfd, "");
+	
 	buffer[0] = 0;
 	length = TcpRecvAll(sfd, buffer, sizeof(buffer));
 	if (length < 1)
