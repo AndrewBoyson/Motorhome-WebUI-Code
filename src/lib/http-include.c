@@ -14,6 +14,7 @@
 static  int include                  (char *item, char* p0, char* p1, char* p2, char* p3, char* p4, char* p5, char* p6, char* p7 );  //Declaration required to allow recursive sheet addition
 
 static char _includeValue[100];
+static uint32_t _includeCount;
 
 int HttpIncludeExpandFile(char* filename, char* p0, char* p1, char* p2, char* p3, char* p4, char* p5, char* p6, char* p7) {	
 	char fullpath[100];
@@ -143,6 +144,8 @@ static  int include(char *item, char* p0, char* p1, char* p2, char* p3, char* p4
 	if (strcmp (name, "sheet"                 ) == 0) { HttpResponseAddString         (HttpRequestResource);                    return 0; } //Adds the current sheet name eg '/battery'
 	if (strcmp (name, "setvalue"              ) == 0) { strncpy(_includeValue, value0, sizeof(_includeValue)); _includeValue[sizeof(_includeValue)-1] = 0; return 0; } //Save a value
 	if (strcmp (name, "getvalue"              ) == 0) { HttpResponseAddString(_includeValue);                         return 0; } //add the saved value
+	if (strcmp (name, "zerocount"             ) == 0) { _includeCount = 0;                                            return 0; } //Zero the count
+	if (strcmp (name, "getcount"              ) == 0) { HttpResponseAddU32(_includeCount++);                          return 0; } //add the current count and increment
 	if (strcmp (name, "p0"                    ) == 0) { if (p0) HttpResponseAddString(p0);                            return 0; }
 	if (strcmp (name, "p1"                    ) == 0) { if (p1) HttpResponseAddString(p1);                            return 0; }
 	if (strcmp (name, "p2"                    ) == 0) { if (p2) HttpResponseAddString(p2);                            return 0; }

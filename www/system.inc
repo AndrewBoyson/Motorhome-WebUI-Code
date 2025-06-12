@@ -12,6 +12,20 @@
 <a class='tab-shortcut' href='#main-content'>Skip to content</a>
 ~expand^menu~
 <h1 id='main-content'>Motorhome - ~getvalue~</h1>
+~zerocount~
+~expand^anchor^Todo~
+~expand^anchor^Wires~
+~expand^anchor^Setup information~
+~expand^anchor^Service~
+~expand^anchor^Core dumps systemd~
+~expand^anchor^Core dumps general~
+~expand^anchor^sysctl.conf~
+~expand^anchor^Startup~
+~expand^anchor^crontab~
+~expand^anchor^fstab~
+~expand^anchor^interfaces~
+~expand^anchor^boot/config.txt~
+~zerocount~
 ~expand^edit^../todo.txt^Todo~
 ~expand^edit^../wires.txt^Wires~
 ~expand^edit^../setup.txt^Setup information~

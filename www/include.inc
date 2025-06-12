@@ -12,7 +12,19 @@
 <a class='tab-shortcut' href='#main-content'>Skip to content</a>
 ~expand^menu~
 <h1 id='main-content'>Motorhome - ~getvalue~</h1>
+~zerocount~
+~expand^anchor^Menu~
+~expand^anchor^Anchor~
+~expand^anchor^Edit~
+~expand^anchor^Input~
+~expand^anchor^Value~
+~expand^anchor^Switch~
+~expand^anchor^Led~
+~expand^anchor^Button~
+~expand^anchor^Meter~
+~zerocount~
 ~expand^edit^menu.inc^Menu~
+~expand^edit^anchor.inc^Anchor~
 ~expand^edit^edit.inc^Edit~
 ~expand^edit^input.inc^Input~
 ~expand^edit^value.inc^Value~

@@ -1,4 +1,4 @@
-<h2>~p1~ ~p0~</h2>
+<h2 id='id~getcount~'>~p1~ ~p0~ <a href='#top'>[goto top]</a></h2>
 <form actions='~sheet~' method='post'>
 ~tab~<input type='submit' value='Submit'>
 ~tab~<input type='button' value='Clear' onclick='this.form.content.value=""'><br/>

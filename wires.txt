@@ -1,18 +1,18 @@
-                                    blk blu brn red grn ora gry whi pnk pur yel
-brown  / green  vehicle battery              x        x
-brown  / blue   habitation battery       x   x
-white  / orange ground                                   x       x
-red    / yellow engine running D+                 x                          x
-brown  / yellow iNet, heating, fridge        x                               x
-yellow / green  ignitions                             x                      x
-yellow / white  sockets                                          x           x
-pink            lights                                                x
-grey            lights                                       x
-grey   / red    awning light                      x          x
-green  / blue   water pump               x            x
-purple          water fill valve                                         x
-purple / red    water drain                       x                      x
-blue   / yellow alarm                    x                                   x
-black  / yellow inverter call         x                                      x
-blue   / white  lpg heater               x                       x
-black  / red    RUT, PI               x           x
+                |                      |blk|blu|brn|red|grn|ora|gry|whi|pnk|pur|yel|
+brown  / green  | vehicle battery      |   |   | x |   | x |   |   |   |   |   |   |
+brown  / blue   | habitation battery   |   | x | x |   |   |   |   |   |   |   |   |
+white  / orange | ground               |   |   |   |   |   | x |   | x |   |   |   |
+red    / yellow | engine running D+    |   |   |   | x |   |   |   |   |   |   | x |
+brown  / yellow | iNet, heating, fridge|   |   | x |   |   |   |   |   |   |   | x |
+yellow / green  | ignitions            |   |   |   |   | x |   |   |   |   |   | x |
+yellow / white  | sockets              |   |   |   |   |   |   |   | x |   |   | x |
+pink            | lights               |   |   |   |   |   |   |   |   | x |   |   |
+grey            | lights               |   |   |   |   |   |   | x |   |   |   |   |
+grey   / red    | awning light         |   |   |   | x |   |   | x |   |   |   |   |
+green  / blue   | water pump           |   | x |   |   | x |   |   |   |   |   |   |
+purple          | water fill valve     |   |   |   |   |   |   |   |   |   | x |   |
+purple / red    | water drain          |   |   |   | x |   |   |   |   |   | x |   |
+blue   / yellow | alarm                |   | x |   |   |   |   |   |   |   |   | x |
+black  / yellow | inverter call        | x |   |   |   |   |   |   |   |   |   | x |
+blue   / white  | lpg heater           |   | x |   |   |   |   |   | x |   |   |   |
+black  / red    | RUT, PI              | x |   |   | x |   |   |   |   |   |   |   |

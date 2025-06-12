@@ -12,7 +12,11 @@
 <a class='tab-shortcut' href='#main-content'>Skip to content</a>
 ~expand^menu~
 <h1 id='main-content'>Motorhome - ~getvalue~</h1>
-~expand^edit^base.css^base.css~
-~expand^edit^settings.css^settings.css~
+~zerocount~
+~expand^anchor^Base~
+~expand^anchor^Settings~
+~zerocount~
+~expand^edit^base.css^Base~
+~expand^edit^settings.css^Settings~
 </body>
 </html>

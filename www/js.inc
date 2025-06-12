@@ -12,12 +12,19 @@
 <a class='tab-shortcut' href='#main-content'>Skip to content</a>
 ~expand^menu~
 <h1 id='main-content'>Motorhome - ~getvalue~</h1>
-~expand^edit^index.js^index.js~
-~expand^edit^control.js^control.js~
-~expand^edit^battery.js^battery.js~
-~expand^edit^manage.js^manage.js~
-~expand^edit^tank.js^tank.js~
-~expand^edit^backup.js^backup.js~
-~expand^edit^ajax.js^ajax.js~
+~expand^anchor^Index~
+~expand^anchor^Control~
+~expand^anchor^Battery~
+~expand^anchor^Manage~
+~expand^anchor^Tank~
+~expand^anchor^Backup~
+~expand^anchor^Ajax~
+~expand^edit^index.js^Index~
+~expand^edit^control.js^Control~
+~expand^edit^battery.js^Battery~
+~expand^edit^manage.js^Manage~
+~expand^edit^tank.js^Tank~
+~expand^edit^backup.js^Backup~
+~expand^edit^ajax.js^Ajax~
 </body>
 </html>

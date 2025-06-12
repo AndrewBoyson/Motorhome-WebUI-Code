@@ -135,21 +135,6 @@ static int recordPlot(time_t t, uint8_t capacity, int16_t mV, int16_t temp8bfdp)
 	if (fclose(fp)                                                               ) { LogErrno("Record plot - fclose: "  );             return 1; }
 	return 0;
 }
-static int recordRest(time_t t, uint32_t secondsAtRest, int16_t mV, uint8_t capacity, int16_t temp8bfdp)
-{
-	FILE* fp = fopen("rest", "a");
-	if (fp                                                                                   == NULL) { LogErrno("Record rest - fopen: "   );             return 1; }
-	
-	struct tm tm;
-	if (gmtime_r(&t, &tm)                                                                    == 0   ) { LogErrno("Record rest - gmtime-r: "); fclose(fp); return 1; }
-	char sTime[20];
-	if (strftime(sTime, sizeof(sTime), "%Y-%m-%d %H:%M:%S", &tm)                              < 0   ) { LogErrno("Record rest - strftime: "); fclose(fp); return 1; }
-	
-	if (fprintf(fp, "%s, %u, %d, %u, %d\r\n", sTime, secondsAtRest, mV, capacity, temp8bfdp) < 0   ) { LogErrno("Record rest - fprintf: " ); fclose(fp); return 1; }
-	
-	if (fclose(fp)                                                                                  ) { LogErrno("Record rest - fclose: "  );             return 1; }
-	return 0;
-}
 static int recordAging(time_t t, int16_t agingAsPerHour)
 {
 	FILE* fp = fopen("aging", "a");
@@ -305,12 +290,6 @@ void BatteryPoll()
 		if (_restStarted) BatterySetRestStarted(0);
 		_secondsAtRest = 0;
 	}
-	
-	//Record rest
-	char doRecordRest = 0;
-	if (isAtRest && _secondsAtRest == 0) doRecordRest = 1;                        //Record on reaching rest state (actually about 5 mins after neutral)
-	for (int i = 8; i < 32; i++) if (_secondsAtRest == 1 << i) doRecordRest = 1;  //Record every multiple of 2 after 256 seconds
-	if (doRecordRest) recordRest(now, _secondsAtRest, cellMv, CanThisGetBatteryCapacityTargetPercent(), batteryTemp8bfdp);
 		
 	//Increment plot - only run every ten seconds to give plenty of time for the battery to have updated
 	static int _secondsCount = 0;

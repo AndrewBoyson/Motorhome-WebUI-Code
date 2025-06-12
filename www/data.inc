@@ -12,12 +12,19 @@
 <a class='tab-shortcut' href='#main-content'>Skip to content</a>
 ~expand^menu~
 <h1 id='main-content'>Motorhome - ~getvalue~</h1>
+~zerocount~
+~expand^anchor^Charge~
+~expand^anchor^Heater~
+~expand^anchor^Aging~
+~expand^anchor^Lpg~
+~expand^anchor^Fresh~
+~expand^anchor^Plot~
+~zerocount~
 ~expand^edit^../data/charge^Charge~
 ~expand^edit^../data/heater^Heater~
 ~expand^edit^../data/aging^Aging~
 ~expand^edit^../data/lpg^Lpg~
 ~expand^edit^../data/fresh^Fresh~
 ~expand^edit^../data/plot^Plot~
-~expand^edit^../data/rest^Rest~
 </body>
 </html>
