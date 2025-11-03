@@ -212,8 +212,14 @@ static void plotCharge()
 	static  int16_t lastMv = 0;
 	static uint32_t lastAs = 0;
 	static time_t lastUpdate = 0;
-	char significantChange = lastMv >= thisMv + SIGNIFICANT_MV_CHANGE || lastMv <= thisMv - SIGNIFICANT_MV_CHANGE   ||
-							 lastAs >= thisAs + SIGNIFICANT_AS_CHANGE || lastAs <= thisAs - SIGNIFICANT_AS_CHANGE;
+	int16_t diffMv = 0;
+	if (lastMv > thisMv) diffMv = lastMv - thisMv;
+	else                 diffMv = thisMv - lastMv;
+	uint32_t diffAs = 0; //Ensure difference is positive to avoid problems with unsigned when capacity is zero
+	if (lastAs > thisAs) diffAs = lastAs - thisAs;
+	else                 diffAs = thisAs - lastAs;
+	char significantChange = diffMv >= SIGNIFICANT_MV_CHANGE ||
+							 diffAs >= SIGNIFICANT_AS_CHANGE;
 	if (significantChange || now > lastUpdate + 1200)
 	{
 		recordCharge(now, thisMv, thisAs);
