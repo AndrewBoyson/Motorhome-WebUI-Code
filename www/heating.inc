@@ -1,10 +1,12 @@
-~setvalue^JS~
+~setvalue^Heating~
 <!DOCTYPE html>
 <html>
 <head>
    <title>Motorhome - ~getvalue~</title>
    <link rel='stylesheet' href='/base.css' type='text/css'/>
    <link rel='stylesheet' href='/settings.css' type='text/css'/>
+   <script src='/ajax.js' type='text/javascript'></script>
+   <script src='/heating.js' type='text/javascript'></script>
    <meta name='viewport' content='width=device-width, initial-scale=1'>
    <link rel='icon'       href='/favicon.ico' type='image/x-icon'/>
 </head>
@@ -12,23 +14,7 @@
 <a class='tab-shortcut' href='#main-content'>Skip to content</a>
 ~expand^menu~
 <h1 id='main-content'>Motorhome - ~getvalue~</h1>
-~zerocount~
-~expand^anchor^Index~
-~expand^anchor^Control~
-~expand^anchor^Heating~
-~expand^anchor^Manage~
-~expand^anchor^Battery~
-~expand^anchor^Tank~
-~expand^anchor^Backup~
-~expand^anchor^Ajax~
-~zerocount~
-~expand^edit^index.js^Index~
-~expand^edit^control.js^Control~
-~expand^edit^heating.js^Heating~
-~expand^edit^manage.js^Manage~
-~expand^edit^battery.js^Battery~
-~expand^edit^tank.js^Tank~
-~expand^edit^backup.js^Backup~
-~expand^edit^ajax.js^Ajax~
+<br/>
+~expand^switch^Lin trace^att-lin-trace~
 </body>
 </html>

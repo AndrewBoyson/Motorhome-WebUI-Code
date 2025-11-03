@@ -107,7 +107,9 @@ int CanSend(int32_t id, int len, void* pData) //This can be called by multiple t
 {
 	if (!initialised)
 	{
-		Log('e', "CanSend - not initialised");
+		static char _logged = 0;
+		if (!_logged) Log('e', "CanSend - not initialised");
+		_logged = 1;
 		return -1;
 	}
 	

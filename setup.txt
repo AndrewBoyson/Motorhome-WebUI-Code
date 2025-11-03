@@ -4,15 +4,17 @@ Use sd formatter to clean a card
 Use Raspberry pi imager to load the sd card with the lite edition (no desktop). In settings change hostname and enable SSH.
 
 sudo raspi-config | Advanced Options | Expand Filesystem
+sudo raspi-config | Interface Options | Serial Port | Login Shell - No, Enable serial hardware - Yes
 
 sudo apt update
 sudo apt full-upgrade
+sudo apt autoremove
 
 sudo apt install git
 
 Can
 ===
-sudo nano /boot/config.txt
+sudo nano /boot/firmware/config.txt                                                <- changed from /boot/config.txt with trixie
 
 dtparam=spi=on                                                                     <- uncomment this line
 
@@ -22,22 +24,32 @@ dtoverlay=mcp2515,spi0-0,oscillator=12000000,interrupt=25,spimaxfrequency=200000
 
 sudo apt-get install can-utils
 
-sudo nano /etc/network/interfaces file and add the following:
+sudo nano /etc/network/interfaces file and add the following:                      <- this is now defunct in trixie
 
 auto can0
 iface can0 inet manual
     pre-up /sbin/ip link set can0 type can bitrate 100000 restart-ms 100
     up     /sbin/ifconfig can0 up
     down   /sbin/ifconfig can0 down
-	
-sudo reboot
 
-candump any
+sudo nano /etc/systemd/system/can0.service and add this:                           <- and replaced by this in trixie
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/ip link set can0 down
+ExecStart=/sbin/ip link set can0 type can bitrate 100000 restart-ms 100
+ExecStart=/sbin/ip link set can0 up
+
+[Install]
+WantedBy=multi-user.target
+
+Enable with command:
+sudo systemctl enable can0
 
 Startup
 =======
 
-sudo nano /etc/systemd/system/server.service file and type in the following:
+sudo nano /etc/systemd/system/server.service file and add this:
 [Unit]
 Description=Motorhome server
 

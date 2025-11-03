@@ -15,6 +15,7 @@
 #include "battery.h"
 #include "sms.h"
 #include "alert.h"
+#include "lin-this.h"
 
 //Utilities
 int HttpThisMakeFullPath(char *filename, char *fullPath, int lengthFullPath) { //Converts a relative file name to a full path by prepending the www folder, returns -1 if no room
@@ -110,6 +111,8 @@ int HttpThisNameValue(unsigned rid, char* name, char* value) { //returns -1 if u
 	if (strcmp(name, "control-pump-min-litres"             ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetControlPumpMinLitres          (v); return 0; }
 	if (strcmp(name, "control-pump-dplus-litres"           ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetControlPumpDplusLitres        (v); return 0; }
 	if (strcmp(name, "control-drain-max-litres"            ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetControlDrainMaxLitres         (v); return 0; }
+	
+	if (strcmp(name, "lin-trace"                           ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; LinThisTrace = v                           ; return 0; }
 	
 	if (strcmp(name, "backup-to-usb"                       ) == 0) { system("cp -rT /home/pi/server /media/usb/server-`date -I`");                                         return 0; }
 
@@ -224,6 +227,9 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	
 	//Log
 	if (strcmp (name, "LogLevel"                     ) == 0) {HttpResponseAddChar  (        LogGetLevel                              ()); return 0; }
+	
+	//Lin
+	if (strcmp (name, "LinTrace"                     ) == 0) {HttpResponseAddS8    (        LinThisTrace                               ); return 0; }
 	
 	//Count
 	if (strcmp (name, "CanCounts"                    ) == 0)

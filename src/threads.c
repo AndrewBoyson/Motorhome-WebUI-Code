@@ -9,11 +9,13 @@
 #include "lib/rtc.h"
 #include "lib/can-reliable.h"
 
+#include "lin-this.h"
 #include "can-this.h"
 #include "alert.h"
 #include "tank.h"
 #include "battery.h"
 
+static struct Thread threadLin;
 static struct Thread threadCan;
 static struct Thread threadHttp;
 static struct Thread threadPoll;
@@ -40,6 +42,7 @@ static void *workerPoll(void *arg)
 		if (secondsAfterInit < 1000) secondsAfterInit++;
 
 		UsbDrivePoll(); //Mount or unmount the UsbDrive
+		LinThisPoll();
 				
 		if (secondsAfterInit > 15) //This gives long enough after a reset for all CAN information to have been received at least once
 		{
@@ -74,25 +77,37 @@ static void *workerCan(void *arg)
 	return NULL;
 }
 
+static void *workerLin(void *arg)
+{
+	if (ThreadWorkerInit(&threadLin)) return NULL;
+	LinThisInit();
+	while(1) LinThisReceive();
+	return NULL;
+}
+
 //External routines
 void ThreadsStart()
 {	
+	threadLin .Name = "lin";
 	threadCan .Name = "can";
 	threadHttp.Name = "http";
 	threadPoll.Name = "poll";
 	threadTick.Name = "tick";
 	
+	threadLin .Worker = workerLin;
 	threadCan .Worker = workerCan;
 	threadHttp.Worker = workerHttp;
 	threadPoll.Worker = workerPoll;
 	threadTick.Worker = workerTick;
 	
+	threadLin .NormalPriority = 0;
 	threadCan .NormalPriority = 0;
 	threadHttp.NormalPriority = 0;
 	threadPoll.NormalPriority = 0;
 	threadTick.NormalPriority = 0;
 	
-	ThreadStart(&threadCan );
+	ThreadStart(&threadLin );
+	//ThreadStart(&threadCan );
 	ThreadStart(&threadHttp);
 	ThreadStart(&threadPoll);
 	ThreadStart(&threadTick);
@@ -100,6 +115,7 @@ void ThreadsStart()
 }
 void ThreadsWait()
 {
+	ThreadJoin(&threadLin );
 	ThreadJoin(&threadCan );
 	ThreadJoin(&threadHttp);
 	ThreadJoin(&threadPoll);
@@ -107,6 +123,7 @@ void ThreadsWait()
 }
 void ThreadsKill()
 {
+	ThreadCancel(&threadLin );
 	ThreadCancel(&threadCan );
 	ThreadCancel(&threadHttp);
 	ThreadCancel(&threadPoll);
