@@ -24,6 +24,8 @@ void CanInit()
 	struct ifreq ifr;
 	int r = 0;
 	
+	Log('e', "Can start initialisation");
+	
 	canSocket = socket(PF_CAN, SOCK_RAW, CAN_RAW);
 	if (canSocket == -1)
 	{
@@ -73,7 +75,7 @@ void CanInit()
 		return;
 	}
 	
-	Log('i', "Can is initialised");
+	Log('e', "Can is initialised");
 	initialised = 1;
 }
 

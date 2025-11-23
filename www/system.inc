@@ -24,7 +24,7 @@
 ~expand^anchor^crontab~
 ~expand^anchor^fstab~
 ~expand^anchor^interfaces~
-~expand^anchor^boot/config.txt~
+~expand^anchor^config.txt~
 ~zerocount~
 ~expand^edit^../todo.txt^Todo~
 ~expand^edit^../wires.txt^Wires~
@@ -37,6 +37,6 @@
 ~expand^edit^/etc/crontab^crontab~
 ~expand^edit^/etc/fstab^fstab~
 ~expand^edit^/etc/network/interfaces^interfaces~
-~expand^edit^/boot/config.txt^boot/config.txt~
+~expand^edit^/boot/firmware/config.txt^config.txt~
 </body>
 </html>

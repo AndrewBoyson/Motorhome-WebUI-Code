@@ -138,6 +138,16 @@ int HttpGetParseFloat(char *text,    float* pValue) {
 	}
 	return 0;
 }
+int HttpGetParseChar(char *text,    char* pValue) {
+	if (!text)
+	{
+		HttpResponseType = 400; //Bad Request
+		snprintf(HttpResponseMessage, HTTP_RESPONSE_MESSAGE_SIZE, "GetParseChar: null value");
+		return 1;
+	}
+	*pValue = *text; //Just send on the first character in the text
+	return 0;
+}
 
 //Handle posts
 static int getChar(char *r) { //returns -1 on error, +1 to finish and 0 to continue

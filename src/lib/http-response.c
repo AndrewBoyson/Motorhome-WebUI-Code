@@ -181,7 +181,7 @@ void HttpResponseAddAsciiFileRows(                  char *file  ) { //Adds a cha
         if (c == '\n') lines++;
 	}
 	fclose(fp);
-	char text[10];
+	char text[16];
 	int length = sprintf(text, "%d", lines + 1);
 	if (length < 0)
 	{

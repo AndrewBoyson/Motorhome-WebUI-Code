@@ -3,19 +3,21 @@
 #include <string.h>
 #include <stdlib.h> //system
 #include <stdio.h>
+#include <ctype.h>
 
 #include "lib/log.h"
 #include "lib/usbdrive.h"
 #include "lib/http-get.h"
 #include "lib/http-response.h"
 #include "lib/http-credentials.h"
+#include "lib/lin.h"
 #include "http-this.h"
 #include "global.h"
 #include "can-this.h"
 #include "battery.h"
 #include "sms.h"
 #include "alert.h"
-#include "lin-this.h"
+#include "truma.h"
 
 //Utilities
 int HttpThisMakeFullPath(char *filename, char *fullPath, int lengthFullPath) { //Converts a relative file name to a full path by prepending the www folder, returns -1 if no room
@@ -112,8 +114,30 @@ int HttpThisNameValue(unsigned rid, char* name, char* value) { //returns -1 if u
 	if (strcmp(name, "control-pump-dplus-litres"           ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetControlPumpDplusLitres        (v); return 0; }
 	if (strcmp(name, "control-drain-max-litres"            ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetControlDrainMaxLitres         (v); return 0; }
 	
-	if (strcmp(name, "lin-trace"                           ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; LinThisTrace = v                           ; return 0; }
-	
+	if (strcmp(name, "lin-trace"                           ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; LinTrace                               = v ; return 0; }
+	if (strcmp(name, "lin-allow-bus-writes"                ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; LinAllowBusWrites                      = v ; return 0; }
+	if (strcmp(name, "truma-send-wanted"                   ) == 0) {                                                          TrumaSetSendWanted                      (1); return 0; }
+	if (strcmp(name, "truma-wanted-room-on"                ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; TrumaSetWantedRoomOn                    (v); return 0; }
+	if (strcmp(name, "truma-wanted-water-on"               ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; TrumaSetWantedWaterOn                   (v); return 0; }
+	if (strcmp(name, "truma-wanted-room-temp"              ) == 0) { uint8_t  v; if (HttpGetParseU8   (value, &v)) return -1; TrumaSetWantedRoomTemp                  (v); return 0; }
+	if (strcmp(name, "truma-wanted-water-temp"             ) == 0) { char     v; if (HttpGetParseChar (value, &v)) return -1; TrumaSetWantedWaterTemp                 (v); return 0; }
+	if (strcmp(name, "truma-wanted-fan-mode"               ) == 0) { char     v; if (HttpGetParseChar (value, &v)) return -1; TrumaSetWantedFanMode                   (v); return 0; }
+	if (strcmp(name, "truma-wanted-energy-sel"             ) == 0)
+	{
+		char v;
+		if (HttpGetParseChar (value, &v)) return -1;
+		switch (v)
+		{
+			case 'e': TrumaSetWantedEnergySel('E'); TrumaSetWantedElecPower('1'); break;
+			case 'E': TrumaSetWantedEnergySel('E'); TrumaSetWantedElecPower('2'); break;
+			case 'm': TrumaSetWantedEnergySel('M'); TrumaSetWantedElecPower('1'); break;
+			case 'M': TrumaSetWantedEnergySel('M'); TrumaSetWantedElecPower('2'); break;
+			default:  TrumaSetWantedEnergySel('G');                               break;
+		}
+		return 0;
+	}
+	//if (strcmp(name, "truma-wanted-elec-power"             ) == 0) { char     v; if (HttpGetParseChar (value, &v)) return -1; TrumaSetWantedElecPower                 (v); return 0; }
+		
 	if (strcmp(name, "backup-to-usb"                       ) == 0) { system("cp -rT /home/pi/server /media/usb/server-`date -I`");                                         return 0; }
 
 	return 1;
@@ -229,7 +253,36 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	if (strcmp (name, "LogLevel"                     ) == 0) {HttpResponseAddChar  (        LogGetLevel                              ()); return 0; }
 	
 	//Lin
-	if (strcmp (name, "LinTrace"                     ) == 0) {HttpResponseAddS8    (        LinThisTrace                               ); return 0; }
+	if (strcmp (name, "LinTrace"                     ) == 0) {HttpResponseAddS8    (        LinTrace                                   ); return 0; }
+	if (strcmp (name, "LinAllowBusWrites"            ) == 0) {HttpResponseAddS8    (        LinAllowBusWrites                          ); return 0; }
+	if (strcmp (name, "LinActive"                    ) == 0) {HttpResponseAddS8    (        LinGetBusIsActive                        ()); return 0; }
+	
+	if (strcmp (name, "TrumaSecondsSinceLastStatus"  ) == 0) {HttpResponseAddU16   (        TrumaGetSecondsSinceLastStatus           ()); return 0; }
+	if (strcmp (name, "TrumaSendOngoing"             ) == 0) {HttpResponseAddS8    (        TrumaGetSendOngoing                      ()); return 0; }
+	if (strcmp (name, "TrumaWantedRoomOn"            ) == 0) {HttpResponseAddS8    (        TrumaGetWantedRoomOn                     ()); return 0; }
+	if (strcmp (name, "TrumaWantedWaterOn"           ) == 0) {HttpResponseAddS8    (        TrumaGetWantedWaterOn                    ()); return 0; }
+	if (strcmp (name, "TrumaWantedRoomTemp"          ) == 0) {HttpResponseAddU8    (        TrumaGetWantedRoomTemp                   ()); return 0; }
+	if (strcmp (name, "TrumaWantedWaterTemp"         ) == 0) {HttpResponseAddChar  (        TrumaGetWantedWaterTemp                  ()); return 0; }
+	if (strcmp (name, "TrumaWantedFanMode"           ) == 0) {HttpResponseAddChar  (        TrumaGetWantedFanMode                    ()); return 0; }
+	if (strcmp (name, "TrumaWantedEnergySel"         ) == 0)
+	{
+		char energySel = TrumaGetWantedEnergySel(); //G E or M
+		char elecPower = TrumaGetWantedElecPower(); //1 or 2
+		if (energySel != 'G' && elecPower != '2') energySel= tolower(energySel);
+		HttpResponseAddChar(energySel); //G e E m or M
+		return 0;
+	}
+	if (strcmp (name, "TrumaTargetRoomTemp"          ) == 0) {HttpResponseAddU16   (        TrumaTargetRoomTemp                        ); return 0; }
+	if (strcmp (name, "TrumaTargetWaterTemp"         ) == 0) {HttpResponseAddChar  (        TrumaTargetWaterTemp                       ); return 0; }
+	if (strcmp (name, "TrumaTargetFanMode"           ) == 0) {HttpResponseAddChar  (        TrumaTargetFanMode                         ); return 0; }
+	if (strcmp (name, "TrumaTargetElecPower"         ) == 0) {HttpResponseAddChar  (        TrumaTargetElecPower                       ); return 0; }
+	if (strcmp (name, "TrumaTargetEnergySel"         ) == 0) {HttpResponseAddChar  (        TrumaTargetEnergySel                       ); return 0; }
+	if (strcmp (name, "TrumaTargetElecPower"         ) == 0) {HttpResponseAddChar  (        TrumaTargetElecPower                       ); return 0; }
+	if (strcmp (name, "TrumaActualRoomTemp"          ) == 0) {HttpResponseAddU16   (        TrumaActualRoomTemp                        ); return 0; }
+	if (strcmp (name, "TrumaActualWaterTemp"         ) == 0) {HttpResponseAddU16   (        TrumaActualWaterTemp                       ); return 0; }
+	if (strcmp (name, "TrumaActualRecvStatus"        ) == 0) {HttpResponseAddU8    (        TrumaActualRecvStatus                      ); return 0; }
+	if (strcmp (name, "TrumaActualOpStatus"          ) == 0) {HttpResponseAddU8    (        TrumaActualOpStatus                        ); return 0; }
+	if (strcmp (name, "TrumaActualErrorCode"         ) == 0) {HttpResponseAddU8    (        TrumaActualErrorCode                       ); return 0; }
 	
 	//Count
 	if (strcmp (name, "CanCounts"                    ) == 0)

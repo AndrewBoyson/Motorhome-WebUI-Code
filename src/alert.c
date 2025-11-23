@@ -93,10 +93,13 @@ static void pollBatteryTemperature()
 static void pollEhu()
 {
 	static char lastEhu = 0;
+	static char isInitialised = 0;
 	char thisEhu = CanThisGetControlEhu();
+	if (!isInitialised) lastEhu = thisEhu; //Prevent alerts on startup
 	if ( thisEhu && !lastEhu) AlertSend("EHU connected");
 	if (!thisEhu &&  lastEhu) AlertSend("EHU disconnected");
 	lastEhu = thisEhu;
+	isInitialised = 1;
 }
 void AlertPoll()
 {

@@ -42,7 +42,6 @@ static void *workerPoll(void *arg)
 		if (secondsAfterInit < 1000) secondsAfterInit++;
 
 		UsbDrivePoll(); //Mount or unmount the UsbDrive
-		LinThisPoll();
 				
 		if (secondsAfterInit > 15) //This gives long enough after a reset for all CAN information to have been received at least once
 		{
@@ -107,7 +106,7 @@ void ThreadsStart()
 	threadTick.NormalPriority = 0;
 	
 	ThreadStart(&threadLin );
-	//ThreadStart(&threadCan );
+	ThreadStart(&threadCan );
 	ThreadStart(&threadHttp);
 	ThreadStart(&threadPoll);
 	ThreadStart(&threadTick);

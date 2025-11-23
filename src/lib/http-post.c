@@ -165,7 +165,6 @@ static int handlePostEditSave     (char *filename)
 	{
 		HttpResponseType = 500; //Internal Server Error
 		snprintf(HttpResponseMessage, HTTP_RESPONSE_MESSAGE_SIZE, "Could not close file to save POST %s", filename);
-		fclose(fp);
 		return -1;
 	}
 

@@ -13,7 +13,8 @@ form                             { line-height:1.2em; margin:0; }
 button, input[type=submit]       { border-radius:0.2em; border:0; box-shadow:none; margin-top:0.3em; }
 button:hover:enabled             { color:red; }
 input[type=submit]:hover:enabled { color:red; }
-input[type=text]         { border:thin none gray; margin:0; padding:0; color:darkblue; text-align:right; }
+input[type=text]                 { border:thin none gray; margin:0; padding:0; color:darkblue; text-align:right; }
+select                           { border:thin none     ; margin:0; padding:0; color:darkblue; text-align:right; background-color:transparent}
 
 .toggle                  { display:inline-block; position:relative; cursor:pointer; width: 1.2em;  height: 0.6em; }
 .slot                    { background-color:lightsteelblue; display:block; position:absolute; top:0.1em; left:0.1em; bottom:0.1em; right:0.1em; border-radius:0.6em; transition:background 0.4s; }

@@ -259,7 +259,7 @@ void SmsSend(char* number, char* message)
 	Log(DEBUG_LOG_LEVEL, "Received %d characters from sms send request:\r\nvvvv\r\n%.*s\r\n^^^^", length, length, buffer);
 	if (!strstr(buffer, "\"success\":true"))
 	{
-		Log('e', "SmsSend - send not successful, had:\r\nvvvv\r\n%.*s^^^^", length, buffer);
+		Log('e', "SmsSend - send not successful (check sim can send texts), had:\r\nvvvv\r\n%.*s^^^^", length, buffer);
 		TcpClose(sfd);
 		return;
 	}

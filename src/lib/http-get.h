@@ -10,5 +10,6 @@ extern int HttpGetParseU16  (char *text, uint16_t* pValue);
 extern int HttpGetParseS8   (char *text,   int8_t* pValue);
 extern int HttpGetParseU8   (char *text,  uint8_t* pValue);
 extern int HttpGetParseFloat(char *text,    float* pValue);
+extern int HttpGetParseChar (char *text,     char* pValue);
 
 extern int HttpGet(char* query);

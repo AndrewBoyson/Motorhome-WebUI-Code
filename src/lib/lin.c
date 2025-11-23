@@ -11,11 +11,22 @@
 #include <time.h>
 
 #include "lin.h"
+#include "lin-transport.h"
 #include "log.h"
+
+
+char LinTrace = 0;
+char LinAllowBusWrites = 1;
 
 void (*LinUnhandledBytesHandler)(void) = 0; //Set by LinThisInit; called at the start of a new frame
 void (*LinIdHandler            )(void) = 0; //Set by LinThisInit; called when a valid id has been received
 void (*LinDataHandler          )(void) = 0; //Set by LinThisInit; called when LinDataLength bytes have been received
+
+time_t _timeOfLastBreak = 0;
+char LinGetBusIsActive()
+{
+	return (time(0) - _timeOfLastBreak) < 20; //Return true if there has been a break recently
+}
 
 int    LinDataLength = 0;         //Set by LinIdHandler - must be -1 if id is not handled or zero if no bytes to read
 
@@ -25,6 +36,34 @@ static int    _recvBytesCount = 0;
 static int  _serialDescriptor = 0;
 static char _initialised = 0;
 static struct serial_icounter_struct _lastCounters;
+
+/*
+	Lower six bits (ID0-ID5) are data, upper two bits are parity
+	The parity bits are calculated as follows:
+	P0 =    ID0 xor ID1 xor ID2 xor ID4
+	P1 = ! (ID1 xor ID3 xor ID4 xor ID5)
+*/
+static char calP0(char id) { return   !!(id & 0x01) ^ !!(id & 0x02) ^ !!(id & 0x04) ^ !!(id & 0x10) ; }
+static char calP1(char id) { return !(!!(id & 0x02) ^ !!(id & 0x08) ^ !!(id & 0x10) ^ !!(id & 0x20)); }
+static char actP0(char id) { return   !!(id & 0x40); }
+static char actP1(char id) { return   !!(id & 0x80); }
+static char checkIdParityIsOk(char id) //Returns 1 if ok, 0 if not
+{
+	return calP0(id) == actP0(id) && calP1(id) == actP1(id);
+}
+static char stripIdParity(char id)
+{
+	return id & 0x3F;
+}
+static char addIdParity(char id)
+{
+	id &= 0x3F;
+	char p0 = calP0(id);
+	char p1 = calP1(id);
+	if (p0) id |= 0x40;
+	if (p1) id |= 0x80;
+	return id;
+}
 
 int LinGetUnhandledBytesCount()
 {
@@ -42,7 +81,7 @@ char LinGetProtectedId() //This is the frame id with parity
 char LinGetFrameId() //This is just the Pid with the parity stripped out
 {
 	if (!_recvBytesCount) return 0;
-	return LinStripIdParity(_recvBuffer[1]);
+	return stripIdParity(_recvBuffer[1]);
 }
 char* LinGetDataPointer()
 {
@@ -54,7 +93,28 @@ char LinGetCheckSum()
 	if (!_recvBytesCount) return 0;
 	return _recvBuffer[_recvBytesCount-1];
 }
-
+static char getCheckSumWithId(char pid, int bufferLen, char* pBuffer)
+{
+	unsigned int cs = (unsigned char)pid;
+	for (int i = 0; i < bufferLen; i++)
+	{
+		cs += (unsigned char)*(pBuffer + i);
+		if (cs > 0xFF) cs -= 0xFF;
+	}
+	return (char)(~cs & 0xFF);
+	
+}
+static char getCheckSumWithoutId(int bufferLen, char* pBuffer)
+{
+	unsigned int cs = 0;
+	for (int i = 0; i < bufferLen; i++)
+	{
+		cs += (unsigned char)*(pBuffer + i);
+		if (cs > 0xFF) cs -= 0xFF;
+	}
+	return (char)(~cs & 0xFF);
+	
+}
 void LinInit      (void)                                 //Safe to be called multiple times
 {
 	_serialDescriptor = open("/dev/serial0", O_RDWR | O_NOCTTY); //RDWR opens for read and write, NOCTTY specifies the serial port not kill the process if ^C is received
@@ -115,7 +175,11 @@ static void getNextByte(char* pByte, char* hadBreak)
 		return;
 	}
 	*hadBreak = 0;
-	if (thisCounters.brk != _lastCounters.brk) *hadBreak = 1;
+	if (thisCounters.brk         != _lastCounters.brk        ) *hadBreak = 1;
+	if (thisCounters.overrun     != _lastCounters.overrun    ) *hadBreak = 1;
+	if (thisCounters.parity      != _lastCounters.parity     ) *hadBreak = 1;
+	if (thisCounters.frame       != _lastCounters.frame      ) *hadBreak = 1;
+	if (thisCounters.buf_overrun != _lastCounters.buf_overrun) *hadBreak = 1;
 	memcpy(&_lastCounters, &thisCounters, sizeof(thisCounters));
 }
 void  LinReadOrWait()  //Only called by the LIN thread and only after being initialised.
@@ -131,12 +195,13 @@ void  LinReadOrWait()  //Only called by the LIN thread and only after being init
 	getNextByte(&data, &hadBreak);
 	if (hadBreak)
 	{
+		_timeOfLastBreak = time(0);
 		if (!LinUnhandledBytesHandler)
 		{
 			Log('e', "LinReadOrWait LinUnhandledBytesHandler not set");
 			return;
 		}
-		LinUnhandledBytesHandler();
+		if (_recvBytesCount) LinUnhandledBytesHandler();
 		_recvBytesCount = 0;
 	}
 	if (_recvBytesCount < sizeof(_recvBuffer)) _recvBuffer[_recvBytesCount++] = data;
@@ -148,24 +213,28 @@ void  LinReadOrWait()  //Only called by the LIN thread and only after being init
 	}
 	if (_state == AWAITING_ID)
 	{
-		char parityOk = LinCheckIdParityIsOk(data);
-		if (!parityOk)
+		if (!checkIdParityIsOk(data))
 		{
+			Log('e', "LinReadOrWait parity not ok");
 			_state = AWAITING_BREAK;
 			return;
 		}
-			
-		//LinPid = data;
 		if (!LinIdHandler)
 		{
 			Log('e', "LinReadOrWait LinIdHandler not set");
 			_state = AWAITING_BREAK;
 			return;
 		}
-		LinIdHandler();
+		switch (LinGetFrameId())
+		{
+			case 0x3c:                                      LinDataLength =  8; break;
+			case 0x3d: LinTransportHandleResponsePacket();  LinDataLength = -1; break;
+			default:   LinIdHandler();                                          break;
+		}
 		_dataCount = 0;
-		if (LinDataLength > 0) _state = AWAITING_DATA;
-		else                   _state = AWAITING_BREAK;
+		if      (LinDataLength >  0)               _state = AWAITING_DATA;
+		else if (LinDataLength == 0)               _state = AWAITING_CHECKSUM;
+		else                                       _state = AWAITING_BREAK;
 		return;
 	}
 	
@@ -187,7 +256,17 @@ void  LinReadOrWait()  //Only called by the LIN thread and only after being init
 			_state = AWAITING_BREAK;
 			return;
 		}
-		LinDataHandler();
+		char calculatedChecksum = 0;
+		if (LinGetFrameId() == 0x3c) calculatedChecksum = getCheckSumWithoutId(                     LinDataLength, LinGetDataPointer());
+		else                         calculatedChecksum = getCheckSumWithId   (LinGetProtectedId(), LinDataLength, LinGetDataPointer());
+		if (LinGetCheckSum() != calculatedChecksum)
+		{
+			Log('e', "LinReadOrWait had checksum error");
+			_state = AWAITING_BREAK;
+			return;
+		}
+		if (LinGetFrameId() == 0x3c) LinTransportHandleRequestPacket();
+		else                         LinDataHandler();
 		_recvBytesCount = 0;
 		_state = AWAITING_BREAK;
 		return;
@@ -236,45 +315,24 @@ int LinSendBreak()
 	}
 	return 0;
 }
-/*
-	Lower six bits (ID0-ID5) are data, upper two bits are parity
-	The parity bits are calculated as follows:
-	P0 =    ID0 xor ID1 xor ID2 xor ID4
-	P1 = ! (ID1 xor ID3 xor ID4 xor ID5)
-*/
-static char calP0(char id) { return   !!(id & 0x01) ^ !!(id & 0x02) ^ !!(id & 0x04) ^ !!(id & 0x10) ; }
-static char calP1(char id) { return !(!!(id & 0x02) ^ !!(id & 0x08) ^ !!(id & 0x10) ^ !!(id & 0x20)); }
-static char actP0(char id) { return   !!(id & 0x40); }
-static char actP1(char id) { return   !!(id & 0x80); }
-char LinCheckIdParityIsOk(char id) //Returns 1 if ok, 0 if not
+void LinSendFrameResponse(int len, char* pData, char trace)
 {
-	return calP0(id) == actP0(id) && calP1(id) == actP1(id);
-}
-char LinStripIdParity(char id)
-{
-	return id & 0x3F;
-}
-char LinAddIdParity(char id)
-{
-	id &= 0x3F;
-	char p0 = calP0(id);
-	char p1 = calP1(id);
-	if (p0) id |= 0x40;
-	if (p1) id |= 0x80;
-	return id;
-}
-char LinGetCheckSumWithId(char pid, int bufferLen, char* pBuffer)
-{
-	unsigned int cs = (unsigned char)pid;
-	for (int i = 0; i < bufferLen; i++)
-	{
-		cs += (unsigned char)*(pBuffer + i);
-		if (cs > 0xFF) cs -= 0xFF;
-	}
-	return (char)(~cs & 0xFF);
+	char checksum = 0;
+	if (LinGetFrameId() == 0x3D) checksum = getCheckSumWithoutId(                     len, pData);
+	else                         checksum = getCheckSumWithId   (LinGetProtectedId(), len, pData);
 	
-}
-char LinGetCheckSumWithoutId(int bufferLen, char* pBuffer)
-{
-	return 0;
+	if (LinAllowBusWrites)
+	{
+		LinSend(len, pData);
+		LinSend(1, &checksum);
+	}
+	if (LinTrace && trace)
+	{
+		char text[100];
+		char* p = text;
+		p += sprintf(p, "<%02X> Frame response  >>>>>", LinGetFrameId());
+		for (int i = 0; i < len; i++) p+= sprintf(p, " %02X", *pData++);
+		p+= sprintf(p, " %02X", checksum);
+		Log('d', text);
+	}
 }
