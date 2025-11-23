@@ -16,7 +16,7 @@
 <h1 id='main-content'>Motorhome - ~getvalue~</h1>
 <br/>
 ~expand^switch^Lin trace^att-trace~
-~expand^switch^Lin allow bus writes^att-allow-bus-writes~
+<!-- ~expand^switch^Lin allow bus writes^att-allow-bus-writes~ -->
 ~expand^led^Lin active^att-active~
 ~expand^value^Seconds since last status^txt-seconds-since-last-status~
 
@@ -79,6 +79,7 @@
 <br/>
 ~expand^button^^truma-send-wanted^Send^3.0~
 ~expand^led^Send ongoing^att-send-ongoing~
+~expand^value^Seconds since last send^txt-seconds-since-last-send~
 
 <h2>Controller status</h2>
 ~expand^value^Room temp sensor^txt-actual-room-temp~

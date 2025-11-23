@@ -2,6 +2,7 @@
 
 extern void     TrumaHadStatus(void);
 extern uint16_t TrumaGetSecondsSinceLastStatus(void);
+extern uint16_t TrumaGetSecondsSinceLastSend(void);
 
 extern char     TrumaGetWantedRoomOn   (void);
 extern char     TrumaGetWantedWaterOn  (void);

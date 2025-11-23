@@ -258,6 +258,7 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	if (strcmp (name, "LinActive"                    ) == 0) {HttpResponseAddS8    (        LinGetBusIsActive                        ()); return 0; }
 	
 	if (strcmp (name, "TrumaSecondsSinceLastStatus"  ) == 0) {HttpResponseAddU16   (        TrumaGetSecondsSinceLastStatus           ()); return 0; }
+	if (strcmp (name, "TrumaSecondsSinceLastSend"    ) == 0) {HttpResponseAddU16   (        TrumaGetSecondsSinceLastSend             ()); return 0; }
 	if (strcmp (name, "TrumaSendOngoing"             ) == 0) {HttpResponseAddS8    (        TrumaGetSendOngoing                      ()); return 0; }
 	if (strcmp (name, "TrumaWantedRoomOn"            ) == 0) {HttpResponseAddS8    (        TrumaGetWantedRoomOn                     ()); return 0; }
 	if (strcmp (name, "TrumaWantedWaterOn"           ) == 0) {HttpResponseAddS8    (        TrumaGetWantedWaterOn                    ()); return 0; }

@@ -2,6 +2,7 @@
 ~LinAllowBusWrites~
 ~LinActive~
 ~TrumaSecondsSinceLastStatus~
+~TrumaSecondsSinceLastSend~
 ~TrumaSendOngoing~
 ~TrumaWantedRoomOn~
 ~TrumaWantedWaterOn~
