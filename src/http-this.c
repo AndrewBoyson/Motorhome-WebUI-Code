@@ -18,6 +18,8 @@
 #include "sms.h"
 #include "alert.h"
 #include "truma.h"
+#include "lin-this-upload.h"
+#include "lin-this-download.h"
 
 //Utilities
 int HttpThisMakeFullPath(char *filename, char *fullPath, int lengthFullPath) { //Converts a relative file name to a full path by prepending the www folder, returns -1 if no room
@@ -116,7 +118,7 @@ int HttpThisNameValue(unsigned rid, char* name, char* value) { //returns -1 if u
 	
 	if (strcmp(name, "lin-trace"                           ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; LinTrace                               = v ; return 0; }
 	if (strcmp(name, "lin-allow-bus-writes"                ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; LinAllowBusWrites                      = v ; return 0; }
-	if (strcmp(name, "truma-send-wanted"                   ) == 0) {                                                          TrumaSetSendWanted                      (1); return 0; }
+	if (strcmp(name, "truma-send-wanted"                   ) == 0) {                                                          LinThisUploadSetCommandSendWanted        (); return 0; }
 	if (strcmp(name, "truma-wanted-room-on"                ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; TrumaSetWantedRoomOn                    (v); return 0; }
 	if (strcmp(name, "truma-wanted-water-on"               ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; TrumaSetWantedWaterOn                   (v); return 0; }
 	if (strcmp(name, "truma-wanted-room-temp"              ) == 0) { uint8_t  v; if (HttpGetParseU8   (value, &v)) return -1; TrumaSetWantedRoomTemp                  (v); return 0; }
@@ -257,9 +259,9 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	if (strcmp (name, "LinAllowBusWrites"            ) == 0) {HttpResponseAddS8    (        LinAllowBusWrites                          ); return 0; }
 	if (strcmp (name, "LinActive"                    ) == 0) {HttpResponseAddS8    (        LinGetBusIsActive                        ()); return 0; }
 	
-	if (strcmp (name, "TrumaSecondsSinceLastStatus"  ) == 0) {HttpResponseAddU16   (        TrumaGetSecondsSinceLastStatus           ()); return 0; }
-	if (strcmp (name, "TrumaSecondsSinceLastSend"    ) == 0) {HttpResponseAddU16   (        TrumaGetSecondsSinceLastSend             ()); return 0; }
-	if (strcmp (name, "TrumaSendOngoing"             ) == 0) {HttpResponseAddS8    (        TrumaGetSendOngoing                      ()); return 0; }
+	if (strcmp (name, "TrumaSecondsSinceLastStatus"  ) == 0) {HttpResponseAddU16   (        LinThisDownloadGetSecondsSinceLastStatus ()); return 0; }
+	if (strcmp (name, "TrumaSecondsSinceLastSend"    ) == 0) {HttpResponseAddU16   (        LinThisUploadGetSecondsSinceCommandSent  ()); return 0; }
+	if (strcmp (name, "TrumaSendOngoing"             ) == 0) {HttpResponseAddS8    (        LinThisUploadGetCommandSendOngoing       ()); return 0; }
 	if (strcmp (name, "TrumaWantedRoomOn"            ) == 0) {HttpResponseAddS8    (        TrumaGetWantedRoomOn                     ()); return 0; }
 	if (strcmp (name, "TrumaWantedWaterOn"           ) == 0) {HttpResponseAddS8    (        TrumaGetWantedWaterOn                    ()); return 0; }
 	if (strcmp (name, "TrumaWantedRoomTemp"          ) == 0) {HttpResponseAddU8    (        TrumaGetWantedRoomTemp                   ()); return 0; }

@@ -6,6 +6,7 @@
 void (*LinTransportHandler)(void) = 0; //Set by LinThisInit; called when a transport message is ready
 
 char LinTransportNad = 0;
+char LinTransportSid = 0;
 
 char LinTransportRequest[1000];
 int  LinTransportRequestLength = 0;
@@ -66,7 +67,11 @@ void LinTransportHandleRequestPacket()
 			return;
 	}
 	
-	if (_requestIndex >= LinTransportRequestLength) LinTransportHandler();
+	if (_requestIndex >= LinTransportRequestLength)
+	{
+		LinTransportSid = LinTransportRequest[0];
+		LinTransportHandler();
+	}
 	
 }
 //Response section

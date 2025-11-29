@@ -1,5 +1,6 @@
 
 extern char   LinTransportNad;
+extern char   LinTransportSid;
 
 extern char   LinTransportRequest[];
 extern int    LinTransportRequestLength;

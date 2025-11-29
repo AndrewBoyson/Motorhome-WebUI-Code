@@ -10,24 +10,6 @@ Wanted - new value from the gui for sending to the CP
 Target - setting read from the CP
 Actual - actual reading read from the CP
 */
-time_t timeOfLastStatus = 0;
-time_t timeOfLastSend = 0;
-static char _sendWanted  = 0; //Set by gui, reset by LinThis uploadCommand function
-static char _sendOngoing = 0; //Set by gui, reset when the upload is acknowledged or a new status is received
-uint16_t TrumaGetSecondsSinceLastStatus()
-{
-	time_t elapsedSeconds = time(0) - timeOfLastStatus;
-	if (elapsedSeconds > 65535) elapsedSeconds = 65535;
-	if (elapsedSeconds <     0) elapsedSeconds =     0;
-	return (uint16_t)(elapsedSeconds);
-}
-uint16_t TrumaGetSecondsSinceLastSend()
-{
-	time_t elapsedSeconds = time(0) - timeOfLastSend;
-	if (elapsedSeconds > 65535) elapsedSeconds = 65535;
-	if (elapsedSeconds <     0) elapsedSeconds =     0;
-	return (uint16_t)(elapsedSeconds);
-}
 static char    _roomOn    =   0; //On or off        == 1, 0
 static uint8_t _roomTemp  =   0; //Degrees C        == < 5 is zero
 static char    _fanMode   = 'E'; //Eco, High        == 1, 10
@@ -72,21 +54,6 @@ uint8_t  TrumaActualRecvStatus  = 0;
 uint8_t  TrumaActualOpStatus    = 0;
 uint8_t  TrumaActualErrorCode   = 0;
 
-void TrumaSetSendWanted(char v)
-{
-	_sendWanted = v;
-	if (v)
-	{
-		_sendOngoing = 1;
-		timeOfLastSend = time(0);
-	}
-}
-char TrumaGetSendWanted()
-{
-	if (_sendOngoing && !_sendWanted && TrumaGetSecondsSinceLastSend() > 30) TrumaSetSendWanted(1);
-	return _sendWanted;
-}
-char TrumaGetSendOngoing()      { return _sendOngoing; }
 void TrumaHadSendAcknowledgement() //This means we know the CP has received the new target values so update them without waiting for a status
 {
 	TrumaTargetRoomTemp    = _roomOn ? _roomTemp   :  0;
@@ -96,24 +63,15 @@ void TrumaHadSendAcknowledgement() //This means we know the CP has received the 
 
 	TrumaTargetEnergySel   = _energySel;
 	TrumaTargetElecPower   = _elecPower;
-	
-	_sendOngoing = 0;
-	timeOfLastSend = 0;
 }
-void TrumaHadStatus() //Save the time of the last status and cancel the send ongoing indicator
+char TrumaHasSameActualAsTarget()
 {
-	time(&timeOfLastStatus);
-	if (TrumaTargetRoomTemp  == (_roomOn  ? _roomTemp  :  0 ) &&
-	    TrumaTargetFanMode   == (_roomOn  ? _fanMode   : 'O') &&
-		TrumaTargetWaterTemp == (_waterOn ? _waterTemp : 'O') &&
-		TrumaTargetEnergySel ==             _energySel        &&
-		TrumaTargetElecPower ==             _elecPower)
-	{
-		_sendOngoing = 0;
-		timeOfLastSend = 0;
-	}
+	return TrumaTargetRoomTemp  == (_roomOn  ? _roomTemp  :  0 ) &&
+	    TrumaTargetFanMode      == (_roomOn  ? _fanMode   : 'O') &&
+		TrumaTargetWaterTemp    == (_waterOn ? _waterTemp : 'O') &&
+		TrumaTargetEnergySel    ==             _energySel        &&
+		TrumaTargetElecPower    ==             _elecPower;
 }
-
 void TrumaInit()
 {
 	int r = 0;

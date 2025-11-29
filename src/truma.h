@@ -1,8 +1,5 @@
 #include <stdint.h>
 
-extern void     TrumaHadStatus(void);
-extern uint16_t TrumaGetSecondsSinceLastStatus(void);
-extern uint16_t TrumaGetSecondsSinceLastSend(void);
 
 extern char     TrumaGetWantedRoomOn   (void);
 extern char     TrumaGetWantedWaterOn  (void);
@@ -32,9 +29,7 @@ extern uint8_t  TrumaActualRecvStatus;
 extern uint8_t  TrumaActualOpStatus  ;
 extern uint8_t  TrumaActualErrorCode ;
 
-extern char TrumaGetSendWanted(void);
-extern void TrumaSetSendWanted(char v);
-extern char TrumaGetSendOngoing(void);
 extern void TrumaHadSendAcknowledgement(void);
+extern char TrumaHasSameActualAsTarget(void);
 
 extern void TrumaInit(void);
