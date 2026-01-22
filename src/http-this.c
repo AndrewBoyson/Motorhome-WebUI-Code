@@ -134,7 +134,7 @@ int HttpThisNameValue(unsigned rid, char* name, char* value) { //returns -1 if u
 			case 'E': TrumaSetWantedEnergySel('E'); TrumaSetWantedElecPower('2'); break;
 			case 'm': TrumaSetWantedEnergySel('M'); TrumaSetWantedElecPower('1'); break;
 			case 'M': TrumaSetWantedEnergySel('M'); TrumaSetWantedElecPower('2'); break;
-			default:  TrumaSetWantedEnergySel('G');                               break;
+			default:  TrumaSetWantedEnergySel('G'); TrumaSetWantedElecPower('0'); break;
 		}
 		return 0;
 	}

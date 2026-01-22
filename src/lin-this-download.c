@@ -53,7 +53,7 @@ static void downloadStatus(char msgLen, char msgId, char* pRequest)
 	uint16_t rawActualRoomTemp   = *(uint16_t*)(pRequest + 14);
 	uint8_t  rawActualOpStatus   = *(uint8_t *)(pRequest + 16);
 	uint8_t  rawActualErrorCode  = *(uint8_t *)(pRequest + 17);
-	if (*(pRequest + 18) != *(pRequest + 3)) Log('e', "LinThis downloadStatus byte 18 not the same as byte 3");
+	if (*(pRequest + 18) != *(pRequest + 3)) Log('e', "LinThis downloadStatus recvStatus-byte18 %02X is not the same as recvStatus-byte3 %02X", *(pRequest + 18), *(pRequest + 3));
 	checkByte(19, *(pRequest + 19), 0x00, "LinThis downloadStatus index %d expected %02X but had %02X");
 	
 	TrumaTargetRoomTemp    = rawTargetRoomTemp ? (uint8_t)(rawTargetRoomTemp / 10 - 273) : 0;
@@ -156,6 +156,13 @@ static void downloadDeviceList(char msgLen, char msgId, char* pRequest)
 	
 	if (LinTrace && TRACE_SID_BB_DOWNLOAD_STATUS) Log('d',"LinThis downloadDeviceList");
 }
+static void downloadConfig(char msgLen, char msgId, char* pRequest)
+{
+	LinTransportResponse[0] = LinTransportSid + 0x40;
+	LinTransportSetResponseLengthAndTrace(1, TRACE_SID_BB_DOWNLOAD_STATUS);  //No payload
+	
+	if (LinTrace && TRACE_SID_BB_DOWNLOAD_STATUS) Log('d',"LinThis downloadConfig");
+}
 
 
 void LinThisDownload()
@@ -175,7 +182,7 @@ void LinThisDownload()
 	Sid
 	*/
 	int i = 0;
-	char* checkFormat = "LinThis downloadBB index %d expected %02X but had %02X";
+	char* checkFormat = "LinThisDownload index %d expected %02X but had %02X";
 	checkByte(i, LinTransportRequest[i], 0xBB, checkFormat); i++; // 0 request sid
 	checkByte(i, LinTransportRequest[i], 0x00, checkFormat); i++; // 1
 	checkByte(i, LinTransportRequest[i], 0x1F, checkFormat); i++; // 2
@@ -206,8 +213,9 @@ void LinThisDownload()
 		case 0x33: downloadStatus    (msgLength, msgId, pMsg); return;
 		case 0x0D: downloadAck       (msgLength, msgId, pMsg); return;
 		case 0x0B: downloadDeviceList(msgLength, msgId, pMsg); return;
+		case 0x17: downloadConfig    (msgLength, msgId, pMsg); return;
 		default:
-			Log('e', "LinThis downloadBB unknown message type %02X", msgType);
+			Log('e', "LinThisDownload unknown message type %02X, length %d", msgType, msgLength);
 			return;			
 	}
 }

@@ -38,7 +38,7 @@ void TrumaSetWantedWaterOn   (char    v) {                                      
 void TrumaSetWantedWaterTemp (char    v) { v = toupper(v); if (!strchr("EHB", v)       ) v = 'H'; _waterTemp = v; SettingsSetChar("heatingWaterTemp", v);} //Sanitise to 'E', 'H' or 'B'
 
 void TrumaSetWantedEnergySel (char    v) { v = toupper(v); if (!strchr("GEM", v)       ) v = 'E'; _energySel = v; SettingsSetChar("heatingEnergySel", v);} //Sanitise to 'G', 'E' or 'M'
-void TrumaSetWantedElecPower (char    v) {                 if (!strchr("12",  v)       ) v = '2'; _elecPower = v; SettingsSetChar("heatingElecPower", v);} //Sanitise to '1' or '2'
+void TrumaSetWantedElecPower (char    v) {                 if (!strchr("012",  v)      ) v = '0'; _elecPower = v; SettingsSetChar("heatingElecPower", v);} //Sanitise to '0', '1' or '2'
 
 uint8_t TrumaTargetRoomTemp    = 0;
 char    TrumaTargetFanMode     = 'E';
