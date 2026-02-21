@@ -32,5 +32,8 @@
 ~expand^input^Min litres for pump^val-control-pump-min-litres^3.0~
 ~expand^input^Min litres for pump with D+^val-control-pump-dplus-litres^3.0~
 ~expand^input^Max litres for drain^val-control-drain-max-litres^3.0~
+<br/>
+~expand^switch^Battery mode home | away^att-battery-mode-away~
+~expand^input^Battery away target %^val-battery-target-percent^2.0~
 </body>
 </html>

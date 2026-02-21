@@ -9,12 +9,11 @@
 ~TrumaWantedRoomTemp~
 ~TrumaWantedWaterTemp~
 ~TrumaWantedFanMode~
-~TrumaWantedEnergySel~
+~TrumaWantedEnergy~
 ~TrumaTargetRoomTemp~
 ~TrumaTargetWaterTemp~
 ~TrumaTargetFanMode~
-~TrumaTargetEnergySel~
-~TrumaTargetElecPower~
+~TrumaTargetEnergy~
 ~TrumaActualRoomTemp~
 ~TrumaActualWaterTemp~
 ~TrumaActualRecvStatus~

@@ -67,8 +67,8 @@
 </div>
 <br/>
 <div class='line'>
-<label for='val-wanted-energy-sel'>Energy selection</label>
-<select id='val-wanted-energy-sel' onchange='change(this)'>
+<label for='val-wanted-energy'>Energy selection</label>
+<select id='val-wanted-energy' onchange='change(this)'>
   <option value='G'>Gas</option>
   <option value='e'>Elec 1</option>
   <option value='E'>Elec 2</option>
@@ -91,7 +91,7 @@
 ~expand^led^Water heater on^att-target-water-on~
 ~expand^value^Water temp target^txt-target-water-temp~
 <br/>
-~expand^value^Energy selection^txt-target-energy-sel~
+~expand^value^Energy selection^txt-target-energy~
 <br/>
 ~expand^value^Receive status^txt-actual-recv-status~
 ~expand^value^Op status^txt-actual-op-status~

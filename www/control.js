@@ -12,6 +12,8 @@ let litres                   = '';
 let pumpMinLitres            = '';
 let pumpDplusLitres          = '';
 let drainMaxLitres           = '';
+let modeAway                 = false;
+let capacityTargetPercent    = '';
 
 function parse()
 {
@@ -27,6 +29,8 @@ function parse()
     pumpMinLitres            = lines[8];
     pumpDplusLitres          = lines[9];
     drainMaxLitres           = lines[10];
+    modeAway                 = lines[11] === '1';
+    capacityTargetPercent    = lines[12];
 }
 
 const CAPACITY_AH        = 280;
@@ -46,18 +50,22 @@ function display()
     elem = Ajax.getElementOrNull('val-control-pump-dplus-litres'        ); if (elem) elem.value       =  pumpDplusLitres;
     elem = Ajax.getElementOrNull('val-control-drain-max-litres'         ); if (elem) elem.value       =  drainMaxLitres;
     elem = Ajax.getElementOrNull('txt-control-litres'                   ); if (elem) elem.textContent =  litres;
+    elem = Ajax.getElementOrNull('att-battery-mode-away'                ); if (elem) elem.setAttribute('dir', modeAway   ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('val-battery-target-percent'           ); if (elem) elem.value       =  capacityTargetPercent;
 }
 
 function change(elem)
 {
-    if (elem.id === 'att-control-water-pump'       ) AjaxSendNameValue('control-water-pump'       ,  elem.dir == 'rtl' ? '0' :  '1');
-    if (elem.id === 'att-control-water-fill'       ) AjaxSendNameValue('control-water-fill'       ,  elem.dir == 'rtl' ? '0' :  '1');
-    if (elem.id === 'att-control-water-drain'      ) AjaxSendNameValue('control-water-drain'      ,  elem.dir == 'rtl' ? '0' :  '1');
-    if (elem.id === 'att-control-inverter'         ) AjaxSendNameValue('control-inverter'         ,  elem.dir == 'rtl' ? '0' :  '1');
-    if (elem.id === 'att-control-lpg-heater'       ) AjaxSendNameValue('control-lpg-heater'       ,  elem.dir == 'rtl' ? '0' :  '1');
-    if (elem.id === 'val-control-pump-min-litres'  ) AjaxSendNameValue('control-pump-min-litres'  ,  elem.value);
-    if (elem.id === 'val-control-pump-dplus-litres') AjaxSendNameValue('control-pump-dplus-litres',  elem.value);
-    if (elem.id === 'val-control-drain-max-litres' ) AjaxSendNameValue('control-drain-max-litres' ,  elem.value);
+    if (elem.id === 'att-control-water-pump'       ) AjaxSendNameValue('control-water-pump'        ,  elem.dir == 'rtl' ? '0' :  '1');
+    if (elem.id === 'att-control-water-fill'       ) AjaxSendNameValue('control-water-fill'        ,  elem.dir == 'rtl' ? '0' :  '1');
+    if (elem.id === 'att-control-water-drain'      ) AjaxSendNameValue('control-water-drain'       ,  elem.dir == 'rtl' ? '0' :  '1');
+    if (elem.id === 'att-control-inverter'         ) AjaxSendNameValue('control-inverter'          ,  elem.dir == 'rtl' ? '0' :  '1');
+    if (elem.id === 'att-control-lpg-heater'       ) AjaxSendNameValue('control-lpg-heater'        ,  elem.dir == 'rtl' ? '0' :  '1');
+    if (elem.id === 'val-control-pump-min-litres'  ) AjaxSendNameValue('control-pump-min-litres'   ,  elem.value);
+    if (elem.id === 'val-control-pump-dplus-litres') AjaxSendNameValue('control-pump-dplus-litres' ,  elem.value);
+    if (elem.id === 'val-control-drain-max-litres' ) AjaxSendNameValue('control-drain-max-litres'  ,  elem.value);
+    if (elem.id === 'val-battery-target-percent'   ) AjaxSendNameValue('battery-target-soc-percent',  elem.value);
+    if (elem.id === 'att-battery-mode-away'        ) AjaxSendNameValue('battery-target-mode'       ,  elem.dir == 'rtl' ? '0' :  '1');
 }
 
 Ajax.server     = '/control-ajax';

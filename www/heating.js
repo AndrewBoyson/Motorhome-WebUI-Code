@@ -12,12 +12,11 @@ let wantedWaterOn          = false;
 let wantedRoomTemp         = '';
 let wantedWaterTemp        = '';
 let wantedFanMode          = '';
-let wantedEnergySel        = '';
+let wantedEnergy           = '';
 let targetRoomTemp         = '';
 let targetWaterTemp        = '';
 let targetFanMode          = '';
-let targetEnergySel        = '';
-let targetElecPower        = '';
+let targetEnergy           = '';
 let actualRoomTemp         = '';
 let actualWaterTemp        = '';
 let actualRecvStatus       = '';
@@ -38,17 +37,16 @@ function parse()
     wantedRoomTemp         = lines[ 8];
     wantedWaterTemp        = lines[ 9];
     wantedFanMode          = lines[10];
-    wantedEnergySel        = lines[11];
+    wantedEnergy           = lines[11];
     targetRoomTemp         = lines[12];
     targetWaterTemp        = lines[13];
     targetFanMode          = lines[14];
-    targetEnergySel        = lines[15];
-    targetElecPower        = lines[16];
-    actualRoomTemp         = lines[17];
-    actualWaterTemp        = lines[18];
-    actualRecvStatus       = lines[19];
-    actualOpStatus         = lines[20];
-    actualErrorCode        = lines[21];
+    targetEnergy           = lines[15];
+    actualRoomTemp         = lines[16];
+    actualWaterTemp        = lines[17];
+    actualRecvStatus       = lines[18];
+    actualOpStatus         = lines[19];
+    actualErrorCode        = lines[20];
 }
 
 function targetWaterTempAsString()
@@ -72,13 +70,15 @@ function targetFanModeAsString()
     }
     return 'Unknown';
 }
-function targetEnergySelAsString()
+function targetEnergyAsString()
 {
-    switch (targetEnergySel)
+    switch (targetEnergy)
     {
          case 'G': return 'Gas';
-         case 'E': return 'Elec ' + targetElecPower;
-         case 'M': return 'Mix '  + targetElecPower;
+         case 'E': return 'Elec 2';
+         case 'M': return 'Mix 2';
+         case 'e': return 'Elec 1';
+         case 'm': return 'Mix 1';
     }
     return 'Unknown';
 }
@@ -96,13 +96,13 @@ function display()
     elem = Ajax.getElementOrNull('val-wanted-room-temp'          ); if (elem) elem.value       =  wantedRoomTemp;
     elem = Ajax.getElementOrNull('val-wanted-water-temp'         ); if (elem) elem.value       =  wantedWaterTemp;
     elem = Ajax.getElementOrNull('val-wanted-fan-mode'           ); if (elem) elem.value       =  wantedFanMode;
-    elem = Ajax.getElementOrNull('val-wanted-energy-sel'         ); if (elem) elem.value       =  wantedEnergySel;
+    elem = Ajax.getElementOrNull('val-wanted-energy'             ); if (elem) elem.value       =  wantedEnergy;
     elem = Ajax.getElementOrNull('att-target-room-on'            ); if (elem) elem.setAttribute('dir', targetRoomTemp  !== '0' ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('txt-target-room-temp'          ); if (elem) elem.textContent =  targetRoomTemp === '0' ? 'Off' : targetRoomTemp;
     elem = Ajax.getElementOrNull('att-target-water-on'           ); if (elem) elem.setAttribute('dir', targetWaterTemp !== 'O' ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('txt-target-water-temp'         ); if (elem) elem.textContent =  targetWaterTempAsString();
     elem = Ajax.getElementOrNull('txt-target-fan-mode'           ); if (elem) elem.textContent =  targetFanModeAsString();
-    elem = Ajax.getElementOrNull('txt-target-energy-sel'         ); if (elem) elem.textContent =  targetEnergySelAsString();
+    elem = Ajax.getElementOrNull('txt-target-energy'             ); if (elem) elem.textContent =  targetEnergyAsString();
     elem = Ajax.getElementOrNull('txt-actual-room-temp'          ); if (elem) elem.textContent = (actualRoomTemp  / 10 - 273).toFixed(1);
     elem = Ajax.getElementOrNull('txt-actual-water-temp'         ); if (elem) elem.textContent = (actualWaterTemp / 10 - 273).toFixed(0);
     elem = Ajax.getElementOrNull('txt-actual-recv-status'        ); if (elem) elem.textContent =  actualRecvStatus;
@@ -119,7 +119,7 @@ function change(elem)
     if (elem.id === 'val-wanted-room-temp' ) AjaxSendNameValue('truma-wanted-room-temp' ,  elem.value);
     if (elem.id === 'val-wanted-water-temp') AjaxSendNameValue('truma-wanted-water-temp',  elem.value);
     if (elem.id === 'val-wanted-fan-mode'  ) AjaxSendNameValue('truma-wanted-fan-mode'  ,  elem.value);
-    if (elem.id === 'val-wanted-energy-sel') AjaxSendNameValue('truma-wanted-energy-sel',  elem.value);
+    if (elem.id === 'val-wanted-energy'    ) AjaxSendNameValue('truma-wanted-energy'    ,  elem.value);
 }
 
 Ajax.server     = '/heating-ajax';

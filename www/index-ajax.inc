@@ -15,7 +15,9 @@
 ~ControlLpgHeater~
 ~ControlDPlus~
 ~ControlEhu~
-~BatteryMode~
+~BatteryTargetMode^1/0~
 ~ControlPumpMinLitres~
 ~ControlPumpDplusLitres~
 ~TankLpgVolumeMinMl~
+~TrumaActualRoomTemp~
+~TrumaActualWaterTemp~

@@ -18,10 +18,12 @@ let inverter                 = false;
 let lpgHeater                = false;
 let dplus                    = false;
 let ehu                      = false;
-let batteryMode              = '';
+let modeAway                 = false;
 let litresLimit              = '';
 let litresDplus              = '';
 let lpgLitresMin             = '';
+let actualRoomTemp           = '';
+let actualWaterTemp          = '';
 
 function parse()
 {
@@ -43,10 +45,12 @@ function parse()
     lpgHeater                = lines[14] === '1';
     dplus                    = lines[15] === '1';
     ehu                      = lines[16] === '1';
-    batteryMode              = lines[17];
+    modeAway                 = lines[17] === '1';
     litresLimit              = lines[18];
     litresDplus              = lines[19];
     lpgLitresMin             = lines[20];
+    actualRoomTemp           = lines[21];
+    actualWaterTemp          = lines[22];
 }
 
 const CAPACITY_AH        = 280;
@@ -114,17 +118,9 @@ function display()
     elem = Ajax.getElementOrNull('att-control-lpg-heater'              ); if (elem) elem.setAttribute('dir', lpgHeater  ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('att-control-dplus'                   ); if (elem) elem.setAttribute('dir', dplus      ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('att-control-ehu'                     ); if (elem) elem.setAttribute('dir', ehu        ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-mode-away'                       ); if (elem) elem.setAttribute('dir', batteryMode == 1 ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-mode-home'                       ); if (elem) elem.setAttribute('dir', batteryMode == 2 ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('txt-battery-mode'                    ); if (elem) {
-                                                                                    switch (batteryMode)
-                                                                                        {
-                                                                                            case '0': elem.textContent = "Manual"   ; break;
-                                                                                            case '1': elem.textContent = "Away"     ; break;
-                                                                                            case '2': elem.textContent = "Home"     ; break;
-                                                                                            default : elem.textContent = batteryMode; break;
-                                                                                        }
-                                                                                    }
+    elem = Ajax.getElementOrNull('att-mode-away'                       ); if (elem) elem.setAttribute('dir', modeAway   ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('txt-actual-room-temp'                ); if (elem) elem.textContent = (actualRoomTemp  / 10 - 273).toFixed(1);
+    elem = Ajax.getElementOrNull('txt-actual-water-temp'               ); if (elem) elem.textContent = (actualWaterTemp / 10 - 273).toFixed(0);
 }
 
 function change(elem)

@@ -1,7 +1,7 @@
 #include <stdint.h>
 extern uint32_t CanThisGetBatteryCountedCapacityAs      (void);
 extern int32_t  CanThisGetBatteryCurrentMa              (void);
-extern uint8_t  CanThisGetBatteryCapacityTargetPercent  (void);
+extern uint8_t  CanThisGetBatteryTargetSocPercent       (void);
 extern char     CanThisGetBatteryOutputState            (void);
 extern char     CanThisGetBatteryChargeEnabled          (void);
 extern char     CanThisGetBatteryDischargeEnabled       (void);
@@ -11,7 +11,11 @@ extern uint8_t  CanThisGetBatteryHeaterOutput8bfdp      (void);
 extern uint8_t  CanThisGetBatteryHeaterProportional     (void);
 extern uint8_t  CanThisGetBatteryHeaterIntegral         (void);
 extern int16_t  CanThisGetBatteryVoltageMv              (void);
-extern int16_t  CanThisGetBatteryAgingAsPerHour         (void);
+extern int16_t  CanThisGetBatteryCurrentOffsetMa        (void);
+extern char     CanThisGetBatteryTargetMode             (void);
+extern int16_t  CanThisGetBatteryTargetMv               (void);
+extern uint32_t CanThisGetBatteryMsAtRest               (void);
+extern uint16_t CanThisGetBatteryVoltageSettleTimeMins  (void);
 
 extern int16_t  CanThisGetTankFreshTemperature          (void);
 extern uint64_t CanThisGetTankFreshRom                  (void);
@@ -66,13 +70,17 @@ extern int16_t  CanThisGetControlDrainMaxLitres         (void);
 extern void CanThisSendServerTime                   (uint32_t value);
 
 extern void CanThisSetBatteryCountedCapacityAs      (uint32_t value);
-extern void CanThisSetBatteryCapacityTargetPercent  (uint8_t  value);
+extern void CanThisSetBatteryTargetSocPercent       (uint8_t  value);
 extern void CanThisSetBatteryChargeEnabled          (char     value);
 extern void CanThisSetBatteryDischargeEnabled       (char     value);
 extern void CanThisSetBatteryTemperatureTargetTenths(int16_t  value);
 extern void CanThisSetBatteryHeaterProportional     (uint16_t value);
 extern void CanThisSetBatteryHeaterIntegral         (uint16_t value);
-extern void CanThisSetBatteryAgingAsPerHour         (int16_t  value);
+extern void CanThisSetBatteryCurrentOffsetMa        (int16_t  value);
+extern void CanThisSetBatteryTargetMode             (char     value);
+extern void CanThisSetBatteryTargetMv               (int16_t  value);
+extern void CanThisSetBatteryVoltageSettleTimeMins  (uint16_t value);
+
 extern void CanThisSetTankFreshBaseTemp16ths        (int16_t  value);
 extern void CanThisSetTankFreshBaseMv               (int16_t  value);
 extern void CanThisSetTankFreshUvPer16th            (int16_t  value);
@@ -90,6 +98,7 @@ extern void CanThisSetTankLpgVolumeMinMl            (int16_t  value);
 extern void CanThisSetTankLpgVolumeMaxMl            (int16_t  value);
 extern void CanThisSetAmbientOutsideRom             (uint64_t value);
 extern void CanThisSetAmbientHeatingRom             (uint64_t value);
+
 extern void CanThisSetControlWaterPump              (char     value);
 extern void CanThisSetControlWaterFill              (char     value);
 extern void CanThisSetControlWaterDrain             (char     value);

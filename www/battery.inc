@@ -15,18 +15,15 @@
 ~expand^menu~
 <h1 id='main-content'>Motorhome - ~getvalue~</h1>
 <h2>Charge</h2>
-~expand^input^Coulombs As^val-battery-counted-capacity-amp-seconds^4.0~
+~expand^input^Coulombs As^val-battery-counted-capacity-amp-seconds^5.0~
 ~expand^value^Amp hours Ah^txt-battery-counted-capacity-amp-hours~
 ~expand^input^Percent %^val-battery-counted-capacity-percent^3.0~
 <h2>Voltage</h2>
 ~expand^value^Battery voltage mV^txt-battery-voltage-mv~
 ~expand^value^Cell voltage mV^txt-battery-cell-voltage-mv~
 <h2>Current</h2>
-~expand^value^Battery current mA^txt-battery-current-ma~
-<h2>Charge correction</h2>
-~expand^input^As per hour^val-battery-aging-as-per-hour^3.0~
-~expand^value^mA^txt-battery-aging-ma~
-~expand^input^Percent per month^val-battery-aging-percent-per-month^3.0~
+~expand^value^Measured mA^txt-battery-current-ma~
+~expand^input^Offset correction mA^val-battery-current-offset-ma^3.0~
 <h2>Heater</h2>
 ~expand^value^Temperature °C^txt-battery-temperature~
 ~expand^input^Set point °C^val-battery-temperature-setpoint^3.0~
@@ -37,11 +34,14 @@
 ~expand^value^Output mA^txt-battery-heater-output-ma~
 ~expand^value^Output W^txt-battery-heater-output-watts~
 <h2>State</h2>
-~expand^input^Battery capacity target %^val-battery-capacity-setpoint-percent^2.0~
-~expand^value^Battery output state^txt-battery-output-state~
-~expand^value^Seconds to target^txt-battery-seconds-to-target~
-~expand^value^Hours to target^txt-battery-hours-to-target~
-~expand^switch^Battery charge enable^att-battery-charge-enabled~
-~expand^switch^Battery discharge enable^att-battery-discharge-enabled~
+~expand^switch^Target mode mV or soc%^att-battery-target-mode~
+~expand^input^Target soc%^val-battery-target-soc-percent^2.0~
+~expand^input^Target mV^val-battery-target-mv^3.0~
+~expand^input^Voltage settle time minutes^val-battery-voltage-settle-time-mins^3.0~
+~expand^value^Output state^txt-battery-output-state~
+~expand^value^Time to target^txt-battery-time-to-target~
+~expand^switch^Charge enable^att-battery-charge-enabled~
+~expand^switch^Discharge enable^att-battery-discharge-enabled~
+~expand^value^Time at rest^txt-battery-time-at-rest~
 </body>
 </html>

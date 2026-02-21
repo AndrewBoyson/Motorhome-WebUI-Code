@@ -117,20 +117,17 @@ static void uploadCommand()
 		}
 	}
 	uint8_t rawWantedEnergySel = 0;
-	switch (TrumaGetWantedEnergySel())
-	{
-		case 'G': rawWantedEnergySel = 1; break;
-		case 'E': rawWantedEnergySel = 2; break;
-		case 'B':
-		case 'M': rawWantedEnergySel = 3; break;
-		default : rawWantedEnergySel = 0; break;
-	}
 	uint16_t rawWantedElecPower = 0;
-	switch (TrumaGetWantedElecPower())
+	switch (TrumaGetWantedEnergy())
 	{
-		case '2': rawWantedElecPower = 1800; break;
-		case '1': rawWantedElecPower =  900; break;
-		default : rawWantedElecPower =    0; break;
+		case 'G': rawWantedEnergySel = 1; rawWantedElecPower =    0; break;
+		case 'E': rawWantedEnergySel = 2; rawWantedElecPower = 1800; break;
+		case 'e': rawWantedEnergySel = 2; rawWantedElecPower =  900; break;
+		case 'M': rawWantedEnergySel = 3; rawWantedElecPower = 1800; break;
+		case 'm': rawWantedEnergySel = 3; rawWantedElecPower =  900; break;
+		default :
+			Log('e', "LinThisUpload uploadCommand TrumaGetWantedEnergy() expected GEeMm but had %c", TrumaGetWantedEnergy());
+			break;
 	}
 	
 	_uploadCommandId = _uploadId++;
@@ -141,8 +138,8 @@ static void uploadCommand()
 		Log ('d',"Target room temp:   truma %04X, app %d"  , rawWantedRoomTemp,   TrumaGetWantedRoomTemp ());
 		Log ('d',"Target fan mode:    truma   %02X, app %c", rawWantedFanMode,    TrumaGetWantedFanMode  ());
 		Log ('d',"Target water temp:  truma %04X, app %c"  , rawWantedWaterTemp,  TrumaGetWantedWaterTemp());
-		Log ('d',"Target elec power:  truma %04X, app %c"  , rawWantedElecPower,  TrumaGetWantedElecPower());
-		Log ('d',"Target energy sel:  truma %04X, app %c"  , rawWantedEnergySel,  TrumaGetWantedEnergySel());
+		Log ('d',"Target elec power:  truma %04X, app %c"  , rawWantedElecPower,  TrumaGetWantedEnergy   ());
+		Log ('d',"Target energy sel:  truma %04X, app %c"  , rawWantedEnergySel,  TrumaGetWantedEnergy   ());
 	}
 	
 	LinTransportResponse[ 0] = 0xFA; //

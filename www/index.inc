@@ -27,13 +27,11 @@
 ~expand^value^Battery current mA^txt-battery-current-ma~
 ~expand^value^Days to empty^txt-battery-days-to-empty~
 ~expand^value^Battery state^txt-battery-output-state~
-~expand^value^Battery mode^txt-battery-mode~
+~expand^led^Battery mode away^att-mode-away~
 <br/>
-~expand^value^Pitch degrees^txt-tilt-front-deg~
-~expand^value^Roll degrees^txt-tilt-right-deg~
-<br/>
+~expand^value^Room temperature^txt-actual-room-temp~
+~expand^value^Hot water temperature^txt-actual-water-temp~
 ~expand^value^Outside temperature^txt-outside-temperature~
-~expand^value^Internal temperature^txt-heating-temperature~
 <br/>
 ~expand^led^Water pump^att-control-water-pump~
 ~expand^led^Water fill^att-control-water-fill~

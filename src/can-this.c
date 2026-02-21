@@ -5,23 +5,27 @@
 #include "lib/can-reliable.h"
 #include "lib/log.h"
 
-#define CAN_ID_SERVER                    0x000
-#define CAN_ID_TIME                       0x00
+#define CAN_ID_SERVER              0x000
+#define CAN_ID_TIME                 0x00
 
-#define CAN_ID_BATTERY                   0x100
-#define CAN_ID_COUNTED_AMP_SECONDS        0x00
-#define CAN_ID_MA                         0x01
-#define CAN_ID_OUTPUT_TARGET              0x02
-#define CAN_ID_OUTPUT_STATE               0x03
-#define CAN_ID_CHARGE_ENABLED             0x04
-#define CAN_ID_DISCHARGE_ENABLED          0x05
-#define CAN_ID_TEMPERATURE_8BFDP          0x06
-#define CAN_ID_HEATER_TARGET              0x07
-#define CAN_ID_HEATER_OUTPUT              0x08
-#define CAN_ID_VOLTAGE                    0x09
-#define CAN_ID_AGING_AS_PER_HOUR          0x0A
-#define CAN_ID_HEATER_PROPORTIONAL        0x0B
-#define CAN_ID_HEATER_INTEGRAL            0x0C
+#define CAN_ID_BATTERY             0x100
+#define CAN_ID_COUNTED_AMP_SECONDS  0x00
+#define CAN_ID_MA                   0x01
+#define CAN_ID_OUTPUT_TARGET_SOC    0x02
+#define CAN_ID_OUTPUT_STATE         0x03
+#define CAN_ID_CHARGE_ENABLED       0x04
+#define CAN_ID_DISCHARGE_ENABLED    0x05
+#define CAN_ID_TEMPERATURE_8BFDP    0x06
+#define CAN_ID_HEATER_TARGET        0x07
+#define CAN_ID_HEATER_OUTPUT        0x08
+#define CAN_ID_VOLTAGE              0x09
+#define CAN_ID_CURRENT_OFFSET_MA    0x0A
+#define CAN_ID_HEATER_PROPORTIONAL  0x0B
+#define CAN_ID_HEATER_INTEGRAL      0x0C
+#define CAN_ID_OUTPUT_TARGET_MODE   0x0D
+#define CAN_ID_OUTPUT_TARGET_MV     0x0E
+#define CAN_ID_MS_AT_REST           0x0F
+#define CAN_ID_VOLTAGE_SETTLE_MINS  0x10
 
 #define CAN_ID_TANK                0x200
 #define CAN_ID_FRESH_TEMPERATURE    0x00
@@ -77,7 +81,7 @@
 
 static uint32_t _batteryCountedCapacity         = 0;
 static int32_t  _batteryCurrentMa               = 0;
-static uint8_t  _batteryCapacityTargetPercent   = 0;
+static uint8_t  _batteryTargetSocPercent        = 0;
 static char     _batteryOutputState             = ' ';
 static char     _batteryChargeEnabled           = 0;
 static char     _batteryDischargeEnabled        = 0;
@@ -87,7 +91,11 @@ static uint8_t  _batteryHeaterOutput8bfdp       = 0;
 static uint16_t _batteryHeaterProportional      = 0;
 static uint16_t _batteryHeaterIntegral          = 0;
 static int16_t  _batteryVoltageMv               = 0;
-static int16_t  _batteryAgingAsPerHour          = 0;
+static int16_t  _batteryCurrentOffsetMa         = 0;
+static char     _batteryTargetMode              = 0;
+static int16_t  _batteryTargetMv                = 0;
+static uint32_t _batteryMsAtRest                = 0;
+static uint16_t _batteryVoltageSettleTimeMins   = 0;
 static int16_t  _tankFreshTemperature           = 0;
 static uint64_t _tankFreshRom                   = 0;
 static int16_t  _tankFreshSupplyMv              = 0;
@@ -140,7 +148,7 @@ static int16_t  _controlDrainMaxLitres          = 0;
  
 uint32_t CanThisGetBatteryCountedCapacityAs       (){ return _batteryCountedCapacity;         }
  int32_t CanThisGetBatteryCurrentMa               (){ return _batteryCurrentMa;               }
- uint8_t CanThisGetBatteryCapacityTargetPercent   (){ return _batteryCapacityTargetPercent;   }
+ uint8_t CanThisGetBatteryTargetSocPercent        (){ return _batteryTargetSocPercent;        }
  char    CanThisGetBatteryOutputState             (){ return _batteryOutputState;             }
  char    CanThisGetBatteryChargeEnabled           (){ return _batteryChargeEnabled;           }
  char    CanThisGetBatteryDischargeEnabled        (){ return _batteryDischargeEnabled;        }
@@ -150,7 +158,11 @@ uint32_t CanThisGetBatteryCountedCapacityAs       (){ return _batteryCountedCapa
 uint16_t CanThisGetBatteryHeaterProportional      (){ return _batteryHeaterProportional;      }
 uint16_t CanThisGetBatteryHeaterIntegral          (){ return _batteryHeaterIntegral;          }
  int16_t CanThisGetBatteryVoltageMv               (){ return _batteryVoltageMv;               }
- int16_t CanThisGetBatteryAgingAsPerHour          (){ return _batteryAgingAsPerHour;          }
+ int16_t CanThisGetBatteryCurrentOffsetMa         (){ return _batteryCurrentOffsetMa;         }
+ char    CanThisGetBatteryTargetMode              (){ return _batteryTargetMode;              }
+ int16_t CanThisGetBatteryTargetMv                (){ return _batteryTargetMv;                }
+uint32_t CanThisGetBatteryMsAtRest                (){ return _batteryMsAtRest;                }
+uint16_t CanThisGetBatteryVoltageSettleTimeMins   (){ return _batteryVoltageSettleTimeMins;   }
  
  int16_t CanThisGetTankFreshTemperature           (){ return _tankFreshTemperature;           }
 uint64_t CanThisGetTankFreshRom                   (){ return _tankFreshRom;                   }
@@ -213,13 +225,17 @@ static void set(void* pSetting, int32_t id, int len, void* pValue)
 
 void CanThisSendServerTime                   (uint32_t value){ CanSend                              (CAN_ID_SERVER  + CAN_ID_TIME                 , 4, &value);}
 void CanThisSetBatteryCountedCapacityAs      (uint32_t value){ set(&_batteryCountedCapacity        , CAN_ID_BATTERY + CAN_ID_COUNTED_AMP_SECONDS  , 4, &value);}
-void CanThisSetBatteryCapacityTargetPercent  (uint8_t  value){ set(&_batteryCapacityTargetPercent  , CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET        , 1, &value);}
+void CanThisSetBatteryTargetSocPercent       (uint8_t  value){ set(&_batteryTargetSocPercent       , CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET_SOC    , 1, &value);}
 void CanThisSetBatteryChargeEnabled          (char     value){ set(&_batteryChargeEnabled          , CAN_ID_BATTERY + CAN_ID_CHARGE_ENABLED       , 1, &value);}
 void CanThisSetBatteryDischargeEnabled       (char     value){ set(&_batteryDischargeEnabled       , CAN_ID_BATTERY + CAN_ID_DISCHARGE_ENABLED    , 1, &value);}
 void CanThisSetBatteryTemperatureTargetTenths(int16_t  value){ set(&_batteryTemperatureTargetTenths, CAN_ID_BATTERY + CAN_ID_HEATER_TARGET        , 2, &value);}
 void CanThisSetBatteryHeaterProportional     (uint16_t value){ set(&_batteryHeaterProportional     , CAN_ID_BATTERY + CAN_ID_HEATER_PROPORTIONAL  , 2, &value);}
 void CanThisSetBatteryHeaterIntegral         (uint16_t value){ set(&_batteryHeaterIntegral         , CAN_ID_BATTERY + CAN_ID_HEATER_INTEGRAL      , 2, &value);}
-void CanThisSetBatteryAgingAsPerHour         (int16_t  value){ set(&_batteryAgingAsPerHour         , CAN_ID_BATTERY + CAN_ID_AGING_AS_PER_HOUR    , 2, &value);}
+void CanThisSetBatteryCurrentOffsetMa        (int16_t  value){ set(&_batteryCurrentOffsetMa        , CAN_ID_BATTERY + CAN_ID_CURRENT_OFFSET_MA    , 2, &value);}
+void CanThisSetBatteryTargetMode             (char     value){ set(&_batteryTargetMode             , CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET_MODE   , 1, &value);}
+void CanThisSetBatteryTargetMv               (int16_t  value){ set(&_batteryTargetMv               , CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET_MV     , 2, &value);}
+void CanThisSetBatteryVoltageSettleTimeMins  (int16_t  value){ set(&_batteryVoltageSettleTimeMins  , CAN_ID_BATTERY + CAN_ID_VOLTAGE_SETTLE_MINS  , 2, &value);}
+
 void CanThisSetTankFreshBaseTemp16ths        (int16_t  value){ set(&_tankFreshBaseTemp16ths        , CAN_ID_TANK    + CAN_ID_FRESH_BASE_TEMP      , 2, &value);}
 void CanThisSetTankFreshBaseMv               (int16_t  value){ set(&_tankFreshBaseMv               , CAN_ID_TANK    + CAN_ID_FRESH_BASE_MV        , 2, &value);}
 void CanThisSetTankFreshUvPer16th            (int16_t  value){ set(&_tankFreshUvPer16th            , CAN_ID_TANK    + CAN_ID_FRESH_UV_PER_16TH    , 2, &value);}
@@ -237,6 +253,7 @@ void CanThisSetTankLpgVolumeMinMl            (int16_t  value){ set(&_tankLpgVolu
 void CanThisSetTankLpgVolumeMaxMl            (int16_t  value){ set(&_tankLpgVolumeMaxMl            , CAN_ID_TANK    + CAN_ID_LPG_VOLUME_MAX       , 2, &value);}
 void CanThisSetAmbientOutsideRom             (uint64_t value){ set(&_ambientOutsideRom             , CAN_ID_TANK    + CAN_ID_AMBIENT_OUTSIDE_ROM  , 8, &value);}
 void CanThisSetAmbientHeatingRom             (uint64_t value){ set(&_ambientHeatingRom             , CAN_ID_TANK    + CAN_ID_AMBIENT_HEATING_ROM  , 8, &value);}
+
 void CanThisSetControlWaterPump              (char     value){ set(&_controlPump                   , CAN_ID_CONTROL + CAN_ID_PUMP                 , 1, &value);}
 void CanThisSetControlWaterFill              (char     value){ set(&_controlFill                   , CAN_ID_CONTROL + CAN_ID_FILL                 , 1, &value);}
 void CanThisSetControlWaterDrain             (char     value){ set(&_controlDrain                  , CAN_ID_CONTROL + CAN_ID_DRAIN                , 1, &value);}
@@ -263,7 +280,7 @@ void CanThisReceive()
 	{
 		case CAN_ID_BATTERY + CAN_ID_COUNTED_AMP_SECONDS:   _batteryCountedCapacity         = (uint32_t)data; break;
 		case CAN_ID_BATTERY + CAN_ID_MA:                    _batteryCurrentMa               = ( int32_t)data; break;
-		case CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET:         _batteryCapacityTargetPercent   = ( uint8_t)data; break;
+		case CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET_SOC:     _batteryTargetSocPercent        = ( uint8_t)data; break;
 		case CAN_ID_BATTERY + CAN_ID_OUTPUT_STATE:          _batteryOutputState             = (    char)data; break;
 		case CAN_ID_BATTERY + CAN_ID_CHARGE_ENABLED:        _batteryChargeEnabled           = (    char)data; break;
 		case CAN_ID_BATTERY + CAN_ID_DISCHARGE_ENABLED:     _batteryDischargeEnabled        = (    char)data; break;
@@ -273,7 +290,12 @@ void CanThisReceive()
 		case CAN_ID_BATTERY + CAN_ID_HEATER_PROPORTIONAL:   _batteryHeaterProportional      = (uint16_t)data; break;
 		case CAN_ID_BATTERY + CAN_ID_HEATER_INTEGRAL:       _batteryHeaterIntegral          = (uint16_t)data; break;
 		case CAN_ID_BATTERY + CAN_ID_VOLTAGE:               _batteryVoltageMv               = ( int16_t)data; break;
-		case CAN_ID_BATTERY + CAN_ID_AGING_AS_PER_HOUR:     _batteryAgingAsPerHour          = ( int16_t)data; break;
+		case CAN_ID_BATTERY + CAN_ID_CURRENT_OFFSET_MA:     _batteryCurrentOffsetMa         = ( int16_t)data; break;
+		case CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET_MODE:    _batteryTargetMode              = (    char)data; break;
+		case CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET_MV:      _batteryTargetMv                = ( int16_t)data; break;
+		case CAN_ID_BATTERY + CAN_ID_MS_AT_REST:            _batteryMsAtRest                = (uint32_t)data; break;
+		case CAN_ID_BATTERY + CAN_ID_VOLTAGE_SETTLE_MINS:   _batteryVoltageSettleTimeMins   = (uint16_t)data; break;
+		
 		case CAN_ID_TANK    + CAN_ID_FRESH_TEMPERATURE:     _tankFreshTemperature           = ( int16_t)data; break;
 		case CAN_ID_TANK    + CAN_ID_FRESH_ROM:             _tankFreshRom                   = (uint64_t)data; break;
 		case CAN_ID_TANK    + CAN_ID_FRESH_SUPPLY_MV:       _tankFreshSupplyMv              = ( int16_t)data; break;
@@ -312,6 +334,7 @@ void CanThisReceive()
 		case CAN_ID_TANK    + CAN_ID_AMBIENT_HEATING_ROM:   _ambientHeatingRom              = (uint64_t)data; break;
 		case CAN_ID_TANK    + CAN_ID_AMBIENT_OUTSIDE_TEMP:  _ambientOutsideTemp16ths        = ( int16_t)data; break;
 		case CAN_ID_TANK    + CAN_ID_AMBIENT_HEATING_TEMP:  _ambientHeatingTemp16ths        = ( int16_t)data; break;
+		
 		case CAN_ID_CONTROL + CAN_ID_PUMP:                  _controlPump                    = (    char)data; break;
 		case CAN_ID_CONTROL + CAN_ID_FILL:                  _controlFill                    = (    char)data; break;
 		case CAN_ID_CONTROL + CAN_ID_DRAIN:                 _controlDrain                   = (    char)data; break;
@@ -322,6 +345,7 @@ void CanThisReceive()
 		case CAN_ID_CONTROL + CAN_ID_PUMP_MIN_LITRES:       _controlPumpMinLitres           = ( int16_t)data; break;
 		case CAN_ID_CONTROL + CAN_ID_PUMP_DPLUS_LITRES:     _controlPumpDplusLitres         = ( int16_t)data; break;
 		case CAN_ID_CONTROL + CAN_ID_DRAIN_MAX_LITRES:      _controlDrainMaxLitres          = ( int16_t)data; break;
+		
 		default:
 				Log('w', "Unknown CAN message id %03X received containing %d bytes: %0*llX", id, length, length*2, data);
 				break;

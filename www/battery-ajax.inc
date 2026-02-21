@@ -1,6 +1,6 @@
 ~BatteryCountedCapacityAs~
 ~BatteryCurrent~
-~BatteryCapacitySetpoint~
+~BatteryTargetSocPercent~
 ~BatteryOutputState~
 ~BatteryChargeEnabled^1/0~
 ~BatteryDischargeEnabled^1/0~
@@ -8,6 +8,10 @@
 ~BatteryTemperatureTargetTenths~
 ~BatteryHeater8bfdp~
 ~BatteryVoltageMv~
-~BatteryAgingAsPerHour~
+~BatteryCurrentOffsetMa~
 ~BatteryHeaterProportional~
 ~BatteryHeaterIntegral~
+~BatteryTargetMode^1/0~
+~BatteryTargetMv~
+~BatteryMsAtRest~
+~BatteryVoltageSettleTimeMins~

@@ -65,13 +65,16 @@ int HttpThisNameValue(unsigned rid, char* name, char* value) { //returns -1 if u
 	if (strcmp(name, "credentials-password"                ) == 0) { CredentialsSetPassword( value ); return 0; }
 	
 	if (strcmp(name, "battery-counted-capacity-amp-seconds") == 0) { uint32_t v; if (HttpGetParseU32  (value, &v)) return -1; CanThisSetBatteryCountedCapacityAs      (v); return 0; }
-	if (strcmp(name, "battery-capacity-setpoint-percent"   ) == 0) { uint8_t  v; if (HttpGetParseU8   (value, &v)) return -1; CanThisSetBatteryCapacityTargetPercent  (v); return 0; }
+	if (strcmp(name, "battery-target-soc-percent"          ) == 0) { uint8_t  v; if (HttpGetParseU8   (value, &v)) return -1; CanThisSetBatteryTargetSocPercent       (v); return 0; }
 	if (strcmp(name, "battery-temperature-target-tenths"   ) == 0) { int16_t  v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetBatteryTemperatureTargetTenths(v); return 0; }
 	if (strcmp(name, "battery-heater-proportional"         ) == 0) { uint16_t v; if (HttpGetParseU16  (value, &v)) return -1; CanThisSetBatteryHeaterProportional     (v); return 0; }
 	if (strcmp(name, "battery-heater-integral"             ) == 0) { uint16_t v; if (HttpGetParseU16  (value, &v)) return -1; CanThisSetBatteryHeaterIntegral         (v); return 0; }
 	if (strcmp(name, "battery-charge-enabled"              ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; CanThisSetBatteryChargeEnabled          (v); return 0; }
 	if (strcmp(name, "battery-discharge-enabled"           ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; CanThisSetBatteryDischargeEnabled       (v); return 0; }
-	if (strcmp(name, "battery-aging-as-per-hour"           ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetBatteryAgingAsPerHour         (v); return 0; }
+	if (strcmp(name, "battery-current-offset-ma"           ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetBatteryCurrentOffsetMa        (v); return 0; }
+	if (strcmp(name, "battery-target-mode"                 ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; CanThisSetBatteryTargetMode             (v); return 0; }
+	if (strcmp(name, "battery-target-mv"                   ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetBatteryTargetMv               (v); return 0; }
+	if (strcmp(name, "battery-voltage-settle-time-mins"    ) == 0) { uint16_t v; if (HttpGetParseU16  (value, &v)) return -1; CanThisSetBatteryVoltageSettleTimeMins  (v); return 0; }
 	if (strcmp(name, "battery-mode"                        ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; BatterySetMode                          (v); return 0; }
 	if (strcmp(name, "battery-away-percent"                ) == 0) { uint8_t  v; if (HttpGetParseU8   (value, &v)) return -1; BatterySetAwayPercent                   (v); return 0; }
 	if (strcmp(name, "battery-home-percent"                ) == 0) { uint8_t  v; if (HttpGetParseU8   (value, &v)) return -1; BatterySetHomePercent                   (v); return 0; }
@@ -124,21 +127,7 @@ int HttpThisNameValue(unsigned rid, char* name, char* value) { //returns -1 if u
 	if (strcmp(name, "truma-wanted-room-temp"              ) == 0) { uint8_t  v; if (HttpGetParseU8   (value, &v)) return -1; TrumaSetWantedRoomTemp                  (v); return 0; }
 	if (strcmp(name, "truma-wanted-water-temp"             ) == 0) { char     v; if (HttpGetParseChar (value, &v)) return -1; TrumaSetWantedWaterTemp                 (v); return 0; }
 	if (strcmp(name, "truma-wanted-fan-mode"               ) == 0) { char     v; if (HttpGetParseChar (value, &v)) return -1; TrumaSetWantedFanMode                   (v); return 0; }
-	if (strcmp(name, "truma-wanted-energy-sel"             ) == 0)
-	{
-		char v;
-		if (HttpGetParseChar (value, &v)) return -1;
-		switch (v)
-		{
-			case 'e': TrumaSetWantedEnergySel('E'); TrumaSetWantedElecPower('1'); break;
-			case 'E': TrumaSetWantedEnergySel('E'); TrumaSetWantedElecPower('2'); break;
-			case 'm': TrumaSetWantedEnergySel('M'); TrumaSetWantedElecPower('1'); break;
-			case 'M': TrumaSetWantedEnergySel('M'); TrumaSetWantedElecPower('2'); break;
-			default:  TrumaSetWantedEnergySel('G'); TrumaSetWantedElecPower('0'); break;
-		}
-		return 0;
-	}
-	//if (strcmp(name, "truma-wanted-elec-power"             ) == 0) { char     v; if (HttpGetParseChar (value, &v)) return -1; TrumaSetWantedElecPower                 (v); return 0; }
+	if (strcmp(name, "truma-wanted-energy"                 ) == 0) { char     v; if (HttpGetParseChar (value, &v)) return -1; TrumaSetWantedEnergy                    (v); return 0; }
 		
 	if (strcmp(name, "backup-to-usb"                       ) == 0) { system("cp -rT /home/pi/server /media/usb/server-`date -I`");                                         return 0; }
 
@@ -150,7 +139,7 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	//Battery
 	if (strcmp (name, "BatteryCountedCapacityAs"      ) == 0) { HttpResponseAddU32 (        CanThisGetBatteryCountedCapacityAs       ()); return 0; }
 	if (strcmp (name, "BatteryCurrent"                ) == 0) { HttpResponseAddS32 (        CanThisGetBatteryCurrentMa               ()); return 0; }
-	if (strcmp (name, "BatteryCapacitySetpoint"       ) == 0) { HttpResponseAddU8  (        CanThisGetBatteryCapacityTargetPercent   ()); return 0; }
+	if (strcmp (name, "BatteryTargetSocPercent"       ) == 0) { HttpResponseAddU8  (        CanThisGetBatteryTargetSocPercent        ()); return 0; }
 	if (strcmp (name, "BatteryOutputState"            ) == 0) { HttpResponseAddChar(        CanThisGetBatteryOutputState             ()); return 0; }
 	if (strcmp (name, "BatteryChargeEnabled"          ) == 0) { HttpResponseAddBool(format, CanThisGetBatteryChargeEnabled           ()); return 0; }
 	if (strcmp (name, "BatteryDischargeEnabled"       ) == 0) { HttpResponseAddBool(format, CanThisGetBatteryDischargeEnabled        ()); return 0; }
@@ -160,7 +149,11 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	if (strcmp (name, "BatteryHeaterProportional"     ) == 0) { HttpResponseAddU16 (        CanThisGetBatteryHeaterProportional      ()); return 0; }
 	if (strcmp (name, "BatteryHeaterIntegral"         ) == 0) { HttpResponseAddU16 (        CanThisGetBatteryHeaterIntegral          ()); return 0; }
 	if (strcmp (name, "BatteryVoltageMv"              ) == 0) { HttpResponseAddS16 (        CanThisGetBatteryVoltageMv               ()); return 0; }
-	if (strcmp (name, "BatteryAgingAsPerHour"         ) == 0) { HttpResponseAddS16 (        CanThisGetBatteryAgingAsPerHour          ()); return 0; }
+	if (strcmp (name, "BatteryCurrentOffsetMa"        ) == 0) { HttpResponseAddS16 (        CanThisGetBatteryCurrentOffsetMa         ()); return 0; }
+	if (strcmp (name, "BatteryTargetMode"             ) == 0) { HttpResponseAddBool(format, CanThisGetBatteryTargetMode              ()); return 0; }
+	if (strcmp (name, "BatteryTargetMv"               ) == 0) { HttpResponseAddS16 (        CanThisGetBatteryTargetMv                ()); return 0; }
+	if (strcmp (name, "BatteryMsAtRest"               ) == 0) { HttpResponseAddU32 (        CanThisGetBatteryMsAtRest                ()); return 0; }
+	if (strcmp (name, "BatteryVoltageSettleTimeMins"  ) == 0) { HttpResponseAddU16 (        CanThisGetBatteryVoltageSettleTimeMins   ()); return 0; }
 	
 	//Plot
 	if (strcmp (name, "BatteryMode"                  ) == 0) {HttpResponseAddS8    (        BatteryGetMode                           ()); return 0; }
@@ -267,20 +260,11 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	if (strcmp (name, "TrumaWantedRoomTemp"          ) == 0) {HttpResponseAddU8    (        TrumaGetWantedRoomTemp                   ()); return 0; }
 	if (strcmp (name, "TrumaWantedWaterTemp"         ) == 0) {HttpResponseAddChar  (        TrumaGetWantedWaterTemp                  ()); return 0; }
 	if (strcmp (name, "TrumaWantedFanMode"           ) == 0) {HttpResponseAddChar  (        TrumaGetWantedFanMode                    ()); return 0; }
-	if (strcmp (name, "TrumaWantedEnergySel"         ) == 0)
-	{
-		char energySel = TrumaGetWantedEnergySel(); //G E or M
-		char elecPower = TrumaGetWantedElecPower(); //1 or 2
-		if (energySel != 'G' && elecPower != '2') energySel= tolower(energySel);
-		HttpResponseAddChar(energySel); //G e E m or M
-		return 0;
-	}
+	if (strcmp (name, "TrumaWantedEnergy"            ) == 0) {HttpResponseAddChar  (        TrumaGetWantedEnergy                     ()); return 0;	}
 	if (strcmp (name, "TrumaTargetRoomTemp"          ) == 0) {HttpResponseAddU16   (        TrumaTargetRoomTemp                        ); return 0; }
 	if (strcmp (name, "TrumaTargetWaterTemp"         ) == 0) {HttpResponseAddChar  (        TrumaTargetWaterTemp                       ); return 0; }
 	if (strcmp (name, "TrumaTargetFanMode"           ) == 0) {HttpResponseAddChar  (        TrumaTargetFanMode                         ); return 0; }
-	if (strcmp (name, "TrumaTargetElecPower"         ) == 0) {HttpResponseAddChar  (        TrumaTargetElecPower                       ); return 0; }
-	if (strcmp (name, "TrumaTargetEnergySel"         ) == 0) {HttpResponseAddChar  (        TrumaTargetEnergySel                       ); return 0; }
-	if (strcmp (name, "TrumaTargetElecPower"         ) == 0) {HttpResponseAddChar  (        TrumaTargetElecPower                       ); return 0; }
+	if (strcmp (name, "TrumaTargetEnergy"            ) == 0) {HttpResponseAddChar  (        TrumaTargetEnergy                          ); return 0; }
 	if (strcmp (name, "TrumaActualRoomTemp"          ) == 0) {HttpResponseAddU16   (        TrumaActualRoomTemp                        ); return 0; }
 	if (strcmp (name, "TrumaActualWaterTemp"         ) == 0) {HttpResponseAddU16   (        TrumaActualWaterTemp                       ); return 0; }
 	if (strcmp (name, "TrumaActualRecvStatus"        ) == 0) {HttpResponseAddU8    (        TrumaActualRecvStatus                      ); return 0; }

@@ -61,35 +61,35 @@ static void downloadStatus(char msgLen, char msgId, char* pRequest)
 	{
 		case 10: TrumaTargetFanMode = 'H'; break; //High
 		case  1: TrumaTargetFanMode = 'E'; break; //Eco
-		default: TrumaTargetFanMode = 'O'; break; //Off
+		case  0: TrumaTargetFanMode = 'O'; break; //Off
+		default:
+			Log ('e', "LinThis downloadStatus rawTargetFanMode expected 10, 1 or 0 but had %02X", rawTargetFanMode);
+			break;
 	}
 	TrumaActualRecvStatus  = rawActualRecvStatus;
-	switch (rawTargetElecPower)
-	{
-		case 1800: TrumaTargetElecPower = '2'; break;
-		case  900: TrumaTargetElecPower = '1'; break;
-		default  : TrumaTargetElecPower = '0'; break;
-	}
 	switch (rawTargetWaterTemp)
 	{
 		case                0 : TrumaTargetWaterTemp = 'O'; break; //Off
 		case ( 40 + 273) * 10 : TrumaTargetWaterTemp = 'E'; break; //Eco
 		case ( 60 + 273) * 10 : TrumaTargetWaterTemp = 'H'; break; //High
 		case (200 + 273) * 10 : TrumaTargetWaterTemp = 'B'; break; //Boost
-		default               : TrumaTargetWaterTemp = 'U'; break; //Unknown
+		default:
+			Log ('e', "LinThis downloadStatus rawTargetWaterTemp expected 2730 plus tenths degree K but had %d", rawTargetWaterTemp);
+			break;
 	}
 	switch (rawTargetEnergySel)
 	{
-		case  1: TrumaTargetEnergySel = 'G'; break; //Gas
-		case  2: TrumaTargetEnergySel = 'E'; break; //Elec
-		case  3: TrumaTargetEnergySel = 'M'; break; //Mix
-		default: TrumaTargetEnergySel = 'O'; break; //Off
+		case  1: TrumaTargetEnergy = 'G'                                    ; break; //Gas
+		case  2: TrumaTargetEnergy = rawTargetElecPower == 1800 ? 'E' : 'e' ; break; //Elec
+		case  3: TrumaTargetEnergy = rawTargetElecPower == 1800 ? 'M' : 'm' ; break; //Mix
+		default:
+			Log ('e', "LinThis downloadStatus rawTargetEnergySel expected 1, 2 or 3 but had %02X", rawTargetEnergySel);
+			break;
 	}
 	TrumaActualWaterTemp   = rawActualWaterTemp;
 	TrumaActualRoomTemp    = rawActualRoomTemp;
 	TrumaActualOpStatus    = rawActualOpStatus;
 	TrumaActualErrorCode   = rawActualErrorCode;
-	
 	
 	time(&timeOfLastStatus);
 	LinThisUploadHadStatus();
@@ -97,16 +97,16 @@ static void downloadStatus(char msgLen, char msgId, char* pRequest)
 	if (LinTrace && TRACE_SID_BB_DOWNLOAD_STATUS)
 	{
 		Log ('d',"Download status message id 0x33");
-		Log ('d',"Target room temp:   truma %04X, app %d"  , rawTargetRoomTemp,   TrumaTargetRoomTemp);
-		Log ('d',"Target fan mode:    truma   %02X, app %c", rawTargetFanMode,    TrumaTargetFanMode );
+		Log ('d',"Target room temp:   truma %04X, app %d"  , rawTargetRoomTemp,   TrumaTargetRoomTemp  );
+		Log ('d',"Target fan mode:    truma   %02X, app %c", rawTargetFanMode,    TrumaTargetFanMode   );
 		Log ('d',"Actual recv status: truma   %02X, app %d", rawActualRecvStatus, TrumaActualRecvStatus);
-		Log ('d',"Target elec power:  truma %04X, app %c"  , rawTargetElecPower,  TrumaTargetElecPower);
-		Log ('d',"Target water temp:  truma %04X, app %c"  , rawTargetWaterTemp,  TrumaTargetWaterTemp);
-		Log ('d',"Target energy sel:  truma %04X, app %c"  , rawTargetEnergySel,  TrumaTargetEnergySel);
-		Log ('d',"Actual water temp:  truma %04X, app %d"  , rawActualWaterTemp,  TrumaActualWaterTemp);
-		Log ('d',"Actual room temp:   truma %04X, app %d"  , rawActualRoomTemp,   TrumaActualRoomTemp);
-		Log ('d',"Actual op status:   truma   %02X, app %d", rawActualOpStatus,   TrumaActualOpStatus);
-		Log ('d',"Actual error code:  truma   %02X, app %d", rawActualErrorCode,  TrumaActualErrorCode);
+		Log ('d',"Target elec power:  truma %04X, app %c"  , rawTargetElecPower,  TrumaTargetEnergy    );
+		Log ('d',"Target water temp:  truma %04X, app %c"  , rawTargetWaterTemp,  TrumaTargetWaterTemp );
+		Log ('d',"Target energy sel:  truma %04X, app %c"  , rawTargetEnergySel,  TrumaTargetEnergy    );
+		Log ('d',"Actual water temp:  truma %04X, app %d"  , rawActualWaterTemp,  TrumaActualWaterTemp );
+		Log ('d',"Actual room temp:   truma %04X, app %d"  , rawActualRoomTemp,   TrumaActualRoomTemp  );
+		Log ('d',"Actual op status:   truma   %02X, app %d", rawActualOpStatus,   TrumaActualOpStatus  );
+		Log ('d',"Actual error code:  truma   %02X, app %d", rawActualErrorCode,  TrumaActualErrorCode );
 	
 	}
 	LinTransportResponse[0] = LinTransportSid + 0x40;

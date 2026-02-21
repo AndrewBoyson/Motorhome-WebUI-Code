@@ -318,7 +318,7 @@ static void sendBattery(char* number)
 		"Temperature %2.1f°\n"
 		"State %c\n",
 		(float)CanThisGetBatteryCountedCapacityAs() / (BATTERY_CAPACITY_AH * 36),
-		CanThisGetBatteryCapacityTargetPercent(),
+		CanThisGetBatteryTargetSocPercent(),
 		CanThisGetBatteryCurrentMa(),
 		(float)CanThisGetBatteryTemperature8bfdp() / 256,
 		CanThisGetBatteryOutputState()
@@ -358,7 +358,7 @@ static void setTarget(char* number, char* sValue)
 		SmsSendF(number, "Target %d%% outside 20 to 90", iValue);
 		return;
 	}
-	CanThisSetBatteryCapacityTargetPercent((uint8_t)iValue);
+	CanThisSetBatteryTargetSocPercent((uint8_t)iValue);
 	sleep(3); //Need time for the values to be updated in their thread so sleep this one
 	sendBattery(number);
 }
