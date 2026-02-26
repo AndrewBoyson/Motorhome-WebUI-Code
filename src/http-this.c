@@ -75,6 +75,7 @@ int HttpThisNameValue(unsigned rid, char* name, char* value) { //returns -1 if u
 	if (strcmp(name, "battery-target-mode"                 ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; CanThisSetBatteryTargetMode             (v); return 0; }
 	if (strcmp(name, "battery-target-mv"                   ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetBatteryTargetMv               (v); return 0; }
 	if (strcmp(name, "battery-voltage-settle-time-mins"    ) == 0) { uint16_t v; if (HttpGetParseU16  (value, &v)) return -1; CanThisSetBatteryVoltageSettleTimeMins  (v); return 0; }
+	if (strcmp(name, "battery-voltage-rebound-mv"          ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; CanThisSetBatteryVoltageReboundMv       (v); return 0; }
 	if (strcmp(name, "battery-mode"                        ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; BatterySetMode                          (v); return 0; }
 	if (strcmp(name, "battery-away-percent"                ) == 0) { uint8_t  v; if (HttpGetParseU8   (value, &v)) return -1; BatterySetAwayPercent                   (v); return 0; }
 	if (strcmp(name, "battery-home-percent"                ) == 0) { uint8_t  v; if (HttpGetParseU8   (value, &v)) return -1; BatterySetHomePercent                   (v); return 0; }
@@ -154,6 +155,7 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	if (strcmp (name, "BatteryTargetMv"               ) == 0) { HttpResponseAddS16 (        CanThisGetBatteryTargetMv                ()); return 0; }
 	if (strcmp (name, "BatteryMsAtRest"               ) == 0) { HttpResponseAddU32 (        CanThisGetBatteryMsAtRest                ()); return 0; }
 	if (strcmp (name, "BatteryVoltageSettleTimeMins"  ) == 0) { HttpResponseAddU16 (        CanThisGetBatteryVoltageSettleTimeMins   ()); return 0; }
+	if (strcmp (name, "BatteryVoltageReboundMv"       ) == 0) { HttpResponseAddS8  (        CanThisGetBatteryVoltageReboundMv        ()); return 0; }
 	
 	//Plot
 	if (strcmp (name, "BatteryMode"                  ) == 0) {HttpResponseAddS8    (        BatteryGetMode                           ()); return 0; }

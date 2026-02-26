@@ -15,3 +15,4 @@
 ~BatteryTargetMv~
 ~BatteryMsAtRest~
 ~BatteryVoltageSettleTimeMins~
+~BatteryVoltageReboundMv~

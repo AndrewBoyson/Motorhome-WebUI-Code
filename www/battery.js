@@ -18,6 +18,7 @@ let batteryTargetMode             = false;
 let batteryTargetMv               = '';
 let batteryMsAtRest               = '';
 let batteryVoltageSettleTimeMins  = '';
+let batteryVoltageReboundMv       = '';
 
 function parse()
 {
@@ -39,6 +40,7 @@ function parse()
     batteryTargetMv               = lines[14];
     batteryMsAtRest               = lines[15];
     batteryVoltageSettleTimeMins  = lines[16];
+    batteryVoltageReboundMv       = lines[17];
 }
 
 const CAPACITY_AH        = 280;
@@ -60,16 +62,12 @@ function formatSeconds(value)
 function display()
 {
     let targetAs = batteryTargetSocPercent * AS_PER_PERCENT;
-    if (batteryTargetMode) targetAs = 57 * AS_PER_PERCENT; //Target mode is mv so assume corresponds to about 57%
+    if (!batteryTargetMode) targetAs = 57 * AS_PER_PERCENT; //Target mode is mv so assume corresponds to about 57%
     let capacityToTargetAs = targetAs - batteryCountedCapacityAs;
 
-    let timeToEmptySeconds  = -batteryCountedCapacityAs / batteryCurrentMa * 1000;
-    let sTimeToEmptySeconds = timeToEmptySeconds >= 0 ? timeToEmptySeconds.toFixed(0) : '-';
-    let sTimeToEmptyDays    = timeToEmptySeconds >= 0 ? (timeToEmptySeconds  / 3600 / 24).toFixed(1) : '-';
 
     let timeToTargetSeconds  = capacityToTargetAs / batteryCurrentMa * 1000;
-    let sTimeToTargetSeconds = timeToTargetSeconds >= 0 ? timeToTargetSeconds.toFixed(0) : '-';
-    let sTimeToTargetHours   = timeToTargetSeconds >= 0 ? (timeToTargetSeconds / 3600).toFixed(1) : '-';
+    let sTimeToTarget = batteryOutputState == 'C' || batteryOutputState == 'D' ? formatSeconds(timeToTargetSeconds) : '-';
 
     let heaterVoltage = Math.sqrt(batteryHeater8bfdp * 256) / 256 * 14;
     let heaterMa      = heaterVoltage / 8.8 * 1000;
@@ -96,8 +94,7 @@ function display()
     elem = Ajax.getElementOrNull('txt-battery-heater-output-watts'          ); if (elem) elem.textContent =  heaterWatts.toFixed(1);
     elem = Ajax.getElementOrNull('txt-battery-voltage-mv'                   ); if (elem) elem.textContent =  batteryVoltageMv;
     elem = Ajax.getElementOrNull('txt-battery-cell-voltage-mv'              ); if (elem) elem.textContent = (batteryVoltageMv/4).toFixed(0);
-    elem = Ajax.getElementOrNull('txt-battery-time-to-target'               ); if (elem) elem.textContent = formatSeconds(timeToTargetSeconds);
-    elem = Ajax.getElementOrNull('txt-battery-days-to-empty'                ); if (elem) elem.textContent = sTimeToEmptyDays;
+    elem = Ajax.getElementOrNull('txt-battery-time-to-target'               ); if (elem) elem.textContent = sTimeToTarget;
     elem = Ajax.getElementOrNull('val-battery-uv-per-ma'                    ); if (elem) elem.value       =  batteryUvPerMa;
     elem = Ajax.getElementOrNull('val-battery-current-offset-ma'            ); if (elem) elem.value       =  batteryCurrentOffsetMa;
     elem = Ajax.getElementOrNull('val-battery-heater-proportional'          ); if (elem) elem.value       = (batteryHeaterProportional / 256 / 256 * 100     ).toFixed(0);
@@ -106,6 +103,7 @@ function display()
     elem = Ajax.getElementOrNull('val-battery-target-mv'                    ); if (elem) elem.value       =  batteryTargetMv;
     elem = Ajax.getElementOrNull('txt-battery-time-at-rest'                 ); if (elem) elem.textContent =  formatSeconds(batteryMsAtRest / 1000);
     elem = Ajax.getElementOrNull('val-battery-voltage-settle-time-mins'     ); if (elem) elem.value       =  batteryVoltageSettleTimeMins;
+    elem = Ajax.getElementOrNull('val-battery-voltage-rebound-mv'           ); if (elem) elem.value       =  batteryVoltageReboundMv;
 }
 
 function change(elem)
@@ -120,6 +118,7 @@ function change(elem)
     if (elem.id === 'att-battery-charge-enabled'              ) AjaxSendNameValue('battery-charge-enabled'              ,  elem.dir == 'rtl' ? '0' :  '1');
     if (elem.id === 'att-battery-discharge-enabled'           ) AjaxSendNameValue('battery-discharge-enabled'           ,  elem.dir == 'rtl' ? '0' :  '1');
     if (elem.id === 'val-battery-voltage-settle-time-mins'    ) AjaxSendNameValue('battery-voltage-settle-time-mins'    ,  elem.value);
+    if (elem.id === 'val-battery-voltage-rebound-mv'          ) AjaxSendNameValue('battery-voltage-rebound-mv'          ,  elem.value);
     if (elem.id === 'val-battery-heater-proportional'         )
     {
         let value = elem.value * 256 * 256 / 100;

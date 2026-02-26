@@ -38,6 +38,7 @@
 ~expand^input^Target soc%^val-battery-target-soc-percent^2.0~
 ~expand^input^Target mV^val-battery-target-mv^3.0~
 ~expand^input^Voltage settle time minutes^val-battery-voltage-settle-time-mins^3.0~
+~expand^input^Voltage rebound mv^val-battery-voltage-rebound-mv^3.0~
 ~expand^value^Output state^txt-battery-output-state~
 ~expand^value^Time to target^txt-battery-time-to-target~
 ~expand^switch^Charge enable^att-battery-charge-enabled~

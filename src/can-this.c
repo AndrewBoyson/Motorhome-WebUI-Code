@@ -26,6 +26,7 @@
 #define CAN_ID_OUTPUT_TARGET_MV     0x0E
 #define CAN_ID_MS_AT_REST           0x0F
 #define CAN_ID_VOLTAGE_SETTLE_MINS  0x10
+#define CAN_ID_VOLTAGE_REBOUND_MV   0x11
 
 #define CAN_ID_TANK                0x200
 #define CAN_ID_FRESH_TEMPERATURE    0x00
@@ -96,6 +97,7 @@ static char     _batteryTargetMode              = 0;
 static int16_t  _batteryTargetMv                = 0;
 static uint32_t _batteryMsAtRest                = 0;
 static uint16_t _batteryVoltageSettleTimeMins   = 0;
+static int8_t   _batteryVoltageReboundMv        = 0;
 static int16_t  _tankFreshTemperature           = 0;
 static uint64_t _tankFreshRom                   = 0;
 static int16_t  _tankFreshSupplyMv              = 0;
@@ -163,6 +165,7 @@ uint16_t CanThisGetBatteryHeaterIntegral          (){ return _batteryHeaterInteg
  int16_t CanThisGetBatteryTargetMv                (){ return _batteryTargetMv;                }
 uint32_t CanThisGetBatteryMsAtRest                (){ return _batteryMsAtRest;                }
 uint16_t CanThisGetBatteryVoltageSettleTimeMins   (){ return _batteryVoltageSettleTimeMins;   }
+ int8_t  CanThisGetBatteryVoltageReboundMv        (){ return _batteryVoltageReboundMv;        }
  
  int16_t CanThisGetTankFreshTemperature           (){ return _tankFreshTemperature;           }
 uint64_t CanThisGetTankFreshRom                   (){ return _tankFreshRom;                   }
@@ -235,6 +238,7 @@ void CanThisSetBatteryCurrentOffsetMa        (int16_t  value){ set(&_batteryCurr
 void CanThisSetBatteryTargetMode             (char     value){ set(&_batteryTargetMode             , CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET_MODE   , 1, &value);}
 void CanThisSetBatteryTargetMv               (int16_t  value){ set(&_batteryTargetMv               , CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET_MV     , 2, &value);}
 void CanThisSetBatteryVoltageSettleTimeMins  (int16_t  value){ set(&_batteryVoltageSettleTimeMins  , CAN_ID_BATTERY + CAN_ID_VOLTAGE_SETTLE_MINS  , 2, &value);}
+void CanThisSetBatteryVoltageReboundMv       (int8_t   value){ set(&_batteryVoltageReboundMv       , CAN_ID_BATTERY + CAN_ID_VOLTAGE_REBOUND_MV   , 1, &value);}
 
 void CanThisSetTankFreshBaseTemp16ths        (int16_t  value){ set(&_tankFreshBaseTemp16ths        , CAN_ID_TANK    + CAN_ID_FRESH_BASE_TEMP      , 2, &value);}
 void CanThisSetTankFreshBaseMv               (int16_t  value){ set(&_tankFreshBaseMv               , CAN_ID_TANK    + CAN_ID_FRESH_BASE_MV        , 2, &value);}
@@ -295,6 +299,7 @@ void CanThisReceive()
 		case CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET_MV:      _batteryTargetMv                = ( int16_t)data; break;
 		case CAN_ID_BATTERY + CAN_ID_MS_AT_REST:            _batteryMsAtRest                = (uint32_t)data; break;
 		case CAN_ID_BATTERY + CAN_ID_VOLTAGE_SETTLE_MINS:   _batteryVoltageSettleTimeMins   = (uint16_t)data; break;
+		case CAN_ID_BATTERY + CAN_ID_VOLTAGE_REBOUND_MV:    _batteryVoltageReboundMv        = (  int8_t)data; break;
 		
 		case CAN_ID_TANK    + CAN_ID_FRESH_TEMPERATURE:     _tankFreshTemperature           = ( int16_t)data; break;
 		case CAN_ID_TANK    + CAN_ID_FRESH_ROM:             _tankFreshRom                   = (uint64_t)data; break;

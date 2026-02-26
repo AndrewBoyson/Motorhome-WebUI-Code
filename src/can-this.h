@@ -16,6 +16,7 @@ extern char     CanThisGetBatteryTargetMode             (void);
 extern int16_t  CanThisGetBatteryTargetMv               (void);
 extern uint32_t CanThisGetBatteryMsAtRest               (void);
 extern uint16_t CanThisGetBatteryVoltageSettleTimeMins  (void);
+extern  int8_t  CanThisGetBatteryVoltageReboundMv       (void);
 
 extern int16_t  CanThisGetTankFreshTemperature          (void);
 extern uint64_t CanThisGetTankFreshRom                  (void);
@@ -80,6 +81,7 @@ extern void CanThisSetBatteryCurrentOffsetMa        (int16_t  value);
 extern void CanThisSetBatteryTargetMode             (char     value);
 extern void CanThisSetBatteryTargetMv               (int16_t  value);
 extern void CanThisSetBatteryVoltageSettleTimeMins  (uint16_t value);
+extern void CanThisSetBatteryVoltageReboundMv       (int8_t   value);
 
 extern void CanThisSetTankFreshBaseTemp16ths        (int16_t  value);
 extern void CanThisSetTankFreshBaseMv               (int16_t  value);
