@@ -18,6 +18,8 @@
 ~expand^input^Coulombs As^val-battery-counted-capacity-amp-seconds^5.0~
 ~expand^value^Amp hours Ah^txt-battery-counted-capacity-amp-hours~
 ~expand^input^Percent %^val-battery-counted-capacity-percent^3.0~
+~expand^value^Pos pulses^txt-battery-count-pos-pulses~
+~expand^value^Neg pulses^txt-battery-count-neg-pulses~
 <h2>Voltage</h2>
 ~expand^value^Battery voltage mV^txt-battery-voltage-mv~
 ~expand^value^Cell voltage mV^txt-battery-cell-voltage-mv~
@@ -27,8 +29,8 @@
 <h2>Heater</h2>
 ~expand^value^Temperature °C^txt-battery-temperature~
 ~expand^input^Set point °C^val-battery-temperature-setpoint^3.0~
-~expand^input^Kp power % per °C^val-battery-heater-proportional^3.0~
-~expand^input^Ki power % per °C per hour^val-battery-heater-integral^3.0~
+~expand^input^Kp % per °C (100)^val-battery-heater-proportional^3.0~
+~expand^input^Ki % per °C per hour (120)^val-battery-heater-integral^3.0~
 ~expand^value^Ti hours^txt-battery-heater-ti-hours^3.0~
 ~expand^value^Output power %^txt-battery-heater-output-percent~
 ~expand^value^Output mA^txt-battery-heater-output-ma~

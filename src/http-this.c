@@ -156,6 +156,8 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	if (strcmp (name, "BatteryMsAtRest"               ) == 0) { HttpResponseAddU32 (        CanThisGetBatteryMsAtRest                ()); return 0; }
 	if (strcmp (name, "BatteryVoltageSettleTimeMins"  ) == 0) { HttpResponseAddU16 (        CanThisGetBatteryVoltageSettleTimeMins   ()); return 0; }
 	if (strcmp (name, "BatteryVoltageReboundMv"       ) == 0) { HttpResponseAddS8  (        CanThisGetBatteryVoltageReboundMv        ()); return 0; }
+	if (strcmp (name, "BatteryCountPosPulses"         ) == 0) { HttpResponseAddU16 (        CanThisGetBatteryCountPosPulses          ()); return 0; }
+	if (strcmp (name, "BatteryCountNegPulses"         ) == 0) { HttpResponseAddU16 (        CanThisGetBatteryCountNegPulses          ()); return 0; }
 	
 	//Plot
 	if (strcmp (name, "BatteryMode"                  ) == 0) {HttpResponseAddS8    (        BatteryGetMode                           ()); return 0; }

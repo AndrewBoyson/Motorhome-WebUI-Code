@@ -16,3 +16,5 @@
 ~BatteryMsAtRest~
 ~BatteryVoltageSettleTimeMins~
 ~BatteryVoltageReboundMv~
+~BatteryCountPosPulses~
+~BatteryCountNegPulses~

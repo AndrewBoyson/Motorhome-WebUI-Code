@@ -19,6 +19,8 @@ let batteryTargetMv               = '';
 let batteryMsAtRest               = '';
 let batteryVoltageSettleTimeMins  = '';
 let batteryVoltageReboundMv       = '';
+let batteryCountPosPulses         = '';
+let batteryCountNegPulses         = '';
 
 function parse()
 {
@@ -41,6 +43,8 @@ function parse()
     batteryMsAtRest               = lines[15];
     batteryVoltageSettleTimeMins  = lines[16];
     batteryVoltageReboundMv       = lines[17];
+    batteryCountPosPulses         = lines[18];
+    batteryCountNegPulses         = lines[19];
 }
 
 const CAPACITY_AH        = 280;
@@ -104,6 +108,8 @@ function display()
     elem = Ajax.getElementOrNull('txt-battery-time-at-rest'                 ); if (elem) elem.textContent =  formatSeconds(batteryMsAtRest / 1000);
     elem = Ajax.getElementOrNull('val-battery-voltage-settle-time-mins'     ); if (elem) elem.value       =  batteryVoltageSettleTimeMins;
     elem = Ajax.getElementOrNull('val-battery-voltage-rebound-mv'           ); if (elem) elem.value       =  batteryVoltageReboundMv;
+    elem = Ajax.getElementOrNull('txt-battery-count-pos-pulses'             ); if (elem) elem.textContent =  batteryCountPosPulses;
+    elem = Ajax.getElementOrNull('txt-battery-count-neg-pulses'             ); if (elem) elem.textContent =  batteryCountNegPulses;
 }
 
 function change(elem)

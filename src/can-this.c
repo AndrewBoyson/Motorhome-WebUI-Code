@@ -27,6 +27,8 @@
 #define CAN_ID_MS_AT_REST           0x0F
 #define CAN_ID_VOLTAGE_SETTLE_MINS  0x10
 #define CAN_ID_VOLTAGE_REBOUND_MV   0x11
+#define CAN_ID_COUNT_POS_PULSES     0x12
+#define CAN_ID_COUNT_NEG_PULSES     0x13
 
 #define CAN_ID_TANK                0x200
 #define CAN_ID_FRESH_TEMPERATURE    0x00
@@ -98,6 +100,8 @@ static int16_t  _batteryTargetMv                = 0;
 static uint32_t _batteryMsAtRest                = 0;
 static uint16_t _batteryVoltageSettleTimeMins   = 0;
 static int8_t   _batteryVoltageReboundMv        = 0;
+static uint16_t _batteryCountNegPulses          = 0;
+static uint16_t _batteryCountPosPulses          = 0;
 static int16_t  _tankFreshTemperature           = 0;
 static uint64_t _tankFreshRom                   = 0;
 static int16_t  _tankFreshSupplyMv              = 0;
@@ -166,6 +170,8 @@ uint16_t CanThisGetBatteryHeaterIntegral          (){ return _batteryHeaterInteg
 uint32_t CanThisGetBatteryMsAtRest                (){ return _batteryMsAtRest;                }
 uint16_t CanThisGetBatteryVoltageSettleTimeMins   (){ return _batteryVoltageSettleTimeMins;   }
  int8_t  CanThisGetBatteryVoltageReboundMv        (){ return _batteryVoltageReboundMv;        }
+uint16_t CanThisGetBatteryCountPosPulses          (){ return _batteryCountPosPulses;          }
+uint16_t CanThisGetBatteryCountNegPulses          (){ return _batteryCountNegPulses;          }
  
  int16_t CanThisGetTankFreshTemperature           (){ return _tankFreshTemperature;           }
 uint64_t CanThisGetTankFreshRom                   (){ return _tankFreshRom;                   }
@@ -300,6 +306,8 @@ void CanThisReceive()
 		case CAN_ID_BATTERY + CAN_ID_MS_AT_REST:            _batteryMsAtRest                = (uint32_t)data; break;
 		case CAN_ID_BATTERY + CAN_ID_VOLTAGE_SETTLE_MINS:   _batteryVoltageSettleTimeMins   = (uint16_t)data; break;
 		case CAN_ID_BATTERY + CAN_ID_VOLTAGE_REBOUND_MV:    _batteryVoltageReboundMv        = (  int8_t)data; break;
+		case CAN_ID_BATTERY + CAN_ID_COUNT_POS_PULSES:      _batteryCountPosPulses          = (uint16_t)data; break;
+		case CAN_ID_BATTERY + CAN_ID_COUNT_NEG_PULSES:      _batteryCountNegPulses          = (uint16_t)data; break;
 		
 		case CAN_ID_TANK    + CAN_ID_FRESH_TEMPERATURE:     _tankFreshTemperature           = ( int16_t)data; break;
 		case CAN_ID_TANK    + CAN_ID_FRESH_ROM:             _tankFreshRom                   = (uint64_t)data; break;

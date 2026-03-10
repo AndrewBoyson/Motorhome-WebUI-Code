@@ -17,6 +17,8 @@ extern int16_t  CanThisGetBatteryTargetMv               (void);
 extern uint32_t CanThisGetBatteryMsAtRest               (void);
 extern uint16_t CanThisGetBatteryVoltageSettleTimeMins  (void);
 extern  int8_t  CanThisGetBatteryVoltageReboundMv       (void);
+extern uint16_t CanThisGetBatteryCountPosPulses         (void);
+extern uint16_t CanThisGetBatteryCountNegPulses         (void);
 
 extern int16_t  CanThisGetTankFreshTemperature          (void);
 extern uint64_t CanThisGetTankFreshRom                  (void);
