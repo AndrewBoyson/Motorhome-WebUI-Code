@@ -18,3 +18,5 @@
 ~BatteryVoltageReboundMv~
 ~BatteryCountPosPulses~
 ~BatteryCountNegPulses~
+~BatteryManageDifferenceMas~
+~BatteryManagePulseAdjustMas~

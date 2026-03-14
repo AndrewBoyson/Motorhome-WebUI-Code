@@ -18,14 +18,13 @@
 ~expand^input^Coulombs As^val-battery-counted-capacity-amp-seconds^5.0~
 ~expand^value^Amp hours Ah^txt-battery-counted-capacity-amp-hours~
 ~expand^input^Percent %^val-battery-counted-capacity-percent^3.0~
-~expand^value^Pos pulses^txt-battery-count-pos-pulses~
-~expand^value^Neg pulses^txt-battery-count-neg-pulses~
 <h2>Voltage</h2>
 ~expand^value^Battery voltage mV^txt-battery-voltage-mv~
 ~expand^value^Cell voltage mV^txt-battery-cell-voltage-mv~
 <h2>Current</h2>
 ~expand^value^Measured mA^txt-battery-current-ma~
 ~expand^input^Offset correction mA^val-battery-current-offset-ma^3.0~
+~expand^value^Pulse interval seconds^txt-battery-pulse-interval-secs~
 <h2>Heater</h2>
 ~expand^value^Temperature °C^txt-battery-temperature~
 ~expand^input^Set point °C^val-battery-temperature-setpoint^3.0~
@@ -39,12 +38,18 @@
 ~expand^switch^Target mode mV or soc%^att-battery-target-mode~
 ~expand^input^Target soc%^val-battery-target-soc-percent^2.0~
 ~expand^input^Target mV^val-battery-target-mv^3.0~
-~expand^input^Voltage settle time minutes^val-battery-voltage-settle-time-mins^3.0~
+~expand^input^Voltage settle time hours^val-battery-voltage-settle-time-hours^3.0~
 ~expand^input^Voltage rebound mv^val-battery-voltage-rebound-mv^3.0~
 ~expand^value^Output state^txt-battery-output-state~
 ~expand^value^Time to target^txt-battery-time-to-target~
 ~expand^switch^Charge enable^att-battery-charge-enabled~
 ~expand^switch^Discharge enable^att-battery-discharge-enabled~
 ~expand^value^Time at rest^txt-battery-time-at-rest~
+<h2>Cycle</h2>
+~expand^value^Pos pulses^txt-battery-count-pos-pulses~
+~expand^value^Neg pulses^txt-battery-count-neg-pulses~
+~expand^value^Cycle difference As^txt-battery-manage-difference-as~
+~expand^value^Cycle difference %^txt-battery-manage-difference-percent~
+~expand^input^Pulse adjust As^val-battery-manage-pulse-adjust-as^3.0~
 </body>
 </html>

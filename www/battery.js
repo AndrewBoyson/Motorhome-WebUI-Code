@@ -21,6 +21,8 @@ let batteryVoltageSettleTimeMins  = '';
 let batteryVoltageReboundMv       = '';
 let batteryCountPosPulses         = '';
 let batteryCountNegPulses         = '';
+let batteryManageDifferenceMas    = '';
+let batteryManagePulseAdjustMas   = '';
 
 function parse()
 {
@@ -45,6 +47,8 @@ function parse()
     batteryVoltageReboundMv       = lines[17];
     batteryCountPosPulses         = lines[18];
     batteryCountNegPulses         = lines[19];
+    batteryManageDifferenceMas    = lines[20];
+    batteryManagePulseAdjustMas   = lines[21];
 }
 
 const CAPACITY_AH        = 280;
@@ -79,6 +83,10 @@ function display()
 
     let TiMinutes = batteryHeaterProportional / batteryHeaterIntegral;
 
+    let pulseIntervalSecs = '-';
+    if (batteryCurrentMa > 0) pulseIntervalSecs = (61444 /  batteryCurrentMa).toFixed(0);
+    if (batteryCurrentMa < 0) pulseIntervalSecs = (61444 / -batteryCurrentMa).toFixed(0);
+
     let elem;
     elem = Ajax.getElementOrNull('txt-battery-counted-capacity-amp-seconds' ); if (elem) elem.textContent =  batteryCountedCapacityAs;
     elem = Ajax.getElementOrNull('val-battery-counted-capacity-amp-seconds' ); if (elem) elem.value       =  batteryCountedCapacityAs;
@@ -86,6 +94,7 @@ function display()
     elem = Ajax.getElementOrNull('txt-battery-counted-capacity-percent'     ); if (elem) elem.textContent = (batteryCountedCapacityAs / AS_PER_PERCENT).toFixed(1);
     elem = Ajax.getElementOrNull('val-battery-counted-capacity-percent'     ); if (elem) elem.value       = (batteryCountedCapacityAs / AS_PER_PERCENT).toFixed(1);
     elem = Ajax.getElementOrNull('txt-battery-current-ma'                   ); if (elem) elem.textContent =  batteryCurrentMa;
+    elem = Ajax.getElementOrNull('txt-battery-pulse-interval-secs'          ); if (elem) elem.textContent =  pulseIntervalSecs;
     elem = Ajax.getElementOrNull('val-battery-target-soc-percent'           ); if (elem) elem.value       =  batteryTargetSocPercent;
     elem = Ajax.getElementOrNull('txt-battery-output-state'                 ); if (elem) elem.textContent =  batteryOutputState;
     elem = Ajax.getElementOrNull('att-battery-charge-enabled'               ); if (elem) elem.setAttribute('dir', batteryChargeEnabled    ? 'rtl' : 'ltr');
@@ -107,9 +116,13 @@ function display()
     elem = Ajax.getElementOrNull('val-battery-target-mv'                    ); if (elem) elem.value       =  batteryTargetMv;
     elem = Ajax.getElementOrNull('txt-battery-time-at-rest'                 ); if (elem) elem.textContent =  formatSeconds(batteryMsAtRest / 1000);
     elem = Ajax.getElementOrNull('val-battery-voltage-settle-time-mins'     ); if (elem) elem.value       =  batteryVoltageSettleTimeMins;
+    elem = Ajax.getElementOrNull('val-battery-voltage-settle-time-hours'    ); if (elem) elem.value       =  (batteryVoltageSettleTimeMins / 60).toFixed(0);
     elem = Ajax.getElementOrNull('val-battery-voltage-rebound-mv'           ); if (elem) elem.value       =  batteryVoltageReboundMv;
     elem = Ajax.getElementOrNull('txt-battery-count-pos-pulses'             ); if (elem) elem.textContent =  batteryCountPosPulses;
     elem = Ajax.getElementOrNull('txt-battery-count-neg-pulses'             ); if (elem) elem.textContent =  batteryCountNegPulses;
+    elem = Ajax.getElementOrNull('txt-battery-manage-difference-as'         ); if (elem) elem.textContent =  (batteryManageDifferenceMas / 1000).toFixed(0);
+    elem = Ajax.getElementOrNull('txt-battery-manage-difference-percent'    ); if (elem) elem.textContent =  (batteryManageDifferenceMas / 1000 / AS_PER_PERCENT).toFixed(1);
+    elem = Ajax.getElementOrNull('val-battery-manage-pulse-adjust-as'       ); if (elem) elem.value       =  (batteryManagePulseAdjustMas   / 1000).toFixed(0);
 }
 
 function change(elem)
@@ -124,7 +137,9 @@ function change(elem)
     if (elem.id === 'att-battery-charge-enabled'              ) AjaxSendNameValue('battery-charge-enabled'              ,  elem.dir == 'rtl' ? '0' :  '1');
     if (elem.id === 'att-battery-discharge-enabled'           ) AjaxSendNameValue('battery-discharge-enabled'           ,  elem.dir == 'rtl' ? '0' :  '1');
     if (elem.id === 'val-battery-voltage-settle-time-mins'    ) AjaxSendNameValue('battery-voltage-settle-time-mins'    ,  elem.value);
+    if (elem.id === 'val-battery-voltage-settle-time-hours'   ) AjaxSendNameValue('battery-voltage-settle-time-mins'    ,  elem.value * 60);
     if (elem.id === 'val-battery-voltage-rebound-mv'          ) AjaxSendNameValue('battery-voltage-rebound-mv'          ,  elem.value);
+    if (elem.id === 'val-battery-manage-pulse-adjust-as'      ) AjaxSendNameValue('battery-manage-pulse-adjust-mas'     ,  elem.value * 1000);
     if (elem.id === 'val-battery-heater-proportional'         )
     {
         let value = elem.value * 256 * 256 / 100;
