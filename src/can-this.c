@@ -31,6 +31,7 @@
 #define CAN_ID_COUNT_NEG_PULSES        0x13
 #define CAN_ID_MANAGE_DIFFERENCE_MAS   0x14
 #define CAN_ID_MANAGE_PULSE_ADJUST_MAS 0x15
+#define CAN_ID_CURRENT_SETTLE_MINS     0x16
 
 #define CAN_ID_TANK                   0x200
 #define CAN_ID_FRESH_TEMPERATURE       0x00
@@ -101,6 +102,7 @@ static char     _batteryTargetMode              = 0;
 static int16_t  _batteryTargetMv                = 0;
 static uint32_t _batteryMsAtRest                = 0;
 static uint16_t _batteryVoltageSettleTimeMins   = 0;
+static uint16_t _batteryCurrentSettleTimeMins   = 0;
 static int8_t   _batteryVoltageReboundMv        = 0;
 static uint16_t _batteryCountNegPulses          = 0;
 static uint16_t _batteryCountPosPulses          = 0;
@@ -173,6 +175,7 @@ uint16_t CanThisGetBatteryHeaterIntegral          (){ return _batteryHeaterInteg
  int16_t CanThisGetBatteryTargetMv                (){ return _batteryTargetMv;                }
 uint32_t CanThisGetBatteryMsAtRest                (){ return _batteryMsAtRest;                }
 uint16_t CanThisGetBatteryVoltageSettleTimeMins   (){ return _batteryVoltageSettleTimeMins;   }
+uint16_t CanThisGetBatteryCurrentSettleTimeMins   (){ return _batteryCurrentSettleTimeMins;   }
  int8_t  CanThisGetBatteryVoltageReboundMv        (){ return _batteryVoltageReboundMv;        }
 uint16_t CanThisGetBatteryCountPosPulses          (){ return _batteryCountPosPulses;          }
 uint16_t CanThisGetBatteryCountNegPulses          (){ return _batteryCountNegPulses;          }
@@ -250,6 +253,7 @@ void CanThisSetBatteryCurrentOffsetMa        (int16_t  value){ set(&_batteryCurr
 void CanThisSetBatteryTargetMode             (char     value){ set(&_batteryTargetMode             , CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET_MODE     , 1, &value);}
 void CanThisSetBatteryTargetMv               (int16_t  value){ set(&_batteryTargetMv               , CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET_MV       , 2, &value);}
 void CanThisSetBatteryVoltageSettleTimeMins  (int16_t  value){ set(&_batteryVoltageSettleTimeMins  , CAN_ID_BATTERY + CAN_ID_VOLTAGE_SETTLE_MINS    , 2, &value);}
+void CanThisSetBatteryCurrentSettleTimeMins  (int16_t  value){ set(&_batteryCurrentSettleTimeMins  , CAN_ID_BATTERY + CAN_ID_CURRENT_SETTLE_MINS    , 2, &value);}
 void CanThisSetBatteryVoltageReboundMv       (int8_t   value){ set(&_batteryVoltageReboundMv       , CAN_ID_BATTERY + CAN_ID_VOLTAGE_REBOUND_MV     , 1, &value);}
 void CanThisSetBatteryManagePulseAdjustMas   (int16_t  value){ set(&_batteryManagePulseAdjustMas   , CAN_ID_BATTERY + CAN_ID_MANAGE_PULSE_ADJUST_MAS, 2, &value);}
 
@@ -312,6 +316,7 @@ void CanThisReceive()
 		case CAN_ID_BATTERY + CAN_ID_OUTPUT_TARGET_MV:        _batteryTargetMv                = ( int16_t)data; break;
 		case CAN_ID_BATTERY + CAN_ID_MS_AT_REST:              _batteryMsAtRest                = (uint32_t)data; break;
 		case CAN_ID_BATTERY + CAN_ID_VOLTAGE_SETTLE_MINS:     _batteryVoltageSettleTimeMins   = (uint16_t)data; break;
+		case CAN_ID_BATTERY + CAN_ID_CURRENT_SETTLE_MINS:     _batteryCurrentSettleTimeMins   = (uint16_t)data; break;
 		case CAN_ID_BATTERY + CAN_ID_VOLTAGE_REBOUND_MV:      _batteryVoltageReboundMv        = (  int8_t)data; break;
 		case CAN_ID_BATTERY + CAN_ID_COUNT_POS_PULSES:        _batteryCountPosPulses          = (uint16_t)data; break;
 		case CAN_ID_BATTERY + CAN_ID_COUNT_NEG_PULSES:        _batteryCountNegPulses          = (uint16_t)data; break;

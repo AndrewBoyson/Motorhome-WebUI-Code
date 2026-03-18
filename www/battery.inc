@@ -24,20 +24,12 @@
 <h2>Current</h2>
 ~expand^value^Measured mA^txt-battery-current-ma~
 ~expand^input^Offset correction mA^val-battery-current-offset-ma^3.0~
-~expand^value^Pulse interval seconds^txt-battery-pulse-interval-secs~
-<h2>Heater</h2>
-~expand^value^Temperature °C^txt-battery-temperature~
-~expand^input^Set point °C^val-battery-temperature-setpoint^3.0~
-~expand^input^Kp % per °C (100)^val-battery-heater-proportional^3.0~
-~expand^input^Ki % per °C per hour (120)^val-battery-heater-integral^3.0~
-~expand^value^Ti hours^txt-battery-heater-ti-hours^3.0~
-~expand^value^Output power %^txt-battery-heater-output-percent~
-~expand^value^Output mA^txt-battery-heater-output-ma~
-~expand^value^Output W^txt-battery-heater-output-watts~
+~expand^value^Pulse interval^txt-battery-pulse-interval-secs~
 <h2>State</h2>
 ~expand^switch^Target mode mV or soc%^att-battery-target-mode~
 ~expand^input^Target soc%^val-battery-target-soc-percent^2.0~
 ~expand^input^Target mV^val-battery-target-mv^3.0~
+~expand^input^Current settle time hours^val-battery-current-settle-time-hours^3.0~
 ~expand^input^Voltage settle time hours^val-battery-voltage-settle-time-hours^3.0~
 ~expand^input^Voltage rebound mv^val-battery-voltage-rebound-mv^3.0~
 ~expand^value^Output state^txt-battery-output-state~
@@ -50,6 +42,15 @@
 ~expand^value^Neg pulses^txt-battery-count-neg-pulses~
 ~expand^value^Cycle difference As^txt-battery-manage-difference-as~
 ~expand^value^Cycle difference %^txt-battery-manage-difference-percent~
-~expand^input^Pulse adjust As^val-battery-manage-pulse-adjust-as^3.0~
+~expand^input^Adjustment mAs per pulse^val-battery-manage-pulse-adjust-mas^3.0~
+<h2>Heater</h2>
+~expand^value^Temperature °C^txt-battery-temperature~
+~expand^input^Set point °C^val-battery-temperature-setpoint^3.0~
+~expand^input^Kp % per °C (100)^val-battery-heater-proportional^3.0~
+~expand^input^Ki % per °C per hour (120)^val-battery-heater-integral^3.0~
+~expand^value^Ti hours^txt-battery-heater-ti-hours^3.0~
+~expand^value^Output power %^txt-battery-heater-output-percent~
+~expand^value^Output mA^txt-battery-heater-output-ma~
+~expand^value^Output W^txt-battery-heater-output-watts~
 </body>
 </html>

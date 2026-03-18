@@ -16,6 +16,7 @@ extern char     CanThisGetBatteryTargetMode              (void);
 extern int16_t  CanThisGetBatteryTargetMv                (void);
 extern uint32_t CanThisGetBatteryMsAtRest                (void);
 extern uint16_t CanThisGetBatteryVoltageSettleTimeMins   (void);
+extern uint16_t CanThisGetBatteryCurrentSettleTimeMins   (void);
 extern  int8_t  CanThisGetBatteryVoltageReboundMv        (void);
 extern uint16_t CanThisGetBatteryCountPosPulses          (void);
 extern uint16_t CanThisGetBatteryCountNegPulses          (void);
@@ -85,6 +86,7 @@ extern void CanThisSetBatteryCurrentOffsetMa        (int16_t  value);
 extern void CanThisSetBatteryTargetMode             (char     value);
 extern void CanThisSetBatteryTargetMv               (int16_t  value);
 extern void CanThisSetBatteryVoltageSettleTimeMins  (uint16_t value);
+extern void CanThisSetBatteryCurrentSettleTimeMins  (uint16_t value);
 extern void CanThisSetBatteryVoltageReboundMv       (int8_t   value);
 extern void CanThisSetBatteryManagePulseAdjustMas   (int16_t  value);
 

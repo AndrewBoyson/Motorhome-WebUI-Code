@@ -20,3 +20,4 @@
 ~BatteryCountNegPulses~
 ~BatteryManageDifferenceMas~
 ~BatteryManagePulseAdjustMas~
+~BatteryCurrentSettleTimeMins~
