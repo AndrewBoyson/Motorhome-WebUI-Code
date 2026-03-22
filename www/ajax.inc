@@ -26,6 +26,7 @@
 ~expand^anchor^Lpg~
 ~expand^anchor^Heater~
 ~expand^anchor^Aging~
+~expand^anchor^Pulse~
 ~expand^anchor^Charge~
 ~expand^anchor^Can~
 ~zerocount~
@@ -42,6 +43,7 @@
 ~expand^edit^lpg-ajax.inc^Lpg~
 ~expand^edit^heater-ajax.inc^Heater~
 ~expand^edit^aging-ajax.inc^Aging~
+~expand^edit^pulse-ajax.inc^Pulse~
 ~expand^edit^charge-ajax.inc^Charge~
 ~expand^edit^can-ajax.inc^Can~
 </body>

@@ -16,6 +16,7 @@
 ~expand^anchor^Charge~
 ~expand^anchor^Heater~
 ~expand^anchor^Aging~
+~expand^anchor^Pulse~
 ~expand^anchor^Lpg~
 ~expand^anchor^Fresh~
 ~expand^anchor^Plot~
@@ -23,6 +24,7 @@
 ~expand^edit^../data/charge^Charge~
 ~expand^edit^../data/heater^Heater~
 ~expand^edit^../data/aging^Aging~
+~expand^edit^../data/pulse^Pulse~
 ~expand^edit^../data/lpg^Lpg~
 ~expand^edit^../data/fresh^Fresh~
 ~expand^edit^../data/plot^Plot~

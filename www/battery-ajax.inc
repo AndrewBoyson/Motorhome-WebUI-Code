@@ -12,7 +12,7 @@
 ~BatteryHeaterProportional~
 ~BatteryHeaterIntegral~
 ~BatteryTargetMode^1/0~
-~BatteryTargetMv~
+~BatteryInflexionMv~
 ~BatteryMsAtRest~
 ~BatteryVoltageSettleTimeMins~
 ~BatteryVoltageReboundMv~
@@ -21,3 +21,7 @@
 ~BatteryManageDifferenceMas~
 ~BatteryManagePulseAdjustMas~
 ~BatteryCurrentSettleTimeMins~
+~BatteryCalChargeIsActive^1/0~
+~BatteryCalCurrentIsActive^1/0~
+~BatteryIsAtRest^1/0~
+~BatteryInflexionPercent~

@@ -181,6 +181,21 @@ static int recordCharge(time_t t, int16_t mv, uint32_t as)
 	if (fclose(fp)                                                                  ) { LogErrno("Record charge - fclose: "  );             return 1; }
 	return 0;
 }
+static int recordPulseAdjustment(time_t t, int16_t posPulses, int16_t negPulses, int32_t differenceMas, int16_t pulseAdjustMas)
+{
+	FILE* fp = fopen("pulse", "a");
+	if (fp                                                             == NULL      ) { LogErrno("Record pulse  - fopen: "   );             return 1; }
+	
+	struct tm tm;
+	if (gmtime_r(&t, &tm)                                              == 0         ) { LogErrno("Record pulse - gmtime-r: "); fclose(fp); return 1; }
+	char sTime[20];
+	if (strftime(sTime, sizeof(sTime), "%Y-%m-%d %H:%M:%S", &tm)        < 0         ) { LogErrno("Record pulse - strftime: "); fclose(fp); return 1; }
+	
+	if (fprintf(fp, "%s, %d, %d, %d, %d\r\n", sTime, posPulses, negPulses, differenceMas, pulseAdjustMas) < 0 ) { LogErrno("Record pulse - fprintf: " ); fclose(fp); return 1; }
+	
+	if (fclose(fp)                                                                  ) { LogErrno("Record pulse - fclose: "  );             return 1; }
+	return 0;
+}
 
 static void plotHeating()
 {
@@ -228,10 +243,31 @@ static void plotCharge()
 		lastUpdate = now;
 	}
 }
+void plotPulse()
+{
+	time_t now = time(0);
+	char    thisIsCalibrating  = CanThisGetBatteryCalChargeIsActive   ();
+	int16_t thisPosPulses      = CanThisGetBatteryCountPosPulses      ();
+	int16_t thisNegPulses      = CanThisGetBatteryCountNegPulses      ();
+	int32_t thisDifferenceMas  = CanThisGetBatteryManageDifferenceMas ();
+	int16_t thisPulseAdjustMas = CanThisGetBatteryManagePulseAdjustMas();
+	
+	static char lastIsCalibrating = 1;
+	static int16_t lastPosPulses  = 0;
+	static int16_t lastNegPulses  = 0;
+	
+	if (thisPosPulses > 0) lastPosPulses = thisPosPulses;
+	if (thisNegPulses > 0) lastNegPulses = thisNegPulses;
+	
+	if (thisIsCalibrating && !lastIsCalibrating) recordPulseAdjustment(now, lastPosPulses, lastNegPulses, thisDifferenceMas, thisPulseAdjustMas);
+	
+	lastIsCalibrating = thisIsCalibrating;
+}
 void BatteryPoll()
 {
 	plotHeating();
 	plotCharge();
+	plotPulse();
 	
 	char state = CanThisGetBatteryOutputState();
 	
