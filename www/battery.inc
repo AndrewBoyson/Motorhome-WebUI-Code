@@ -36,14 +36,14 @@
 <h2>Curve</h2>
 ~expand^input^Inflexion mV^val-battery-inflexion-mv^3.0~
 ~expand^input^Inflexion soc%^val-battery-inflexion-percent^3.0~
-<h2>Calibrate</h2>
+<h2>Rest</h2>
 ~expand^led^Is at rest^att-battery-is-at-rest~
 ~expand^value^Time at rest^txt-battery-time-at-rest~
 ~expand^input^Current settle time hours^val-battery-current-settle-time-hours^3.0~
 ~expand^input^Voltage settle time hours^val-battery-voltage-settle-time-hours^3.0~
 ~expand^led^Current is calibrating^att-battery-cal-current-is-active~
 ~expand^led^SoC calibrating from voltage^att-battery-cal-charge-is-active~
-<h2>Cycle</h2>
+<h2>Calibrate pulse</h2>
 ~expand^value^Pos pulses^txt-battery-count-pos-pulses~
 ~expand^value^Neg pulses^txt-battery-count-neg-pulses~
 ~expand^value^Cycle difference As^txt-battery-manage-difference-as~
