@@ -5,7 +5,7 @@
 
 extern void BatteryInit(void);
 extern void BatteryPoll(void);
-
+/*
 extern void BatterySetMode           (int8_t   v);
 extern char BatterySetModeAsString   (char*    v);
 extern void BatterySetAwayPercent    (uint8_t  v);
@@ -40,3 +40,4 @@ extern uint32_t BatteryGetCalMinAs       (void);
 
 extern uint32_t BatteryGetRestedSeconds  (void);
 extern char     BatteryGetCalOkToStart   (void);
+*/

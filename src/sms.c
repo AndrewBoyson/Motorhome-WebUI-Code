@@ -283,20 +283,18 @@ void SmsSendF(char* number, const char *format, ...)
 }
 static void sendStatus(char* number)
 {
-	
-	SmsSendF(
-		number,
+	SmsSendF( number,
 		"Status:\n"
 		"Battery %3.1f%%\n"
 		"Water %d litres\n"
 		"Lpg %d litres\n"
-		"Water pump %s\n"
-		"Water fill %s\n"
-		"Water drain %s\n"
+		"Pump %s\n"
+		"Fill %s\n"
+		"Drain %s\n"
 		"Inverter %s\n"
 		"Lpg heater %s\n"
-		"EHU %s",
-		"Battery target mode %s",
+		"EHU %s\n"
+		"Battery mode %s",
 		(float)CanThisGetBatteryCountedCapacityAs() / (BATTERY_CAPACITY_AH * 36),
 		CanThisGetTankFreshLitres(),
 		CanThisGetTankLpgVolumeMl() / 1024,
@@ -307,6 +305,30 @@ static void sendStatus(char* number)
 		CanThisGetControlLpgHeater()  ? "on" : "off",
 		CanThisGetControlEhu()        ? "on" : "off",
 		CanThisGetBatteryTargetMode() == 0 ? "home" : CanThisGetBatteryTargetMode() == 1 ? "away" : "none"
+	);
+}
+static void oldsendStatus(char* number)
+{
+	SmsSendF( number,
+		"Status:\n"
+		"Battery %3.1f%%\n"
+		"Water %d litres\n"
+		"Lpg %d litres\n"
+		"Pump %s\n"
+		"Fill %s\n"
+		"Drain %s\n"
+		"Inverter %s\n"
+		"Lpg heater %s\n"
+		"EHU %s\n\n\nSome very very very long text\n",
+		(float)CanThisGetBatteryCountedCapacityAs() / (BATTERY_CAPACITY_AH * 36),
+		CanThisGetTankFreshLitres(),
+		CanThisGetTankLpgVolumeMl() / 1024,
+		CanThisGetControlWaterPump()  ? "on" : "off",
+		CanThisGetControlWaterFill()  ? "on" : "off",
+		CanThisGetControlWaterDrain() ? "on" : "off",
+		CanThisGetControlInverter()   ? "on" : "off",
+		CanThisGetControlLpgHeater()  ? "on" : "off",
+		CanThisGetControlEhu()        ? "on" : "off"
 	);
 }
 static void sendBattery(char* number)
@@ -412,7 +434,7 @@ static char setLpgHeater(char* number, char* sValue)
 }
 static char setMode(char* number, char* sValue)
 {
-	if (strcasecmp(sValue, "voltage") == 0) CanThisSetBatteryTargetMode( 0);
+	if      (strcasecmp(sValue, "voltage") == 0) CanThisSetBatteryTargetMode( 0);
 	else if (strcasecmp(sValue, "home"   ) == 0) CanThisSetBatteryTargetMode( 0);
 	else if (strcasecmp(sValue, "soc"    ) == 0) CanThisSetBatteryTargetMode( 1);
 	else if (strcasecmp(sValue, "charge" ) == 0) CanThisSetBatteryTargetMode( 1);
@@ -421,7 +443,7 @@ static char setMode(char* number, char* sValue)
 	else if (strcasecmp(sValue, "none"   ) == 0) CanThisSetBatteryTargetMode(-1);
 	else return -1;
 	sleep(3); //Need time for the values to be updated in their thread so sleep this one
-	sendStatus(number);
+	sendBattery(number);
 	return 0;
 }
 static void splitRequest(char* request, int commandSize, char* command, int paramSize, char* param) //Returns 0 on success

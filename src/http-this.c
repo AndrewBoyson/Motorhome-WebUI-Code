@@ -79,20 +79,6 @@ int HttpThisNameValue(unsigned rid, char* name, char* value) { //returns -1 if u
 	if (strcmp(name, "battery-current-settle-time-mins"    ) == 0) { uint16_t v; if (HttpGetParseU16  (value, &v)) return -1; CanThisSetBatteryCurrentSettleTimeMins  (v); return 0; }
 	if (strcmp(name, "battery-voltage-rebound-mv"          ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; CanThisSetBatteryVoltageReboundMv       (v); return 0; }
 	if (strcmp(name, "battery-manage-pulse-adjust-mas"     ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetBatteryManagePulseAdjustMas   (v); return 0; }
-	if (strcmp(name, "battery-mode"                        ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; BatterySetMode                          (v); return 0; }
-	if (strcmp(name, "battery-away-percent"                ) == 0) { uint8_t  v; if (HttpGetParseU8   (value, &v)) return -1; BatterySetAwayPercent                   (v); return 0; }
-	if (strcmp(name, "battery-home-percent"                ) == 0) { uint8_t  v; if (HttpGetParseU8   (value, &v)) return -1; BatterySetHomePercent                   (v); return 0; }
-	if (strcmp(name, "battery-rest-ma"                     ) == 0) { int32_t  v; if (HttpGetParseS32  (value, &v)) return -1; BatterySetRestMa                        (v); return 0; }
-	if (strcmp(name, "plot-rest-seconds"                   ) == 0) { uint32_t v; if (HttpGetParseU32  (value, &v)) return -1; BatterySetPlotRestSeconds               (v); return 0; }
-	if (strcmp(name, "plot-direction"                      ) == 0) {  int8_t  v; if (HttpGetParseS8   (value, &v)) return -1; BatterySetPlotDir                       (v); return 0; }
-	if (strcmp(name, "plot-inc-percent"                    ) == 0) { uint8_t  v; if (HttpGetParseU8   (value, &v)) return -1; BatterySetPlotIncPercent                (v); return 0; }
-	if (strcmp(name, "plot-max-percent"                    ) == 0) { uint8_t  v; if (HttpGetParseU8   (value, &v)) return -1; BatterySetPlotMaxPercent                (v); return 0; }
-	if (strcmp(name, "plot-min-percent"                    ) == 0) { uint8_t  v; if (HttpGetParseU8   (value, &v)) return -1; BatterySetPlotMinPercent                (v); return 0; }
-	if (strcmp(name, "battery-cal-as"                      ) == 0) { uint32_t v; if (HttpGetParseU32  (value, &v)) return -1; BatterySetCalAs                         (v); return 0; }
-	if (strcmp(name, "battery-cal-mv"                      ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; BatterySetCalMv                         (v); return 0; }
-	if (strcmp(name, "battery-cal-as-per-mv"               ) == 0) { uint32_t v; if (HttpGetParseU32  (value, &v)) return -1; BatterySetCalAsPerMv                    (v); return 0; }
-	if (strcmp(name, "battery-cal-time"                    ) == 0) { uint32_t v; if (HttpGetParseU32  (value, &v)) return -1; BatterySetCalTime                       (v); return 0; }
-	if (strcmp(name, "battery-cal-min-as"                  ) == 0) { uint32_t v; if (HttpGetParseU32  (value, &v)) return -1; BatterySetCalMinAs                      (v); return 0; }
 	
 	if (strcmp(name, "tank-fresh-base-temp-16ths"          ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetTankFreshBaseTemp16ths        (v); return 0; }
 	if (strcmp(name, "tank-fresh-base-mv"                  ) == 0) {  int16_t v; if (HttpGetParseS16  (value, &v)) return -1; CanThisSetTankFreshBaseMv               (v); return 0; }
@@ -154,7 +140,7 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	if (strcmp (name, "BatteryHeaterIntegral"         ) == 0) { HttpResponseAddU16 (        CanThisGetBatteryHeaterIntegral          ()); return 0; }
 	if (strcmp (name, "BatteryVoltageMv"              ) == 0) { HttpResponseAddS16 (        CanThisGetBatteryVoltageMv               ()); return 0; }
 	if (strcmp (name, "BatteryCurrentOffsetMa"        ) == 0) { HttpResponseAddS16 (        CanThisGetBatteryCurrentOffsetMa         ()); return 0; }
-	if (strcmp (name, "BatteryTargetMode"             ) == 0) { HttpResponseAddBool(format, CanThisGetBatteryTargetMode              ()); return 0; }
+	if (strcmp (name, "BatteryTargetMode"             ) == 0) { HttpResponseAddS8  (        CanThisGetBatteryTargetMode              ()); return 0; }
 	if (strcmp (name, "BatteryInflexionMv"            ) == 0) { HttpResponseAddS16 (        CanThisGetBatteryInflexionMv             ()); return 0; }
 	if (strcmp (name, "BatteryInflexionPercent"       ) == 0) { HttpResponseAddU8  (        CanThisGetBatteryInflexionPercent        ()); return 0; }
 	if (strcmp (name, "BatteryMsAtRest"               ) == 0) { HttpResponseAddU32 (        CanThisGetBatteryMsAtRest                ()); return 0; }
@@ -168,24 +154,6 @@ int HttpThisInclude(char* name, char* format) { // Returns 0 if handled, 1 if no
 	if (strcmp (name, "BatteryCalChargeIsActive"      ) == 0) { HttpResponseAddBool(format, CanThisGetBatteryCalChargeIsActive       ()); return 0; }
 	if (strcmp (name, "BatteryCalCurrentIsActive"     ) == 0) { HttpResponseAddBool(format, CanThisGetBatteryCalCurrentIsActive      ()); return 0; }
 	if (strcmp (name, "BatteryIsAtRest"               ) == 0) { HttpResponseAddBool(format, CanThisGetBatteryIsAtRest                ()); return 0; }
-	
-	//Plot
-	if (strcmp (name, "BatteryMode"                  ) == 0) {HttpResponseAddS8    (        BatteryGetMode                           ()); return 0; }
-	if (strcmp (name, "BatteryAwayPercent"           ) == 0) {HttpResponseAddU8    (        BatteryGetAwayPercent                    ()); return 0; }
-	if (strcmp (name, "BatteryHomePercent"           ) == 0) {HttpResponseAddU8    (        BatteryGetHomePercent                    ()); return 0; }
-	if (strcmp (name, "BatteryRestMa"                ) == 0) {HttpResponseAddS32   (        BatteryGetRestMa                         ()); return 0; }
-	if (strcmp (name, "BatteryRestedSeconds"         ) == 0) {HttpResponseAddU32   (        BatteryGetRestedSeconds                  ()); return 0; }
-	if (strcmp (name, "PlotRestSeconds"              ) == 0) {HttpResponseAddU32   (        BatteryGetPlotRestSeconds                ()); return 0; }
-	if (strcmp (name, "PlotDirection"                ) == 0) {HttpResponseAddS8    (        BatteryGetPlotDir                        ()); return 0; }
-	if (strcmp (name, "PlotIncPercent"               ) == 0) {HttpResponseAddU8    (        BatteryGetPlotIncPercent                 ()); return 0; }
-	if (strcmp (name, "PlotMaxPercent"               ) == 0) {HttpResponseAddU8    (        BatteryGetPlotMaxPercent                 ()); return 0; }
-	if (strcmp (name, "PlotMinPercent"               ) == 0) {HttpResponseAddU8    (        BatteryGetPlotMinPercent                 ()); return 0; }
-	if (strcmp (name, "BatteryCalAs"                 ) == 0) {HttpResponseAddU32   (        BatteryGetCalAs                          ()); return 0; }
-	if (strcmp (name, "BatteryCalMv"                 ) == 0) {HttpResponseAddS16   (        BatteryGetCalMv                          ()); return 0; }
-	if (strcmp (name, "BatteryCalAsPerMv"            ) == 0) {HttpResponseAddU32   (        BatteryGetCalAsPerMv                     ()); return 0; }
-	if (strcmp (name, "BatteryCalTime"               ) == 0) {HttpResponseAddU32   (        BatteryGetCalTime                        ()); return 0; }
-	if (strcmp (name, "BatteryCalMinAs"              ) == 0) {HttpResponseAddU32   (        BatteryGetCalMinAs                       ()); return 0; }
-	if (strcmp (name, "BatteryCalOkToStart"          ) == 0) {HttpResponseAddS8    (        BatteryGetCalOkToStart                   ()); return 0; }
 	
 	//Tank
 	if (strcmp (name, "TankFreshTemperature"         ) == 0) { HttpResponseAddS16  (        CanThisGetTankFreshTemperature           ()); return 0; }
