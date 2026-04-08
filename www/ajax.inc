@@ -16,7 +16,6 @@
 ~expand^anchor^Index~
 ~expand^anchor^Control~
 ~expand^anchor^Heating~
-~expand^anchor^Manage~
 ~expand^anchor^Battery~
 ~expand^anchor^Tank~
 ~expand^anchor^Backup~
@@ -33,7 +32,6 @@
 ~expand^edit^index-ajax.inc^Index~
 ~expand^edit^control-ajax.inc^Control~
 ~expand^edit^heating-ajax.inc^Heating~
-~expand^edit^manage-ajax.inc^Manage~
 ~expand^edit^battery-ajax.inc^Battery~
 ~expand^edit^tank-ajax.inc^Tank~
 ~expand^edit^backup-ajax.inc^Backup~

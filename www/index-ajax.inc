@@ -15,7 +15,6 @@
 ~ControlLpgHeater~
 ~ControlDPlus~
 ~ControlEhu~
-~BatteryTargetMode^1/0~
 ~ControlPumpMinLitres~
 ~ControlPumpDplusLitres~
 ~TankLpgVolumeMinMl~

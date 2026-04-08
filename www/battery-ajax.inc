@@ -11,7 +11,7 @@
 ~BatteryCurrentOffsetMa~
 ~BatteryHeaterProportional~
 ~BatteryHeaterIntegral~
-~BatteryTargetMode^1/0~
+~BatteryTargetMode~
 ~BatteryInflexionMv~
 ~BatteryMsAtRest~
 ~BatteryVoltageSettleTimeMins~

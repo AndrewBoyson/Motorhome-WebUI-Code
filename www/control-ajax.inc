@@ -9,5 +9,6 @@
 ~ControlPumpMinLitres~
 ~ControlPumpDplusLitres~
 ~ControlDrainMaxLitres~
-~BatteryTargetMode^1/0~
+~BatteryTargetMode~
 ~BatteryTargetSocPercent~
+~BatteryOutputState~

@@ -307,30 +307,6 @@ static void sendStatus(char* number)
 		CanThisGetBatteryTargetMode() == 0 ? "home" : CanThisGetBatteryTargetMode() == 1 ? "away" : "none"
 	);
 }
-static void oldsendStatus(char* number)
-{
-	SmsSendF( number,
-		"Status:\n"
-		"Battery %3.1f%%\n"
-		"Water %d litres\n"
-		"Lpg %d litres\n"
-		"Pump %s\n"
-		"Fill %s\n"
-		"Drain %s\n"
-		"Inverter %s\n"
-		"Lpg heater %s\n"
-		"EHU %s\n\n\nSome very very very long text\n",
-		(float)CanThisGetBatteryCountedCapacityAs() / (BATTERY_CAPACITY_AH * 36),
-		CanThisGetTankFreshLitres(),
-		CanThisGetTankLpgVolumeMl() / 1024,
-		CanThisGetControlWaterPump()  ? "on" : "off",
-		CanThisGetControlWaterFill()  ? "on" : "off",
-		CanThisGetControlWaterDrain() ? "on" : "off",
-		CanThisGetControlInverter()   ? "on" : "off",
-		CanThisGetControlLpgHeater()  ? "on" : "off",
-		CanThisGetControlEhu()        ? "on" : "off"
-	);
-}
 static void sendBattery(char* number)
 {
 	SmsSendF(number,
@@ -434,13 +410,13 @@ static char setLpgHeater(char* number, char* sValue)
 }
 static char setMode(char* number, char* sValue)
 {
-	if      (strcasecmp(sValue, "voltage") == 0) CanThisSetBatteryTargetMode( 0);
-	else if (strcasecmp(sValue, "home"   ) == 0) CanThisSetBatteryTargetMode( 0);
-	else if (strcasecmp(sValue, "soc"    ) == 0) CanThisSetBatteryTargetMode( 1);
-	else if (strcasecmp(sValue, "charge" ) == 0) CanThisSetBatteryTargetMode( 1);
-	else if (strcasecmp(sValue, "away"   ) == 0) CanThisSetBatteryTargetMode( 1);
-	else if (strcasecmp(sValue, "neutral") == 0) CanThisSetBatteryTargetMode(-1);
-	else if (strcasecmp(sValue, "none"   ) == 0) CanThisSetBatteryTargetMode(-1);
+	if      (strcasecmp(sValue, "voltage") == 0) CanThisSetBatteryTargetMode('M');
+	else if (strcasecmp(sValue, "home"   ) == 0) CanThisSetBatteryTargetMode('M');
+	else if (strcasecmp(sValue, "soc"    ) == 0) CanThisSetBatteryTargetMode('C');
+	else if (strcasecmp(sValue, "charge" ) == 0) CanThisSetBatteryTargetMode('C');
+	else if (strcasecmp(sValue, "away"   ) == 0) CanThisSetBatteryTargetMode('C');
+	else if (strcasecmp(sValue, "neutral") == 0) CanThisSetBatteryTargetMode('N');
+	else if (strcasecmp(sValue, "none"   ) == 0) CanThisSetBatteryTargetMode('N');
 	else return -1;
 	sleep(3); //Need time for the values to be updated in their thread so sleep this one
 	sendBattery(number);

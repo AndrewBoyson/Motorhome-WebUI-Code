@@ -29,7 +29,15 @@
 ~expand^value^Output state^txt-battery-output-state~
 ~expand^switch^Charge enable^att-battery-charge-enabled~
 ~expand^switch^Discharge enable^att-battery-discharge-enabled~
-~expand^switch^Target mode mV or soc%^att-battery-target-mode~
+<h2>Target</h2>
+<div class='line'>
+<label for='val-battery-target-mode'>Target mode</label>
+<select id='val-battery-target-mode' onchange='change(this)'>
+  <option value='M'>Voltage mV</option>
+  <option value='C'>Charge %</option>
+  <option value='N'>Neutral</option>
+</select>
+</div>
 ~expand^input^Target soc%^val-battery-target-soc-percent^2.0~
 ~expand^input^Voltage rebound mv^val-battery-voltage-rebound-mv^3.0~
 ~expand^value^Time to target^txt-battery-time-to-target~

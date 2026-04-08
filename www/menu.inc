@@ -5,7 +5,6 @@
 <li id='Home'><a href='/'>Home</a></li>
 <li id='Control'><a href='/control'>Control</a></li>
 <li id='Heating'><a href='/heating'>Heating</a></li>
-<li id='Manage'><a href='/manage'>Manage</a></li>
 <li id='Battery'><a href='/battery'>Battery</a></li>
 <li id='Tank'><a href='/tank'>Tank</a></li>
 <li id='Backup'><a href='/backup'>Backup</a></li>

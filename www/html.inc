@@ -17,7 +17,6 @@
 ~expand^anchor^Index~
 ~expand^anchor^Control~
 ~expand^anchor^Heating~
-~expand^anchor^Manage~
 ~expand^anchor^Battery~
 ~expand^anchor^Tank~
 ~expand^anchor^Backup~
@@ -35,7 +34,6 @@
 ~expand^edit^index.inc^Index~
 ~expand^edit^control.inc^Control~
 ~expand^edit^heating.inc^Heating~
-~expand^edit^manage.inc^Manage~
 ~expand^edit^battery.inc^Battery~
 ~expand^edit^tank.inc^Tank~
 ~expand^edit^backup.inc^Backup~

@@ -33,7 +33,15 @@
 ~expand^input^Min litres for pump with D+^val-control-pump-dplus-litres^3.0~
 ~expand^input^Max litres for drain^val-control-drain-max-litres^3.0~
 <br/>
-~expand^switch^Battery mode home | away^att-battery-mode-away~
+~expand^value^Battery state^txt-battery-output-state~
 ~expand^input^Battery away target %^val-battery-target-percent^2.0~
+<div class='line'>
+<label for='val-battery-mode'>Battery mode</label>
+<select id='val-battery-mode' onchange='change(this)'>
+  <option value='M'>Home</option>
+  <option value='C'>Away</option>
+  <option value='N'>Neutral</option>
+</select>
+</div>
 </body>
 </html>

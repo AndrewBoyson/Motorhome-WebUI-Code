@@ -27,7 +27,6 @@
 ~expand^value^Battery current mA^txt-battery-current-ma~
 ~expand^value^Days to empty^txt-battery-days-to-empty~
 ~expand^value^Battery state^txt-battery-output-state~
-~expand^led^Battery mode away^att-mode-away~
 <br/>
 ~expand^value^Room temperature^txt-actual-room-temp~
 ~expand^value^Hot water temperature^txt-actual-water-temp~

@@ -16,7 +16,6 @@
 ~expand^anchor^Index~
 ~expand^anchor^Control~
 ~expand^anchor^Heating~
-~expand^anchor^Manage~
 ~expand^anchor^Battery~
 ~expand^anchor^Tank~
 ~expand^anchor^Backup~
@@ -25,7 +24,6 @@
 ~expand^edit^index.js^Index~
 ~expand^edit^control.js^Control~
 ~expand^edit^heating.js^Heating~
-~expand^edit^manage.js^Manage~
 ~expand^edit^battery.js^Battery~
 ~expand^edit^tank.js^Tank~
 ~expand^edit^backup.js^Backup~
