@@ -304,7 +304,7 @@ static void sendStatus(char* number)
 		CanThisGetControlInverter()   ? "on" : "off",
 		CanThisGetControlLpgHeater()  ? "on" : "off",
 		CanThisGetControlEhu()        ? "on" : "off",
-		CanThisGetBatteryTargetMode() == 0 ? "home" : CanThisGetBatteryTargetMode() == 1 ? "away" : "none"
+		CanThisGetBatteryTargetMode() == 'M' ? "home" : CanThisGetBatteryTargetMode() == 'C' ? "away" : "none"
 	);
 }
 static void sendBattery(char* number)
@@ -318,7 +318,7 @@ static void sendBattery(char* number)
 		"Temperature %2.1f°\n"
 		"Output state %c",
 		(float)CanThisGetBatteryCountedCapacityAs() / (BATTERY_CAPACITY_AH * 36),
-		CanThisGetBatteryTargetMode() == 0 ? "voltage" : CanThisGetBatteryTargetMode() == 1 ? "soc" : "neutral",
+		CanThisGetBatteryTargetMode() == 'M' ? "voltage" : CanThisGetBatteryTargetMode() == 'C' ? "soc" : "neutral",
 		CanThisGetBatteryTargetSocPercent(),
 		CanThisGetBatteryCurrentMa(),
 		(float)CanThisGetBatteryTemperature8bfdp() / 256,
