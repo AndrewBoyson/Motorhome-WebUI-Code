@@ -83,8 +83,8 @@ static void pollBatteryTemperature()
 {
 	static int16_t lastTemperatureDeg  = 20;
 	int16_t thisTemperatureDeg  =           CanThisGetBatteryTemperature8bfdp() / 256;
-	     if (lastTemperatureDeg  <= 30 && thisTemperatureDeg  > 30) AlertSend("Battery temperature above 30");
-	else if (lastTemperatureDeg  <= 25 && thisTemperatureDeg  > 25) AlertSend("Battery temperature above 25");
+	     if (lastTemperatureDeg  <= 40 && thisTemperatureDeg  > 40) AlertSend("Battery temperature above 40");
+	else if (lastTemperatureDeg  <= 30 && thisTemperatureDeg  > 30) AlertSend("Battery temperature above 30");
 	else if (lastTemperatureDeg  >=  0 && thisTemperatureDeg  <  0) AlertSend("Battery temperature below 0");
 	else if (lastTemperatureDeg  >=  5 && thisTemperatureDeg  <  5) AlertSend("Battery temperature below 5");
 	else if (lastTemperatureDeg  >= 10 && thisTemperatureDeg  < 10) AlertSend("Battery temperature below 10");
