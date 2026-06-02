@@ -46,6 +46,10 @@
   <option value='23'>23</option>
   <option value='24'>24</option>
   <option value='25'>25</option>
+  <option value='26'>26</option>
+  <option value='27'>27</option>
+  <option value='28'>28</option>
+  <option value='29'>29</option>
 </select>
 </div>
 <div class='line'>

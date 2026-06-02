@@ -30,3 +30,4 @@ extern void TrumaHadSendAcknowledgement(void);
 extern char TrumaHasSameActualAsTarget(void);
 
 extern void TrumaInit(void);
+extern void TrumaPoll(void);

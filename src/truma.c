@@ -19,6 +19,8 @@ static char    _waterTemp = 'H'; //Eco, High, Boost == 40K, 60K, 200K
 
 static char    _energy    = 'E'; //Gas, Elec, Both  == 1, 2, 3 little, capital 900, 1800
 
+static uint32_t _secondsAfterWantedChanged = 0;
+
 char    TrumaGetWantedRoomOn   () { return _roomOn;    }
 uint8_t TrumaGetWantedRoomTemp () { return _roomTemp;  }
 char    TrumaGetWantedFanMode  () { return _fanMode;   }
@@ -28,14 +30,14 @@ char    TrumaGetWantedWaterTemp() { return _waterTemp; }
 
 char    TrumaGetWantedEnergy   () { return _energy;    }
 
-void TrumaSetWantedRoomOn   (char    v) {                                        _roomOn    = v; SettingsSetChar("heatingRoomOn"   , v);} //Boolean so no need to sanitise
-void TrumaSetWantedRoomTemp (uint8_t v) { if (v < 5) v = 5; if (v > 25) v =  25; _roomTemp  = v; SettingsSetU8  ("heatingRoomTemp" , v);} //Sanitise to be between 5 and 25
-void TrumaSetWantedFanMode  (char    v) { if (!strchr("EH",    v)     ) v = 'E'; _fanMode   = v; SettingsSetChar("heatingFanMode"  , v);} //Sanitise to 'E' or 'H'
+void TrumaSetWantedRoomOn   (char    v) {                                        _roomOn    = v; _secondsAfterWantedChanged = 0; SettingsSetChar("heatingRoomOn"   , v);} //Boolean so no need to sanitise
+void TrumaSetWantedRoomTemp (uint8_t v) { if (v < 5) v = 5; if (v > 25) v =  25; _roomTemp  = v; _secondsAfterWantedChanged = 0; SettingsSetU8  ("heatingRoomTemp" , v);} //Sanitise to be between 5 and 25
+void TrumaSetWantedFanMode  (char    v) { if (!strchr("EH",    v)     ) v = 'E'; _fanMode   = v; _secondsAfterWantedChanged = 0; SettingsSetChar("heatingFanMode"  , v);} //Sanitise to 'E' or 'H'
 
-void TrumaSetWantedWaterOn  (char    v) {                                        _waterOn   = v; SettingsSetChar("heatingWaterOn"  , v);} //Boolean so no need to sanitise
-void TrumaSetWantedWaterTemp(char    v) { if (!strchr("EHB",   v)     ) v = 'H'; _waterTemp = v; SettingsSetChar("heatingWaterTemp", v);} //Sanitise to 'E', 'H' or 'B'
+void TrumaSetWantedWaterOn  (char    v) {                                        _waterOn   = v; _secondsAfterWantedChanged = 0; SettingsSetChar("heatingWaterOn"  , v);} //Boolean so no need to sanitise
+void TrumaSetWantedWaterTemp(char    v) { if (!strchr("EHB",   v)     ) v = 'H'; _waterTemp = v; _secondsAfterWantedChanged = 0; SettingsSetChar("heatingWaterTemp", v);} //Sanitise to 'E', 'H' or 'B'
 
-void TrumaSetWantedEnergy   (char    v) { if (!strchr("GEeMm", v)     ) v = 'E'; _energy    = v; SettingsSetChar("heatingEnergy"   , v);} //Sanitise to 'G', 'E', 'e', 'M' or 'm'
+void TrumaSetWantedEnergy   (char    v) { if (!strchr("GEeMm", v)     ) v = 'E'; _energy    = v; _secondsAfterWantedChanged = 0; SettingsSetChar("heatingEnergy"   , v);} //Sanitise to 'G', 'E', 'e', 'M' or 'm'
 
 uint8_t TrumaTargetRoomTemp  = 0;
 char    TrumaTargetFanMode   = 'E';
@@ -65,6 +67,26 @@ char TrumaHasSameActualAsTarget()
 	    TrumaTargetFanMode      == (_roomOn  ? _fanMode   : 'O') &&
 		TrumaTargetWaterTemp    == (_waterOn ? _waterTemp : 'O') &&
 		TrumaTargetEnergy       ==             _energy;
+}
+static void updateWantedFromActual()
+{
+	//Block updates for two minutes after any change to wanteds
+	_secondsAfterWantedChanged++;
+	if (_secondsAfterWantedChanged < 120) return;
+	_secondsAfterWantedChanged = 120;
+	
+	_roomOn = TrumaTargetRoomTemp > 0;
+	if (!_roomOn) _roomTemp = TrumaActualRoomTemp / 10 - 273 + 1;
+	if ( _roomOn) _fanMode  = TrumaTargetFanMode;
+	
+	_waterOn = TrumaTargetWaterTemp == 'E' || TrumaTargetWaterTemp == 'H' || TrumaTargetWaterTemp == 'B';
+	if (_waterOn) _waterTemp = TrumaTargetWaterTemp;
+	
+	_energy = TrumaTargetEnergy;
+}
+void TrumaPoll() //Used to track wanted room temperature
+{
+	updateWantedFromActual();
 }
 void TrumaInit()
 {

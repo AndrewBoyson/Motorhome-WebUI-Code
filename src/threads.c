@@ -14,6 +14,7 @@
 #include "alert.h"
 #include "tank.h"
 #include "battery.h"
+#include "truma.h"
 
 static struct Thread threadLin;
 static struct Thread threadCan;
@@ -49,6 +50,7 @@ static void *workerPoll(void *arg)
 			AlertPoll();       //Check for alerts
 			TankPoll();        //Manages the tank - actually just records water and lpg levels
 			BatteryPoll();     //Manage the battery
+			TrumaPoll();       //Manage the Truma heating - actually just updates the wanted values from the actual values
 		}
 	}
 	return NULL;
