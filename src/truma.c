@@ -77,6 +77,7 @@ static void updateWantedFromActual()
 	
 	_roomOn = TrumaTargetRoomTemp > 0;
 	if (!_roomOn) _roomTemp = TrumaActualRoomTemp / 10 - 273 + 1;
+	if ( _roomOn) _roomTemp = TrumaTargetRoomTemp;
 	if ( _roomOn) _fanMode  = TrumaTargetFanMode;
 	
 	_waterOn = TrumaTargetWaterTemp == 'E' || TrumaTargetWaterTemp == 'H' || TrumaTargetWaterTemp == 'B';
