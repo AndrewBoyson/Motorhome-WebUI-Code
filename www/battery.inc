@@ -52,10 +52,11 @@
 ~expand^led^Current is calibrating^att-battery-cal-current-is-active~
 ~expand^led^SoC calibrating from voltage^att-battery-cal-charge-is-active~
 <h2>Calibrate pulse</h2>
-~expand^value^Pos pulses^txt-battery-count-pos-pulses~
-~expand^value^Neg pulses^txt-battery-count-neg-pulses~
+~expand^value^Cycle pos pulses^txt-battery-count-pos-pulses~
+~expand^value^Cycle neg pulses^txt-battery-count-neg-pulses~
 ~expand^value^Cycle difference As^txt-battery-manage-difference-as~
 ~expand^value^Cycle difference %^txt-battery-manage-difference-percent~
+~expand^value^Cycle difference mAs per pulse^txt-battery-cycle-diff-mas-per-pulse~
 ~expand^input^Adjustment mAs per pulse^val-battery-manage-pulse-adjust-mas^3.0~
 <h2>Heater</h2>
 ~expand^value^Temperature °C^txt-battery-temperature~

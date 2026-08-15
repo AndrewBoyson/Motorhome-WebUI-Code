@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <limits.h>    //INT_MAX
 #include <stdio.h>     //fopen printf
 #include <errno.h>     //errno
 #include <string.h>    //strerror
@@ -246,22 +247,31 @@ static void plotCharge()
 void plotPulse()
 {
 	time_t now = time(0);
-	char    thisIsCalibrating  = CanThisGetBatteryCalChargeIsActive   ();
-	int16_t thisPosPulses      = CanThisGetBatteryCountPosPulses      ();
-	int16_t thisNegPulses      = CanThisGetBatteryCountNegPulses      ();
-	int32_t thisDifferenceMas  = CanThisGetBatteryManageDifferenceMas ();
-	int16_t thisPulseAdjustMas = CanThisGetBatteryManagePulseAdjustMas();
+	char    isCalibrating  = CanThisGetBatteryCalChargeIsActive   ();
+	int16_t posPulses      = CanThisGetBatteryCountPosPulses      ();
+	int16_t negPulses      = CanThisGetBatteryCountNegPulses      ();
+	int32_t differenceMas  = CanThisGetBatteryManageDifferenceMas ();
 	
-	static char lastIsCalibrating = 1;
-	static int16_t lastPosPulses  = 0;
-	static int16_t lastNegPulses  = 0;
+	int16_t pulseCount = posPulses + negPulses;
+	if (!pulseCount) return; //Don't do divide by zero
+	int32_t newPulseAdjustMas = differenceMas / pulseCount;
 	
-	if (thisPosPulses > 0) lastPosPulses = thisPosPulses;
-	if (thisNegPulses > 0) lastNegPulses = thisNegPulses;
+	if (newPulseAdjustMas > INT_MAX) newPulseAdjustMas = INT_MAX;
+	if (newPulseAdjustMas < INT_MIN) newPulseAdjustMas = INT_MIN;
+	int16_t pulseAdjustMas = (int16_t)newPulseAdjustMas;
 	
-	if (thisIsCalibrating && !lastIsCalibrating) recordPulseAdjustment(now, lastPosPulses, lastNegPulses, thisDifferenceMas, thisPulseAdjustMas);
+	static uint8_t isCalibratingSeconds = 255;
+	if (!isCalibrating)
+	{
+		isCalibratingSeconds = 0;
+		return;
+	}
 	
-	lastIsCalibrating = thisIsCalibrating;
+	if (isCalibratingSeconds < 255) isCalibratingSeconds++;
+	
+	if (isCalibratingSeconds != 3) return;
+	
+	recordPulseAdjustment(now, posPulses, negPulses, differenceMas, pulseAdjustMas);
 }
 void BatteryPoll()
 {
