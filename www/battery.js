@@ -65,6 +65,8 @@ const CAPACITY_AH        = 280;
 const AS_PER_PULSE       = 61.444;
 const AS_PER_PERCENT     = CAPACITY_AH*36;
 const PULSES_PER_PERCENT = AS_PER_PERCENT/AS_PER_PULSE;
+const HEATER_OHMS        =  8.8;
+const HEATER_VOLTS       = 14.4;
 
 function formatSeconds(value)
 {
@@ -87,9 +89,11 @@ function display()
     let timeToTargetSeconds  = capacityToTargetAs / batteryCurrentMa * 1000;
     let sTimeToTarget = batteryOutputState == 'C' || batteryOutputState == 'D' ? formatSeconds(timeToTargetSeconds) : '-';
 
-    let heaterVoltage = Math.sqrt(batteryHeater8bfdp * 256) / 256 * 14;
-    let heaterMa      = heaterVoltage / 8.8 * 1000;
-    let heaterWatts   = heaterVoltage * heaterVoltage / 8.8;
+    //let heaterVoltage = Math.sqrt(batteryHeater8bfdp * 256) / 256 * 14;
+    let heaterVoltage = batteryHeater8bfdp * HEATER_VOLTS / 256;
+    let heaterMa      = heaterVoltage / HEATER_OHMS * 1000;
+    let heaterWatts   = heaterVoltage * heaterVoltage / HEATER_OHMS;
+    let heaterPercent = batteryHeater8bfdp * 100 / 256;
 
     let TiMinutes = batteryHeaterProportional / batteryHeaterIntegral;
 
@@ -114,7 +118,7 @@ function display()
     elem = Ajax.getElementOrNull('val-battery-target-mode'                  ); if (elem) elem.value       =  batteryTargetMode;
     elem = Ajax.getElementOrNull('txt-battery-temperature'                  ); if (elem) elem.textContent = (batteryTemperature8bfdp/256).toFixed(1);
     elem = Ajax.getElementOrNull('val-battery-temperature-setpoint'         ); if (elem) elem.value       = (batteryTemperatureSetPoint/10).toFixed(1);
-    elem = Ajax.getElementOrNull('txt-battery-heater-output-percent'        ); if (elem) elem.textContent =  (batteryHeater8bfdp * 100 / 256).toFixed(1);
+    elem = Ajax.getElementOrNull('txt-battery-heater-output-percent'        ); if (elem) elem.textContent =  heaterPercent.toFixed(1);
     elem = Ajax.getElementOrNull('txt-battery-heater-output-ma'             ); if (elem) elem.textContent =  heaterMa.toFixed(0);
     elem = Ajax.getElementOrNull('txt-battery-heater-output-watts'          ); if (elem) elem.textContent =  heaterWatts.toFixed(1);
     elem = Ajax.getElementOrNull('txt-battery-voltage-mv'                   ); if (elem) elem.textContent =  batteryVoltageMv;
