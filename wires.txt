@@ -16,3 +16,4 @@ blue   / yellow | alarm                |   | x |   |   |   |   |   |   |   |   |
 black  / yellow | inverter call        | x |   |   |   |   |   |   |   |   |   | x |
 blue   / white  | lpg heater           |   | x |   |   |   |   |   | x |   |   |   |
 black  / red    | RUT, PI              | x |   |   | x |   |   |   |   |   |   |   |
+brown  / red    | Water tank heaters   |   |   | x | x |   |   |   |   |   |   |   | Connects to green/blue at heater end

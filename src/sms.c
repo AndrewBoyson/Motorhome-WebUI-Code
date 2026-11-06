@@ -293,17 +293,21 @@ static void sendStatus(char* number)
 		"Drain %s\n"
 		"Inverter %s\n"
 		"Lpg heater %s\n"
+		"Fresh tank heater %s\n"
+		"Grey tank heater %s\n"
 		"EHU %s\n"
 		"Battery mode %s",
 		(float)CanThisGetBatteryCountedCapacityAs() / (BATTERY_CAPACITY_AH * 36),
 		CanThisGetTankFreshLitres(),
 		CanThisGetTankLpgVolumeMl() / 1024,
-		CanThisGetControlWaterPump()  ? "on" : "off",
-		CanThisGetControlWaterFill()  ? "on" : "off",
-		CanThisGetControlWaterDrain() ? "on" : "off",
-		CanThisGetControlInverter()   ? "on" : "off",
-		CanThisGetControlLpgHeater()  ? "on" : "off",
-		CanThisGetControlEhu()        ? "on" : "off",
+		CanThisGetControlWaterPump()   ? "on" : "off",
+		CanThisGetControlWaterFill()   ? "on" : "off",
+		CanThisGetControlWaterDrain()  ? "on" : "off",
+		CanThisGetControlInverter()    ? "on" : "off",
+		CanThisGetControlLpgHeater()   ? "on" : "off",
+		CanThisGetControlFreshHeater() ? "on" : "off",
+		CanThisGetControlGreyHeater()  ? "on" : "off",
+		CanThisGetControlEhu()         ? "on" : "off",
 		CanThisGetBatteryTargetMode() == 'M' ? "home" : CanThisGetBatteryTargetMode() == 'C' ? "away" : "none"
 	);
 }
@@ -338,6 +342,8 @@ static void sendHelp(char* number)
 		"drain on|off\n"
 		"inverter on|off\n"
 		"lpgheater on|off\n"
+		"freshheater on|off\n"
+		"greyheater on|off\n"
 		"mode voltage|soc|neutral\n"
 	);
 }
@@ -404,6 +410,24 @@ static char setLpgHeater(char* number, char* sValue)
 	int iValue = parseBool(sValue);
 	if (iValue < 0) return -1;
 	CanThisSetControlLpgHeater((char)iValue);
+	sleep(3); //Need time for the values to be updated in their thread so sleep this one
+	sendStatus(number);
+	return 0;
+}
+static char setFreshHeater(char* number, char* sValue)
+{
+	int iValue = parseBool(sValue);
+	if (iValue < 0) return -1;
+	CanThisSetControlFreshHeater((char)iValue);
+	sleep(3); //Need time for the values to be updated in their thread so sleep this one
+	sendStatus(number);
+	return 0;
+}
+static char setGreyHeater(char* number, char* sValue)
+{
+	int iValue = parseBool(sValue);
+	if (iValue < 0) return -1;
+	CanThisSetControlGreyHeater((char)iValue);
 	sleep(3); //Need time for the values to be updated in their thread so sleep this one
 	sendStatus(number);
 	return 0;
@@ -492,16 +516,18 @@ void SmsHandleRequest(char* number, char* request)
 	char param[20];
 	splitRequest(request, sizeof(command), command, sizeof(param), param);
 	
-	     if (strcasecmp(command, "status"   ) == 0) {      sendStatus  (number       ); return; } //Handles its own error response
-	else if (strcasecmp(command, "battery"  ) == 0) {      sendBattery (number       ); return; } //Handles its own error response
-	else if (strcasecmp(command, "help"     ) == 0) {      sendHelp    (number       ); return; } //Handles its own error response
-	else if (strcasecmp(command, "target"   ) == 0) {      setTarget   (number, param); return; } //Handles its own error response
-	else if (strcasecmp(command, "pump"     ) == 0) { if (!setPump     (number, param)) return; }
-	else if (strcasecmp(command, "fill"     ) == 0) { if (!setFill     (number, param)) return; }
-	else if (strcasecmp(command, "drain"    ) == 0) { if (!setDrain    (number, param)) return; }
-	else if (strcasecmp(command, "inverter" ) == 0) { if (!setInverter (number, param)) return; }
-	else if (strcasecmp(command, "lpgheater") == 0) { if (!setLpgHeater(number, param)) return; }
-	else if (strcasecmp(command, "mode"     ) == 0) { if (!setMode     (number, param)) return; }
+	     if (strcasecmp(command, "status"     ) == 0) {      sendStatus    (number       ); return; } //Handles its own error response
+	else if (strcasecmp(command, "battery"    ) == 0) {      sendBattery   (number       ); return; } //Handles its own error response
+	else if (strcasecmp(command, "help"       ) == 0) {      sendHelp      (number       ); return; } //Handles its own error response
+	else if (strcasecmp(command, "target"     ) == 0) {      setTarget     (number, param); return; } //Handles its own error response
+	else if (strcasecmp(command, "pump"       ) == 0) { if (!setPump       (number, param)) return; }
+	else if (strcasecmp(command, "fill"       ) == 0) { if (!setFill       (number, param)) return; }
+	else if (strcasecmp(command, "drain"      ) == 0) { if (!setDrain      (number, param)) return; }
+	else if (strcasecmp(command, "inverter"   ) == 0) { if (!setInverter   (number, param)) return; }
+	else if (strcasecmp(command, "lpgheater"  ) == 0) { if (!setLpgHeater  (number, param)) return; }
+	else if (strcasecmp(command, "freshheater") == 0) { if (!setFreshHeater(number, param)) return; }
+	else if (strcasecmp(command, "greyheater" ) == 0) { if (!setGreyHeater (number, param)) return; }
+	else if (strcasecmp(command, "mode"       ) == 0) { if (!setMode       (number, param)) return; }
 	Log('w', "SMS '%s' sent '%s' command '%s' param '%s'", number, request, command, param);
 	SmsSendF(number, "Sorry, I don't understand '%s'", request);
 	

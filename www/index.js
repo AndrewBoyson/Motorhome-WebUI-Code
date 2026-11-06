@@ -16,6 +16,8 @@ let waterFill                = false;
 let waterDrain               = false;
 let inverter                 = false;
 let lpgHeater                = false;
+let freshHeater              = false;
+let greyHeater               = false;
 let dplus                    = false;
 let ehu                      = false;
 let litresLimit              = '';
@@ -42,13 +44,15 @@ function parse()
     waterDrain               = lines[12] === '1';
     inverter                 = lines[13] === '1';
     lpgHeater                = lines[14] === '1';
-    dplus                    = lines[15] === '1';
-    ehu                      = lines[16] === '1';
-    litresLimit              = lines[17];
-    litresDplus              = lines[18];
-    lpgLitresMin             = lines[19];
-    actualRoomTemp           = lines[20];
-    actualWaterTemp          = lines[21];
+    freshHeater              = lines[15] === '1';
+    greyHeater               = lines[16] === '1';
+    dplus                    = lines[17] === '1';
+    ehu                      = lines[18] === '1';
+    litresLimit              = lines[19];
+    litresDplus              = lines[20];
+    lpgLitresMin             = lines[21];
+    actualRoomTemp           = lines[22];
+    actualWaterTemp          = lines[23];
 }
 
 const CAPACITY_AH        = 280;
@@ -109,13 +113,15 @@ function display()
     elem = Ajax.getElementOrNull('txt-tilt-front-deg'                  ); if (elem) elem.textContent =  tiltZdeg.toFixed(1);
     elem = Ajax.getElementOrNull('txt-outside-temperature'             ); if (elem) elem.textContent =  displayTemp16ths(outsideTemp16ths);
     elem = Ajax.getElementOrNull('txt-heating-temperature'             ); if (elem) elem.textContent =  displayTemp16ths(heatingTemp16ths);
-    elem = Ajax.getElementOrNull('att-control-water-pump'              ); if (elem) elem.setAttribute('dir', waterPump  ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-control-water-fill'              ); if (elem) elem.setAttribute('dir', waterFill  ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-control-water-drain'             ); if (elem) elem.setAttribute('dir', waterDrain ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-control-inverter'                ); if (elem) elem.setAttribute('dir', inverter   ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-control-lpg-heater'              ); if (elem) elem.setAttribute('dir', lpgHeater  ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-control-dplus'                   ); if (elem) elem.setAttribute('dir', dplus      ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-control-ehu'                     ); if (elem) elem.setAttribute('dir', ehu        ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-water-pump'              ); if (elem) elem.setAttribute('dir', waterPump   ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-water-fill'              ); if (elem) elem.setAttribute('dir', waterFill   ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-water-drain'             ); if (elem) elem.setAttribute('dir', waterDrain  ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-inverter'                ); if (elem) elem.setAttribute('dir', inverter    ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-lpg-heater'              ); if (elem) elem.setAttribute('dir', lpgHeater   ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-fresh-heater'            ); if (elem) elem.setAttribute('dir', freshHeater ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-grey-heater'             ); if (elem) elem.setAttribute('dir', greyHeater  ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-dplus'                   ); if (elem) elem.setAttribute('dir', dplus       ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-ehu'                     ); if (elem) elem.setAttribute('dir', ehu         ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('txt-actual-room-temp'                ); if (elem) elem.textContent = (actualRoomTemp  / 10 - 273).toFixed(1);
     elem = Ajax.getElementOrNull('txt-actual-water-temp'               ); if (elem) elem.textContent = (actualWaterTemp / 10 - 273).toFixed(0);
 }

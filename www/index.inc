@@ -35,7 +35,9 @@
 ~expand^led^Water pump^att-control-water-pump~
 ~expand^led^Water fill^att-control-water-fill~
 ~expand^led^Water drain^att-control-water-drain~
-~expand^led^Lpg Heater^att-control-lpg-heater~
+~expand^led^Lpg heater^att-control-lpg-heater~
+~expand^led^Fresh tank heater^att-control-fresh-heater~
+~expand^led^Grey tank heater^att-control-grey-heater~
 <br/>
 ~expand^led^Inverter^att-control-inverter~
 ~expand^led^EHU^att-control-ehu~

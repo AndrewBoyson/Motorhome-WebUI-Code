@@ -65,8 +65,10 @@ const CAPACITY_AH        = 280;
 const AS_PER_PULSE       = 61.444;
 const AS_PER_PERCENT     = CAPACITY_AH*36;
 const PULSES_PER_PERCENT = AS_PER_PERCENT/AS_PER_PULSE;
-const HEATER_OHMS        =  8.8;
+const HEATER_OHMS        =  9.5;
 const HEATER_VOLTS       = 14.4;
+const HEATER_AMPS        = HEATER_VOLTS / HEATER_OHMS;
+const HEATER_WATTS       = HEATER_VOLTS * HEATER_AMPS;
 
 function formatSeconds(value)
 {
@@ -82,18 +84,17 @@ function formatSeconds(value)
 function display()
 {
     let targetAs = batteryTargetSocPercent * AS_PER_PERCENT;
-    if (batteryTargetMode == 'M') targetAs = 57 * AS_PER_PERCENT; //Target mode is midpoint mv so assume corresponds to about 57%
+    if (batteryTargetMode == 'M') targetAs = batteryInflexionPercent * AS_PER_PERCENT; //Target mode is midpoint mv so assume corresponds to about 57%
     let capacityToTargetAs = targetAs - batteryCountedCapacityAs;
 
 
     let timeToTargetSeconds  = capacityToTargetAs / batteryCurrentMa * 1000;
     let sTimeToTarget = batteryOutputState == 'C' || batteryOutputState == 'D' ? formatSeconds(timeToTargetSeconds) : '-';
 
-    //let heaterVoltage = Math.sqrt(batteryHeater8bfdp * 256) / 256 * 14;
-    let heaterVoltage = batteryHeater8bfdp * HEATER_VOLTS / 256;
-    let heaterMa      = heaterVoltage / HEATER_OHMS * 1000;
-    let heaterWatts   = heaterVoltage * heaterVoltage / HEATER_OHMS;
-    let heaterPercent = batteryHeater8bfdp * 100 / 256;
+    let heaterDuty    = batteryHeater8bfdp / 256.0;
+    let heaterMa      = heaterDuty * HEATER_AMPS * 1000;
+    let heaterWatts   = heaterDuty * HEATER_WATTS;
+    let heaterPercent = heaterDuty * 100;
 
     let TiMinutes = batteryHeaterProportional / batteryHeaterIntegral;
 

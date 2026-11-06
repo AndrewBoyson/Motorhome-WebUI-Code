@@ -6,6 +6,8 @@ let waterFill                = false;
 let waterDrain               = false;
 let inverter                 = false;
 let lpgHeater                = false;
+let freshHeater              = false;
+let greyHeater               = false;
 let dplus                    = false;
 let ehu                      = false;
 let litres                   = '';
@@ -24,15 +26,17 @@ function parse()
     waterDrain               = lines[2] === '1';
     inverter                 = lines[3] === '1';
     lpgHeater                = lines[4] === '1';
-    dplus                    = lines[5] === '1';
-    ehu                      = lines[6] === '1';
-    litres                   = lines[7];
-    pumpMinLitres            = lines[8];
-    pumpDplusLitres          = lines[9];
-    drainMaxLitres           = lines[10];
-    batteryMode              = lines[11];
-    capacityTargetPercent    = lines[12];
-    batteryOutputState       = lines[13];
+    freshHeater              = lines[5] === '1';
+    greyHeater               = lines[6] === '1';
+    dplus                    = lines[7] === '1';
+    ehu                      = lines[8] === '1';
+    litres                   = lines[9];
+    pumpMinLitres            = lines[10];
+    pumpDplusLitres          = lines[11];
+    drainMaxLitres           = lines[12];
+    batteryMode              = lines[13];
+    capacityTargetPercent    = lines[14];
+    batteryOutputState       = lines[15];
 }
 
 const CAPACITY_AH        = 280;
@@ -41,13 +45,15 @@ const AS_PER_PERCENT     = CAPACITY_AH*36;
 function display()
 {
     let elem;
-    elem = Ajax.getElementOrNull('att-control-water-pump'               ); if (elem) elem.setAttribute('dir', waterPump  ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-control-water-fill'               ); if (elem) elem.setAttribute('dir', waterFill  ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-control-water-drain'              ); if (elem) elem.setAttribute('dir', waterDrain ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-control-inverter'                 ); if (elem) elem.setAttribute('dir', inverter   ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-control-lpg-heater'               ); if (elem) elem.setAttribute('dir', lpgHeater  ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-control-dplus'                    ); if (elem) elem.setAttribute('dir', dplus      ? 'rtl' : 'ltr');
-    elem = Ajax.getElementOrNull('att-control-ehu'                      ); if (elem) elem.setAttribute('dir', ehu        ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-water-pump'               ); if (elem) elem.setAttribute('dir', waterPump   ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-water-fill'               ); if (elem) elem.setAttribute('dir', waterFill   ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-water-drain'              ); if (elem) elem.setAttribute('dir', waterDrain  ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-inverter'                 ); if (elem) elem.setAttribute('dir', inverter    ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-lpg-heater'               ); if (elem) elem.setAttribute('dir', lpgHeater   ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-fresh-heater'             ); if (elem) elem.setAttribute('dir', freshHeater ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-grey-heater'              ); if (elem) elem.setAttribute('dir', greyHeater  ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-dplus'                    ); if (elem) elem.setAttribute('dir', dplus       ? 'rtl' : 'ltr');
+    elem = Ajax.getElementOrNull('att-control-ehu'                      ); if (elem) elem.setAttribute('dir', ehu         ? 'rtl' : 'ltr');
     elem = Ajax.getElementOrNull('val-control-pump-min-litres'          ); if (elem) elem.value       =  pumpMinLitres;
     elem = Ajax.getElementOrNull('val-control-pump-dplus-litres'        ); if (elem) elem.value       =  pumpDplusLitres;
     elem = Ajax.getElementOrNull('val-control-drain-max-litres'         ); if (elem) elem.value       =  drainMaxLitres;
@@ -64,6 +70,8 @@ function change(elem)
     if (elem.id === 'att-control-water-drain'      ) AjaxSendNameValue('control-water-drain'       ,  elem.dir == 'rtl' ? '0' :  '1');
     if (elem.id === 'att-control-inverter'         ) AjaxSendNameValue('control-inverter'          ,  elem.dir == 'rtl' ? '0' :  '1');
     if (elem.id === 'att-control-lpg-heater'       ) AjaxSendNameValue('control-lpg-heater'        ,  elem.dir == 'rtl' ? '0' :  '1');
+    if (elem.id === 'att-control-fresh-heater'     ) AjaxSendNameValue('control-fresh-heater'      ,  elem.dir == 'rtl' ? '0' :  '1');
+    if (elem.id === 'att-control-grey-heater'      ) AjaxSendNameValue('control-grey-heater'       ,  elem.dir == 'rtl' ? '0' :  '1');
     if (elem.id === 'val-control-pump-min-litres'  ) AjaxSendNameValue('control-pump-min-litres'   ,  elem.value);
     if (elem.id === 'val-control-pump-dplus-litres') AjaxSendNameValue('control-pump-dplus-litres' ,  elem.value);
     if (elem.id === 'val-control-drain-max-litres' ) AjaxSendNameValue('control-drain-max-litres'  ,  elem.value);

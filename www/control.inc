@@ -25,6 +25,10 @@
 <br/>
 ~expand^switch^Lpg heater^att-control-lpg-heater~
 <br/>
+~expand^switch^Fresh tank heater^att-control-fresh-heater~
+<br/>
+~expand^switch^Grey tank heater^att-control-grey-heater~
+<br/>
 ~expand^led^D+^att-control-dplus~
 ~expand^led^EHU^att-control-ehu~
 <br/>
