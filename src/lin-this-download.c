@@ -42,7 +42,8 @@ static void downloadStatus(char msgLen, char msgId, char* pRequest)
 
 	uint16_t rawTargetRoomTemp   = *(uint16_t*)(pRequest +  0);
 	uint8_t  rawTargetFanMode    = *(uint8_t *)(pRequest +  2);
-	uint8_t  rawActualRecvStatus = *(uint8_t *)(pRequest +  3);
+	//uint8_t  rawActualRecvStatus = *(uint8_t *)(pRequest +  3);
+	checkByte( 3, *(pRequest +  3), 0x00, "LinThis downloadStatus index %d expected %02X but had %02X");
 	uint16_t rawTargetElecPower  = *(uint16_t*)(pRequest +  4);
 	uint16_t rawTargetWaterTemp  = *(uint16_t*)(pRequest +  6);
 	if (*(pRequest + 8) != *(pRequest + 4)) Log('e', "LinThis downloadStatus byte 8 not the same as byte 4");
@@ -53,7 +54,8 @@ static void downloadStatus(char msgLen, char msgId, char* pRequest)
 	uint16_t rawActualRoomTemp   = *(uint16_t*)(pRequest + 14);
 	uint8_t  rawActualOpStatus   = *(uint8_t *)(pRequest + 16);
 	uint8_t  rawActualErrorCode  = *(uint8_t *)(pRequest + 17);
-	if (*(pRequest + 18) != *(pRequest + 3)) Log('e', "LinThis downloadStatus recvStatus-byte18 %02X is not the same as recvStatus-byte3 %02X", *(pRequest + 18), *(pRequest + 3));
+	//if (*(pRequest + 18) != *(pRequest + 3)) Log('e', "LinThis downloadStatus recvStatus-byte18 %02X is not the same as recvStatus-byte3 %02X", *(pRequest + 18), *(pRequest + 3));
+	uint8_t  rawActualRecvStatus = *(uint8_t *)(pRequest +  18);
 	checkByte(19, *(pRequest + 19), 0x00, "LinThis downloadStatus index %d expected %02X but had %02X");
 	
 	TrumaTargetRoomTemp    = rawTargetRoomTemp ? (uint8_t)(rawTargetRoomTemp / 10 - 273) : 0;
